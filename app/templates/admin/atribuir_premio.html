@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-arrow-right"></i> {{ titulo }}
+                        </h5>
+                        <a href="{{ url_for('admin.premios') }}" class="btn btn-light btn-sm">
+                            <i class="fas fa-arrow-left"></i> Voltar
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Informações do Prêmio -->
+                    <div class="alert alert-info" role="alert">
+                        <h6><i class="fas fa-gift"></i> <strong>Prêmio Selecionado:</strong></h6>
+                        <p class="mb-2"><strong>{{ premio.nome }}</strong></p>
+                        {% if premio.descricao %}
+                            <p class="mb-2">{{ premio.descricao }}</p>
+                        {% endif %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small><strong>Tipo:</strong> 
+                                    <span class="badge bg-{{ 'info' if premio.tipo == 'show' else 'warning' }}">
+                                        {{ 'Show' if premio.tipo == 'show' else 'Day Use' }}
+                                    </span>
+                                </small>
+                            </div>
+                            <div class="col-md-6">
+                                <small><strong>Data do Evento:</strong> {{ premio.data_evento.strftime('%d/%m/%Y') }}</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulário de Atribuição -->
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-4">
+                            {{ form.loja_id.label(class="form-label") }}
+                            {{ form.loja_id(class="form-select form-select-lg") }}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i> Apenas lojas que foram sorteadas semanalmente aparecem nesta lista.
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning" role="alert">
+                            <h6><i class="fas fa-exclamation-triangle"></i> <strong>Importante:</strong></h6>
+                            <ul class="mb-0">
+                                <li>Após atribuir, apenas o assistente da loja selecionada poderá sortear este prêmio</li>
+                                <li>O prêmio ficará disponível no painel do assistente da loja</li>
+                                <li>Você pode remover a atribuição a qualquer momento (até ser sorteado)</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('admin.premios') }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.alert h6 {
+    color: inherit;
+    margin-bottom: 0.5rem;
+}
+.form-select-lg {
+    font-size: 1.1rem;
+    padding: 0.75rem 1rem;
+}
+.btn-lg {
+    font-size: 1.1rem;
+    padding: 0.75rem 1.5rem;
+}
+</style>
+{% endblock %} 

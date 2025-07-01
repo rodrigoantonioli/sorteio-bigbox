@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, DateField, SelectField, SubmitField, IntegerField, TextAreaField, BooleanField
+from wtforms import StringField, PasswordField, DateField, SelectField, SubmitField, IntegerField, TextAreaField, BooleanField, HiddenField
 from wtforms.validators import DataRequired, Email, Length, Optional, NumberRange
 from datetime import date
 
@@ -43,8 +43,14 @@ class PremioForm(FlaskForm):
         ('show', 'Show'),
         ('day_use', 'Day Use')
     ], validators=[DataRequired(message='Tipo é obrigatório')])
-    loja_id = SelectField('Loja Ganhadora', coerce=int, validators=[Optional()])
     submit = SubmitField('Salvar')
+
+class AtribuirPremioForm(FlaskForm):
+    """Formulário para atribuir prêmio a uma loja ganhadora"""
+    loja_id = SelectField('Loja Ganhadora', coerce=int, validators=[
+        DataRequired(message='Selecione uma loja')
+    ])
+    submit = SubmitField('Atribuir à Loja')
 
 class LojaForm(FlaskForm):
     """Formulário para criar/editar lojas"""

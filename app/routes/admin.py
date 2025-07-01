@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
 from app.models import db, Usuario, Loja, SorteioSemanal, SorteioColaborador, Colaborador, Premio
-from app.forms.admin import SorteioSemanalForm, UsuarioForm, PremioForm, LojaForm
+from app.forms.admin import SorteioSemanalForm, UsuarioForm, PremioForm, LojaForm, AtribuirPremioForm
 from datetime import datetime, date, timedelta
 from functools import wraps
 import random
@@ -333,26 +333,39 @@ def excluir_usuario(id):
 @admin_bp.route('/premios')
 @admin_required
 def premios():
-    """Lista prêmios"""
+    """Lista prêmios com status de atribuição"""
     premios = Premio.query.order_by(Premio.data_evento.desc(), Premio.nome).all()
-    return render_template('admin/premios.html', premios=premios)
+    
+    # Separar prêmios por status
+    premios_sem_loja = []
+    premios_com_loja = []
+    premios_sorteados = []
+    
+    for premio in premios:
+        # Verifica se já foi sorteado
+        sorteio_colaborador = SorteioColaborador.query.filter_by(premio_id=premio.id).first()
+        
+        if sorteio_colaborador:
+            premios_sorteados.append({
+                'premio': premio,
+                'colaborador': sorteio_colaborador.colaborador,
+                'sorteio': sorteio_colaborador
+            })
+        elif premio.loja_id:
+            premios_com_loja.append(premio)
+        else:
+            premios_sem_loja.append(premio)
+    
+    return render_template('admin/premios.html', 
+                         premios_sem_loja=premios_sem_loja,
+                         premios_com_loja=premios_com_loja,
+                         premios_sorteados=premios_sorteados)
 
 @admin_bp.route('/premios/novo', methods=['GET', 'POST'])
 @admin_required
 def novo_premio():
-    """Criar novo prêmio"""
+    """Criar novo prêmio (sem loja por padrão)"""
     form = PremioForm()
-    
-    # Popula lojas ganhadoras (apenas lojas que foram sorteadas)
-    lojas_ganhadoras = []
-    sorteios_ativos = SorteioSemanal.query.order_by(SorteioSemanal.semana_inicio.desc()).all()
-    for sorteio in sorteios_ativos:
-        if sorteio.loja_big not in [l[1] for l in lojas_ganhadoras]:
-            lojas_ganhadoras.append((sorteio.loja_big.id, f"{sorteio.loja_big.codigo} - {sorteio.loja_big.nome} (BIG)"))
-        if sorteio.loja_ultra not in [l[1] for l in lojas_ganhadoras]:
-            lojas_ganhadoras.append((sorteio.loja_ultra.id, f"{sorteio.loja_ultra.codigo} - {sorteio.loja_ultra.nome} (ULTRA)"))
-    
-    form.loja_id.choices = [(0, 'Disponível para todas as lojas ganhadoras')] + lojas_ganhadoras
     
     if form.validate_on_submit():
         premio = Premio(
@@ -360,7 +373,7 @@ def novo_premio():
             descricao=form.descricao.data,
             data_evento=form.data_evento.data,
             tipo=form.tipo.data,
-            loja_id=form.loja_id.data if form.loja_id.data > 0 else None,
+            loja_id=None,  # Sempre sem loja por padrão
             criado_por=current_user.id,
             ativo=True
         )
@@ -368,7 +381,7 @@ def novo_premio():
         db.session.add(premio)
         db.session.commit()
         
-        flash(f'Prêmio "{premio.nome}" criado com sucesso!', 'success')
+        flash(f'✅ Prêmio "{premio.nome}" criado com sucesso! Você pode agora atribuí-lo a uma loja ganhadora.', 'success')
         return redirect(url_for('admin.premios'))
     
     return render_template('admin/premio_form.html', form=form, titulo='Novo Prêmio')
@@ -376,48 +389,89 @@ def novo_premio():
 @admin_bp.route('/premios/<int:id>/editar', methods=['GET', 'POST'])
 @admin_required
 def editar_premio(id):
-    """Editar prêmio"""
+    """Editar prêmio (apenas se não foi sorteado)"""
     premio = Premio.query.get_or_404(id)
     
+    # Verifica se já foi sorteado
+    sorteio_colaborador = SorteioColaborador.query.filter_by(premio_id=id).first()
+    if sorteio_colaborador:
+        flash('❌ Não é possível editar um prêmio que já foi sorteado!', 'danger')
+        return redirect(url_for('admin.premios'))
+    
     form = PremioForm(obj=premio)
-    
-    # Popula lojas ganhadoras (apenas lojas que foram sorteadas)
-    lojas_ganhadoras = []
-    sorteios_ativos = SorteioSemanal.query.order_by(SorteioSemanal.semana_inicio.desc()).all()
-    for sorteio in sorteios_ativos:
-        if sorteio.loja_big not in [l[1] for l in lojas_ganhadoras]:
-            lojas_ganhadoras.append((sorteio.loja_big.id, f"{sorteio.loja_big.codigo} - {sorteio.loja_big.nome} (BIG)"))
-        if sorteio.loja_ultra not in [l[1] for l in lojas_ganhadoras]:
-            lojas_ganhadoras.append((sorteio.loja_ultra.id, f"{sorteio.loja_ultra.codigo} - {sorteio.loja_ultra.nome} (ULTRA)"))
-    
-    form.loja_id.choices = [(0, 'Disponível para todas as lojas ganhadoras')] + lojas_ganhadoras
     
     if form.validate_on_submit():
         premio.nome = form.nome.data
         premio.descricao = form.descricao.data
         premio.data_evento = form.data_evento.data
         premio.tipo = form.tipo.data
-        premio.loja_id = form.loja_id.data if form.loja_id.data > 0 else None
+        # Não permite alterar loja_id aqui - usa rota específica para isso
         
         db.session.commit()
         
-        flash(f'Prêmio "{premio.nome}" atualizado com sucesso!', 'success')
+        flash(f'✅ Prêmio "{premio.nome}" atualizado com sucesso!', 'success')
         return redirect(url_for('admin.premios'))
     
     return render_template('admin/premio_form.html', form=form, titulo='Editar Prêmio')
 
-@admin_bp.route('/premios/<int:id>/toggle')
+@admin_bp.route('/premios/<int:id>/atribuir', methods=['GET', 'POST'])
 @admin_required
-def toggle_premio(id):
-    """Ativar/desativar prêmio"""
+def atribuir_premio(id):
+    """Atribuir prêmio a uma loja ganhadora"""
     premio = Premio.query.get_or_404(id)
     
-    premio.ativo = not premio.ativo
+    # Verifica se já foi sorteado
+    sorteio_colaborador = SorteioColaborador.query.filter_by(premio_id=id).first()
+    if sorteio_colaborador:
+        flash('❌ Não é possível atribuir um prêmio que já foi sorteado!', 'danger')
+        return redirect(url_for('admin.premios'))
+    
+    form = AtribuirPremioForm()
+    
+    # Popula apenas lojas ganhadoras (que foram sorteadas)
+    lojas_ganhadoras = []
+    sorteios_ativos = SorteioSemanal.query.order_by(SorteioSemanal.semana_inicio.desc()).all()
+    for sorteio in sorteios_ativos:
+        if sorteio.loja_big.id not in [l[0] for l in lojas_ganhadoras]:
+            lojas_ganhadoras.append((sorteio.loja_big.id, f"{sorteio.loja_big.codigo} - {sorteio.loja_big.nome} (BIG)"))
+        if sorteio.loja_ultra.id not in [l[0] for l in lojas_ganhadoras]:
+            lojas_ganhadoras.append((sorteio.loja_ultra.id, f"{sorteio.loja_ultra.codigo} - {sorteio.loja_ultra.nome} (ULTRA)"))
+    
+    if not lojas_ganhadoras:
+        flash('❌ Não há lojas ganhadoras disponíveis! Realize sorteios semanais primeiro.', 'warning')
+        return redirect(url_for('admin.premios'))
+    
+    form.loja_id.choices = lojas_ganhadoras
+    
+    if form.validate_on_submit():
+        loja = Loja.query.get(form.loja_id.data)
+        premio.loja_id = form.loja_id.data
+        
+        db.session.commit()
+        
+        flash(f'✅ Prêmio "{premio.nome}" atribuído à loja {loja.codigo} - {loja.nome}!', 'success')
+        return redirect(url_for('admin.premios'))
+    
+    return render_template('admin/atribuir_premio.html', form=form, premio=premio, titulo='Atribuir Prêmio à Loja')
+
+@admin_bp.route('/premios/<int:id>/desatribuir', methods=['POST'])
+@admin_required
+def desatribuir_premio(id):
+    """Remover atribuição de prêmio (voltar para pool geral)"""
+    premio = Premio.query.get_or_404(id)
+    
+    # Verifica se já foi sorteado
+    sorteio_colaborador = SorteioColaborador.query.filter_by(premio_id=id).first()
+    if sorteio_colaborador:
+        flash('❌ Não é possível desatribuir um prêmio que já foi sorteado!', 'danger')
+        return redirect(url_for('admin.premios'))
+    
+    loja_nome = premio.loja.nome if premio.loja else 'desconhecida'
+    premio.loja_id = None
+    
     db.session.commit()
     
-    status = 'ativado' if premio.ativo else 'desativado'
-    flash(f'Prêmio "{premio.nome}" foi {status}.', 'success')
-    
+    flash(f'✅ Prêmio "{premio.nome}" removido da loja {loja_nome} e voltou para o pool geral.', 'success')
     return redirect(url_for('admin.premios'))
 
 @admin_bp.route('/sorteios')

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Prêmios - Admin{% endblock %}
+{% block title %}Gerenciar Prêmios{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -9,10 +9,10 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h1 class="h3 mb-0">🎁 Gerenciar Prêmios</h1>
-                    <small class="text-muted">Cadastro de prêmios para sorteios</small>
+                    <small class="text-muted">Festival Na Praia 2025 - Sistema de Atribuição</small>
                 </div>
                 <div>
-                    <a href="{{ url_for('admin.novo_premio') }}" class="btn btn-primary">
+                    <a href="{{ url_for('admin.novo_premio') }}" class="btn btn-success">
                         <i class="fas fa-plus"></i> Novo Prêmio
                     </a>
                     <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
@@ -23,135 +23,273 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-gift"></i> Lista de Prêmios
-                        <span class="badge bg-light text-dark ms-2">{{ premios|length }}</span>
-                    </h5>
+    <!-- Estatísticas -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-warning text-dark">
+                <div class="card-body text-center">
+                    <h3>{{ premios_sem_loja|length }}</h3>
+                    <p class="mb-0">🎁 Prêmios Disponíveis</p>
+                    <small>Aguardando atribuição</small>
                 </div>
-                <div class="card-body">
-                    {% if premios %}
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Nome</th>
-                                        <th>Tipo</th>
-                                        <th>Data do Evento</th>
-                                        <th>Loja Ganhadora</th>
-                                        <th>Status</th>
-                                        <th>Criado por</th>
-                                        <th width="150">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for premio in premios %}
-                                    <tr>
-                                        <td><strong>{{ premio.nome }}</strong></td>
-                                        <td>
-                                            {% if premio.tipo == 'show' %}
-                                                <span class="badge bg-primary">
-                                                    <i class="fas fa-music"></i> Show
-                                                </span>
-                                            {% else %}
-                                                <span class="badge bg-success">
-                                                    <i class="fas fa-sun"></i> Day Use
-                                                </span>
-                                            {% endif %}
-                                        </td>
-                                        <td>{{ premio.data_evento.strftime('%d/%m/%Y') }}</td>
-                                        <td>
-                                            {% if premio.loja %}
-                                                <span class="badge bg-{{ 'primary' if premio.loja.bandeira == 'BIG' else 'success' }}">
-                                                    {{ premio.loja.codigo }}
-                                                </span>
-                                                <br>
-                                                <small class="text-muted">{{ premio.loja.nome }}</small>
-                                            {% else %}
-                                                <span class="badge bg-secondary">Todas as lojas</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            {% if premio.ativo %}
-                                                <span class="badge bg-success">Ativo</span>
-                                            {% else %}
-                                                <span class="badge bg-danger">Inativo</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            <small class="text-muted">{{ premio.criador.nome }}</small>
-                                        </td>
-                                        <td>
-                                            <div class="btn-group btn-group-sm" role="group">
-                                                <a href="{{ url_for('admin.editar_premio', id=premio.id) }}" 
-                                                   class="btn btn-outline-primary" title="Editar">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a href="{{ url_for('admin.toggle_premio', id=premio.id) }}" 
-                                                   class="btn btn-outline-{{ 'danger' if premio.ativo else 'success' }}"
-                                                   title="{{ 'Desativar' if premio.ativo else 'Ativar' }}"
-                                                   onclick="return confirm('Tem certeza que deseja {{ 'desativar' if premio.ativo else 'ativar' }} este prêmio?')">
-                                                    <i class="fas fa-{{ 'ban' if premio.ativo else 'check' }}"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Estatísticas -->
-                        <div class="row mt-3">
-                            <div class="col-md-3">
-                                <div class="card bg-success text-white">
-                                    <div class="card-body text-center">
-                                        <h5>{{ premios|selectattr('ativo')|list|length }}</h5>
-                                        <small>Prêmios Ativos</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="card bg-primary text-white">
-                                    <div class="card-body text-center">
-                                        <h5>{{ premios|selectattr('tipo', 'equalto', 'show')|list|length }}</h5>
-                                        <small>Shows</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="card bg-info text-white">
-                                    <div class="card-body text-center">
-                                        <h5>{{ premios|selectattr('tipo', 'equalto', 'day_use')|list|length }}</h5>
-                                        <small>Day Use</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="card bg-warning text-dark">
-                                    <div class="card-body text-center">
-                                        <h5>{{ premios|rejectattr('ativo')|list|length }}</h5>
-                                        <small>Inativos</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% else %}
-                        <div class="text-center py-5">
-                            <i class="fas fa-gift fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">Nenhum prêmio cadastrado</h5>
-                            <p class="text-muted">Crie prêmios para que os gerentes possam realizar sorteios.</p>
-                            <a href="{{ url_for('admin.novo_premio') }}" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Criar Primeiro Prêmio
-                            </a>
-                        </div>
-                    {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3>{{ premios_com_loja|length }}</h3>
+                    <p class="mb-0">🏪 Prêmios Atribuídos</p>
+                    <small>Prontos para sorteio</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3>{{ premios_sorteados|length }}</h3>
+                    <p class="mb-0">🏆 Prêmios Sorteados</p>
+                    <small>Colaboradores ganhadoras</small>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Prêmios Disponíveis (Pool Geral) -->
+    {% if premios_sem_loja %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-gift"></i> 🎁 Prêmios Disponíveis para Atribuição
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">Estes prêmios estão no pool geral e podem ser atribuídos a lojas ganhadoras.</p>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Prêmio</th>
+                                    <th>Tipo</th>
+                                    <th>Data do Evento</th>
+                                    <th>Criado</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for premio in premios_sem_loja %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ premio.nome }}</strong>
+                                        {% if premio.descricao %}
+                                            <br><small class="text-muted">{{ premio.descricao }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'info' if premio.tipo == 'show' else 'warning' }}">
+                                            {{ 'Show' if premio.tipo == 'show' else 'Day Use' }}
+                                        </span>
+                                    </td>
+                                    <td>{{ premio.data_evento.strftime('%d/%m/%Y') }}</td>
+                                    <td>
+                                        <small>{{ premio.criado_em.strftime('%d/%m/%Y') }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{{ url_for('admin.atribuir_premio', id=premio.id) }}" 
+                                               class="btn btn-primary" title="Atribuir à Loja">
+                                                <i class="fas fa-arrow-right"></i> Atribuir
+                                            </a>
+                                            <a href="{{ url_for('admin.editar_premio', id=premio.id) }}" 
+                                               class="btn btn-outline-secondary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Prêmios Atribuídos às Lojas -->
+    {% if premios_com_loja %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-store"></i> 🏪 Prêmios Atribuídos às Lojas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">Estes prêmios foram atribuídos a lojas específicas e estão prontos para sorteio pelos assistentes.</p>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Prêmio</th>
+                                    <th>Tipo</th>
+                                    <th>Loja Atribuída</th>
+                                    <th>Data do Evento</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for premio in premios_com_loja %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ premio.nome }}</strong>
+                                        {% if premio.descricao %}
+                                            <br><small class="text-muted">{{ premio.descricao }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'info' if premio.tipo == 'show' else 'warning' }}">
+                                            {{ 'Show' if premio.tipo == 'show' else 'Day Use' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'primary' if premio.loja.bandeira == 'BIG' else 'success' }}">
+                                            {{ premio.loja.codigo }}
+                                        </span>
+                                        <br>
+                                        <small class="text-muted">{{ premio.loja.nome }}</small>
+                                    </td>
+                                    <td>{{ premio.data_evento.strftime('%d/%m/%Y') }}</td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            <i class="fas fa-clock"></i> Aguardando Sorteio
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <form method="POST" action="{{ url_for('admin.desatribuir_premio', id=premio.id) }}" 
+                                                  style="display: inline;">
+                                                <button type="submit" class="btn btn-outline-warning" 
+                                                        title="Remover da Loja"
+                                                        onclick="return confirm('Tem certeza que deseja remover este prêmio da loja?')">
+                                                    <i class="fas fa-arrow-left"></i> Remover
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Prêmios Sorteados -->
+    {% if premios_sorteados %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-trophy"></i> 🏆 Prêmios Sorteados
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">Estes prêmios já foram sorteados e têm colaboradores ganhadores definidos.</p>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Prêmio</th>
+                                    <th>Colaborador Ganhador</th>
+                                    <th>Loja</th>
+                                    <th>Data do Sorteio</th>
+                                    <th>Sorteado por</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in premios_sorteados %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ item.premio.nome }}</strong>
+                                        <br>
+                                        <span class="badge bg-{{ 'info' if item.premio.tipo == 'show' else 'warning' }}">
+                                            {{ 'Show' if item.premio.tipo == 'show' else 'Day Use' }}
+                                        </span>
+                                        <small class="text-muted">{{ item.premio.data_evento.strftime('%d/%m/%Y') }}</small>
+                                    </td>
+                                    <td>
+                                        <strong class="text-success">{{ item.colaborador.nome }}</strong>
+                                        <br>
+                                        <small class="text-muted">Mat: {{ item.colaborador.matricula }}</small>
+                                        <br>
+                                        <small class="text-muted">{{ item.colaborador.setor }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'primary' if item.colaborador.loja.bandeira == 'BIG' else 'success' }}">
+                                            {{ item.colaborador.loja.codigo }}
+                                        </span>
+                                        <br>
+                                        <small class="text-muted">{{ item.colaborador.loja.nome }}</small>
+                                    </td>
+                                    <td>
+                                        {{ item.sorteio.data_sorteio.strftime('%d/%m/%Y %H:%M') }}
+                                    </td>
+                                    <td>
+                                        <small>{{ item.sorteio.sorteador.nome }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Estado Vazio -->
+    {% if not premios_sem_loja and not premios_com_loja and not premios_sorteados %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-gift fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Nenhum prêmio cadastrado</h5>
+                    <p class="text-muted">Clique em "Novo Prêmio" para criar o primeiro prêmio.</p>
+                    <a href="{{ url_for('admin.novo_premio') }}" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Criar Primeiro Prêmio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
+
+<style>
+.card-header {
+    font-weight: 600;
+}
+.badge {
+    font-size: 0.85em;
+}
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+.btn-group-sm .btn {
+    font-size: 0.875rem;
+}
+</style>
 {% endblock %} 
