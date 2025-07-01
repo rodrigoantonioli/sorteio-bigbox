@@ -152,9 +152,26 @@ def sortear_lojas():
     """Sorteia lojas semanalmente"""
     form = SorteioSemanalForm()
     
-    # Busca lojas ativas para o frontend
-    lojas_big = Loja.query.filter_by(bandeira='BIG', ativo=True).all()
-    lojas_ultra = Loja.query.filter_by(bandeira='ULTRA', ativo=True).all()
+    # Busca lojas ativas que ainda NÃO foram sorteadas
+    # Pega IDs das lojas já sorteadas
+    lojas_ja_sorteadas_ids = set()
+    sorteios_existentes = SorteioSemanal.query.all()
+    for sorteio in sorteios_existentes:
+        lojas_ja_sorteadas_ids.add(sorteio.loja_big_id)
+        lojas_ja_sorteadas_ids.add(sorteio.loja_ultra_id)
+    
+    # Filtra lojas ativas que ainda não foram sorteadas
+    lojas_big = Loja.query.filter(
+        Loja.bandeira == 'BIG',
+        Loja.ativo == True,
+        ~Loja.id.in_(lojas_ja_sorteadas_ids)
+    ).all()
+    
+    lojas_ultra = Loja.query.filter(
+        Loja.bandeira == 'ULTRA',
+        Loja.ativo == True,
+        ~Loja.id.in_(lojas_ja_sorteadas_ids)
+    ).all()
     
     # Serializa lojas para JSON
     lojas_big_json = [{'id': l.id, 'codigo': l.codigo, 'nome': l.nome} for l in lojas_big]
@@ -170,7 +187,12 @@ def sortear_lojas():
             return render_template('admin/sortear.html', form=form, lojas_big=lojas_big_json, lojas_ultra=lojas_ultra_json)
         
         if not lojas_big or not lojas_ultra:
-            flash('Não há lojas suficientes para o sorteio!', 'danger')
+            if not lojas_big and not lojas_ultra:
+                flash('Não há mais lojas disponíveis para sorteio! Todas as lojas BIG e ULTRA já foram sorteadas.', 'warning')
+            elif not lojas_big:
+                flash('Não há mais lojas BIG disponíveis para sorteio! Todas já foram sorteadas.', 'warning')
+            else:
+                flash('Não há mais lojas ULTRA disponíveis para sorteio! Todas já foram sorteadas.', 'warning')
             return render_template('admin/sortear.html', form=form, lojas_big=lojas_big_json, lojas_ultra=lojas_ultra_json)
         
         # Verifica se é sorteio animado (com IDs das lojas escolhidas)
@@ -411,6 +433,64 @@ def sorteios():
     return render_template('admin/sorteios.html', 
                          sorteios_semanais=sorteios_semanais,
                          sorteios_colaboradores=sorteios_colaboradores)
+
+@admin_bp.route('/sorteios/resetar-pote', methods=['POST'])
+@admin_required
+def resetar_pote_lojas():
+    """Reseta o pote de lojas - permite que todas as lojas voltem a participar dos sorteios"""
+    try:
+        # Conta quantos sorteios serão removidos
+        total_sorteios = SorteioSemanal.query.count()
+        total_colaboradores = SorteioColaborador.query.count()
+        
+        if total_sorteios == 0:
+            flash('Não há sorteios para resetar.', 'info')
+            return redirect(url_for('admin.sorteios'))
+        
+        # Remove todos os sorteios de colaboradores primeiro (FK constraint)
+        SorteioColaborador.query.delete()
+        
+        # Remove todos os sorteios semanais
+        SorteioSemanal.query.delete()
+        
+        db.session.commit()
+        
+        flash(f'✅ Pote de lojas resetado com sucesso! {total_sorteios} sorteios semanais e {total_colaboradores} sorteios de colaboradores foram removidos. Todas as lojas podem participar novamente.', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'❌ Erro ao resetar pote de lojas: {str(e)}', 'danger')
+    
+    return redirect(url_for('admin.sorteios'))
+
+@admin_bp.route('/sorteios/resetar-pote', methods=['POST'])
+@admin_required
+def resetar_pote_lojas():
+    """Reseta o pote de lojas - permite que todas as lojas voltem a participar dos sorteios"""
+    try:
+        # Conta quantos sorteios serão removidos
+        total_sorteios = SorteioSemanal.query.count()
+        total_colaboradores = SorteioColaborador.query.count()
+        
+        if total_sorteios == 0:
+            flash('Não há sorteios para resetar.', 'info')
+            return redirect(url_for('admin.sorteios'))
+        
+        # Remove todos os sorteios de colaboradores primeiro (FK constraint)
+        SorteioColaborador.query.delete()
+        
+        # Remove todos os sorteios semanais
+        SorteioSemanal.query.delete()
+        
+        db.session.commit()
+        
+        flash(f'✅ Pote de lojas resetado com sucesso! {total_sorteios} sorteios semanais e {total_colaboradores} sorteios de colaboradores foram removidos. Todas as lojas podem participar novamente.', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'❌ Erro ao resetar pote de lojas: {str(e)}', 'danger')
+    
+    return redirect(url_for('admin.sorteios'))
 
 @admin_bp.route('/sorteios/semanal/<int:id>/excluir')
 @admin_required
