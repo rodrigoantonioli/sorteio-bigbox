@@ -43,6 +43,13 @@ def create_app(config_name='default'):
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(manager_bp, url_prefix='/gerente')
     
+    # Rota de compatibilidade para redirecionamento /manager -> /gerente
+    @app.route('/manager/<path:path>')
+    def redirect_manager_routes(path):
+        """Redireciona rotas antigas /manager/* para /gerente/*"""
+        from flask import redirect, url_for
+        return redirect(f'/gerente/{path}', code=301)
+    
     # Comando CLI para inicializar o banco
     @app.cli.command()
     def init_db():

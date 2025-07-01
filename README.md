@@ -1,8 +1,8 @@
-# 🎲 Sistema de Sorteios Big Box & UltraBox
+# 🎬 Sistema de Sorteios Big Box & UltraBox v1.7
 
-**Sistema web para sorteios semanais do Festival Na Praia 2025** 🚀
+**Sistema web cinematográfico para sorteios do Festival Na Praia 2025** 🚀
 
-Sistema completo para gerenciar sorteios entre lojas Big Box e UltraBox, com interface moderna e gestão facilitada.
+Sistema completo para gerenciar sorteios entre lojas Big Box e UltraBox, com **interface premium de nível hollywoodiano** e experiência de usuário sofisticada.
 
 ## ✨ Funcionalidades
 
@@ -22,10 +22,14 @@ Sistema completo para gerenciar sorteios entre lojas Big Box e UltraBox, com int
 - Cadastro individual com validações
 - Controle de aptidão para participar dos sorteios
 
-### 🎲 Sorteios Automáticos
+### 🎬 Sorteios Cinematográficos v1.7
+- **Interface Premium**: Experiência visual de alto nível com animações sofisticadas
+- **Pote Elegante**: Cards de colaboradores com avatar, hover effects e shimmer
+- **Resultado Compacto**: Design harmonioso que se encaixa perfeitamente na tela
+- **Confetti Dinâmico**: 3 ondas de 240 peças coloridas com rotação complexa
+- **Loja em Destaque**: Informações da loja integradas ao resultado final
 - Sorteio semanal automático de lojas (1 BIG + 1 ULTRA)
 - Algoritmo que evita repetições recentes
-- Interface intuitiva para assistentes
 
 ### 🔐 Controle de Acesso
 - **Administrador**: Acesso total ao sistema
@@ -80,11 +84,13 @@ python run.py
 4. Sistema registra → Histórico completo
 ```
 
-## 🎨 Interface
-- Bootstrap 5 responsivo
-- Cards informativos com estatísticas
-- Design moderno e intuitivo
-- Compatível com mobile
+## 🎨 Interface Cinematográfica v1.7
+- **Design Premium**: Gradientes específicos, backdrop-filter e sombras profissionais
+- **Animações Sofisticadas**: Float, pulse, shimmer, hover effects e confetti dinâmico
+- **Layout Responsivo**: Grid adaptativo perfeito em desktop, tablet e mobile
+- **Compatibilidade Total**: Safari, Chrome, Firefox com prefixos webkit
+- Bootstrap 5 responsivo com classes customizadas elegantes
+- Cards informativos com estatísticas visuais impactantes
 
 ## 🔒 Segurança
 - Autenticação por sessão
@@ -110,4 +116,5 @@ Planilhas Excel (.xlsx/.xls) com formato:
 
 **Desenvolvido para Festival Na Praia 2025**
 
-**Sistema de Sorteios v1.0.0** 🎲 
+**Sistema de Sorteios v1.7** 🎬  
+*Edição Cinematográfica Premium* ✨ 

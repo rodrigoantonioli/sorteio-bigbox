@@ -250,6 +250,44 @@ class SorteioAnimado {
         }, 5000);
     }
 
+    // Cria confetti de celebração mais dinâmico
+    criarConfettiCelebracao() {
+        const container = document.getElementById('confettiCelebration');
+        if (!container) return;
+        
+        container.innerHTML = '';
+
+        // Cria múltiplas ondas de confetti
+        for (let onda = 0; onda < 3; onda++) {
+            setTimeout(() => {
+                for (let i = 0; i < 80; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti-celebration-piece';
+                    
+                    // Cores variadas
+                    const cores = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#F9CA24', '#6C5CE7', '#FD79A8', '#00B894', '#FDCB6E'];
+                    confetti.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
+                    
+                    // Posição e tamanho aleatórios
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.width = (Math.random() * 8 + 4) + 'px';
+                    confetti.style.height = confetti.style.width;
+                    
+                    // Animação personalizada
+                    confetti.style.animationDelay = Math.random() * 2 + 's';
+                    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    
+                    container.appendChild(confetti);
+                }
+            }, onda * 1000);
+        }
+
+        // Remove confetti após todas as ondas
+        setTimeout(() => {
+            if (container) container.innerHTML = '';
+        }, 8000);
+    }
+
     // Atualiza status do sorteio
     atualizarStatus(texto) {
         const status = document.getElementById('sorteioStatus');
@@ -258,7 +296,7 @@ class SorteioAnimado {
         }
     }
 
-    // Exibe resultado final das lojas
+    // Exibe resultado final das lojas - VERSÃO COMPACTA E ELEGANTE
     exibirResultadoFinal(resultados) {
         setTimeout(() => {
             // Gera data e hora atual
@@ -272,47 +310,63 @@ class SorteioAnimado {
                 second: '2-digit'
             });
             
-            this.atualizarStatus('💾 Salvando sorteio no banco de dados...');
+            this.atualizarStatus('');
             
             const display = document.getElementById('sorteioDisplay');
+            
+            // Container compacto e harmonioso
+            display.style.minHeight = '280px';
+            display.className = 'sorteio-display resultado-final-compacto';
+            
             display.innerHTML = `
-                <div class="resultado-final">
-                    <div class="mb-4 text-center">
-                        <div class="data-sorteio mb-3">
-                            <i class="bi bi-calendar-check"></i> <strong>${dataHora}</strong>
-                        </div>
-                        <div class="alert alert-info mb-3" id="statusAlert">
-                            <i class="bi bi-gear-fill"></i> Salvando resultados...
-                        </div>
+                <div class="resultado-lojas-elegante">
+                    <!-- Confetes dinâmicos -->
+                    <div class="confetti-celebration" id="confettiCelebration"></div>
+                    
+                    <!-- Título Compacto -->
+                    <div class="titulo-resultado-compacto mb-3">
+                        🏆 Lojas Ganhadoras
                     </div>
-                    <div class="text-center mb-4">
-                        <h3>🎉 PARABÉNS AOS GANHADORES! 🎉</h3>
+                    
+                    <!-- Data Discreta -->
+                    <div class="data-discreta mb-4">
+                        ${dataHora}
                     </div>
-                    ${resultados.map(r => `
-                        <div class="mb-4 text-center">
-                            <h4 class="text-primary">${r.tipo === 'Loja BIG' ? '🏢' : '🏬'} ${r.tipo}</h4>
-                            <div class="ganhador-nome ${r.tipo === 'Loja BIG' ? 'ganhador-big' : 'ganhador-ultra'}" style="font-size: 3rem;">
-                                ${r.vencedor.nome}
+                    
+                    <!-- Lojas Ganhadoras - Design Compacto -->
+                    <div class="lojas-ganhadoras-compacto">
+                        ${resultados.map((r, index) => `
+                            <div class="loja-ganhadora-compacta ${r.tipo === 'Loja BIG' ? 'loja-big-elegante' : 'loja-ultra-elegante'}">
+                                <div class="loja-badge-compacto">
+                                    ${r.tipo === 'Loja BIG' ? 'BIG' : 'ULTRA'}
+                                </div>
+                                <div class="loja-icone-compacto">
+                                    ${r.tipo === 'Loja BIG' ? '🏢' : '🏬'}
+                                </div>
+                                <div class="loja-nome-compacto">
+                                    ${r.vencedor.nome}
+                                </div>
+                                <div class="loja-codigo-compacto">
+                                    ${r.vencedor.codigo || ''}
+                                </div>
                             </div>
-                        </div>
-                    `).join('')}
-                    <div class="text-center mt-4" id="botoesAcao" style="display: none;">
-                        <button type="button" class="btn btn-discreto" onclick="window.location.href='/admin/dashboard'">
-                            ← Voltar ao Dashboard
-                        </button>
+                        `).join('')}
                     </div>
                 </div>
             `;
 
-            // SALVA AUTOMATICAMENTE NO BANCO VIA AJAX
+            // Ativa confetes dinâmicos imediatamente
+            this.criarConfettiCelebracao();
+            
+            // SALVA AUTOMATICAMENTE NO BANCO VIA AJAX (sem loading)
             setTimeout(() => {
                 this.submitarFormularioAjax(resultados);
-            }, 1500);
+            }, 1000);
             
-        }, 2000);
+        }, 1500);
     }
 
-    // Exibe resultado dos colaboradores
+    // Exibe resultado dos colaboradores (SEM BOTÃO DASHBOARD - como o sorteio das lojas)
     exibirResultadoColaboradores(resultados) {
         setTimeout(() => {
             // Gera data e hora atual
@@ -329,35 +383,36 @@ class SorteioAnimado {
             this.atualizarStatus('💾 Salvando sorteio no banco de dados...');
             
             const display = document.getElementById('sorteioDisplay');
+            
+            // Manter tamanho do container durante o sorteio (igual ao sorteio das lojas)
+            display.style.minHeight = '350px';
+            display.className = 'sorteio-display resultado-final-container';
+            
             display.innerHTML = `
-                <div class="resultado-final">
-                    <div class="mb-4 text-center">
-                        <div class="data-sorteio mb-3">
-                            <i class="bi bi-calendar-check"></i> <strong>${dataHora}</strong>
-                        </div>
-                        <div class="alert alert-info mb-3" id="statusAlert">
-                            <i class="bi bi-gear-fill"></i> Salvando resultados...
-                        </div>
+                <div class="resultado-final-completo">
+                    <!-- Confetes dinâmicos -->
+                    <div class="confetti-celebration" id="confettiCelebration"></div>
+                    
+                    <!-- Data e hora elegante -->
+                    <div class="data-sorteio-elegante mb-4 text-center">
+                        <i class="bi bi-calendar-check"></i> <strong>${dataHora}</strong>
                     </div>
-                    <h5 class="text-primary mb-3">
-                        ${resultados.length > 1 ? 'Colaboradores Sorteados' : 'Colaborador Sorteado'}
-                    </h5>
-                    ${resultados.map((colaborador, index) => `
-                        <div class="mb-2">
-                            <div class="nome-sorteio vencedor" style="font-size: ${resultados.length > 1 ? '1.5rem' : '2rem'};">
-                                ${index + 1}. ${colaborador.nome}
-                            </div>
-                            <small class="text-muted">${colaborador.setor}</small>
-                        </div>
-                    `).join('')}
-                    <div class="text-center mt-4" id="botoesAcao" style="display: none;">
-                        <a href="/manager/dashboard" class="btn btn-warning btn-lg">
-                            <i class="bi bi-arrow-left"></i> Ir para Dashboard
-                        </a>
+                    
+                    <!-- Status de salvamento -->
+                    <div class="alert alert-info mb-4 status-salvamento" id="statusAlert">
+                        <i class="bi bi-gear-fill animate-spin"></i> Salvando resultados no sistema...
+                    </div>
+                    
+                    <!-- Resultado será inserido pelo template via AJAX -->
+                    <div id="resultadoColaboradorContainer">
+                        <!-- Conteúdo será preenchido pela função AJAX customizada -->
                     </div>
                 </div>
             `;
 
+            // Ativa confetes dinâmicos imediatamente
+            this.criarConfettiCelebracao();
+            
             // SALVA AUTOMATICAMENTE NO BANCO VIA AJAX
             setTimeout(() => {
                 this.submitarFormularioColaboradoresAjax(resultados);
@@ -394,20 +449,35 @@ class SorteioAnimado {
         this.submitarFormularioColaboradoresAjax(resultados);
     }
 
-    // Exibe sucesso no sorteio
+    // Exibe sucesso no sorteio - VERSÃO SILENCIOSA
     exibirSucesso(mensagem) {
         const status = document.getElementById('sorteioStatus');
         const alertDiv = document.getElementById('statusAlert');
         const botoesDiv = document.getElementById('botoesAcao');
+        const colaboradorContainer = document.getElementById('resultadoColaboradorContainer');
         
-        if (status) status.textContent = '✅ Sorteio concluído com sucesso!';
-        
-        if (alertDiv) {
-            alertDiv.className = 'alert alert-success mb-3';
-            alertDiv.innerHTML = '<i class="bi bi-check-circle-fill"></i> ' + mensagem;
+        // Para sorteio de lojas: apenas remove elementos desnecessários silenciosamente
+        if (status && !colaboradorContainer) {
+            status.style.display = 'none'; // Oculta status em vez de mostrar mensagem
         }
         
-        if (botoesDiv) {
+        // Remove alert de salvamento (não precisamos mostrar)
+        if (alertDiv && !colaboradorContainer) {
+            alertDiv.style.display = 'none';
+        }
+        
+        // Se for sorteio de colaboradores, insere o resultado no container específico
+        if (colaboradorContainer) {
+            colaboradorContainer.innerHTML = mensagem;
+            if (status) status.style.display = 'none';
+            if (alertDiv) {
+                alertDiv.className = 'alert alert-success mb-4';
+                alertDiv.innerHTML = '<i class="bi bi-check-circle-fill"></i> Resultado salvo com sucesso!';
+            }
+        }
+        
+        // Para compatibilidade com sorteio de lojas (sem mostrar botões)
+        if (botoesDiv && colaboradorContainer) {
             botoesDiv.style.display = 'block';
         }
     }

@@ -447,6 +447,1612 @@ main {
 }
 
 /* ========================================
+   ESTILOS PARA TELA FINAL MELHORADA
+======================================== */
+
+/* Container do resultado final */
+.resultado-final-container {
+    min-height: 350px !important;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.resultado-final-completo {
+    position: relative;
+    z-index: 2;
+}
+
+/* Parabéns em destaque */
+.parabenss-destaque {
+    margin-bottom: 2rem;
+    animation: parabensPulse 2s ease-in-out infinite alternate;
+}
+
+.parabenss-texto-animado {
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(45deg, #FF6B6B, #4ECDC4, #45B7D1, #F9CA24);
+    background-size: 400% 400%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientAnimation 3s ease infinite;
+    text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+    margin-bottom: 0.5rem;
+}
+
+.parabenss-subtexto {
+    font-size: 1.1rem;
+    color: #666;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes parabensPulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.02); }
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Data e hora elegante */
+.data-sorteio-elegante {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #28a745;
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.2));
+    padding: 0.8rem 1.5rem;
+    border-radius: 15px;
+    display: inline-block;
+    border: 3px solid rgba(40, 167, 69, 0.3);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+    animation: dataHoraBrilho 3s ease-in-out infinite;
+}
+
+@keyframes dataHoraBrilho {
+    0%, 100% { box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2); }
+    50% { box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4); }
+}
+
+/* Container das lojas vencedoras lado a lado */
+.lojas-vencedoras-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+    gap: 1.5rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+/* Card de cada loja vencedora */
+.loja-vencedora {
+    flex: 1;
+    min-width: 200px;
+    background: linear-gradient(135deg, #fff, #f8f9fa);
+    border-radius: 20px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transform: translateY(0);
+    transition: all 0.3s ease;
+    animation: lojaEntrada 1s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.loja-vencedora::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    animation: brilhoSuperior 2s ease-in-out infinite;
+}
+
+.loja-vencedora:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Cores específicas das bandeiras */
+.loja-big {
+    border: 3px solid var(--big-color);
+    background: linear-gradient(135deg, #fff, rgba(142, 68, 173, 0.05));
+    animation: lojaBigPulse 3s ease-in-out infinite;
+}
+
+.loja-ultra {
+    border: 3px solid var(--ultra-color);
+    background: linear-gradient(135deg, #fff, rgba(0, 166, 81, 0.05));
+    animation: lojaUltraPulse 3s ease-in-out infinite;
+}
+
+@keyframes lojaBigPulse {
+    0%, 100% { border-color: var(--big-color); box-shadow: 0 10px 30px rgba(142, 68, 173, 0.15); }
+    50% { border-color: rgba(142, 68, 173, 0.8); box-shadow: 0 15px 40px rgba(142, 68, 173, 0.25); }
+}
+
+@keyframes lojaUltraPulse {
+    0%, 100% { border-color: var(--ultra-color); box-shadow: 0 10px 30px rgba(0, 166, 81, 0.15); }
+    50% { border-color: rgba(0, 166, 81, 0.8); box-shadow: 0 15px 40px rgba(0, 166, 81, 0.25); }
+}
+
+@keyframes lojaEntrada {
+    0% { 
+        transform: translateY(50px) scale(0.8);
+        opacity: 0;
+    }
+    100% { 
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes brilhoSuperior {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Header da loja */
+.loja-header {
+    margin-bottom: 1rem;
+}
+
+.loja-icone {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    animation: iconeFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconeFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.loja-tipo {
+    font-size: 1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+}
+
+.loja-big .loja-tipo {
+    color: var(--big-color);
+    text-shadow: 2px 2px 4px rgba(142, 68, 173, 0.3);
+}
+
+.loja-ultra .loja-tipo {
+    color: var(--ultra-color);
+    text-shadow: 2px 2px 4px rgba(0, 166, 81, 0.3);
+}
+
+/* Nome do vencedor */
+.loja-nome-vencedor {
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin: 1rem 0;
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    animation: nomeVencedorPulse 2s ease-in-out infinite;
+}
+
+.loja-big .loja-nome-vencedor {
+    color: var(--big-color);
+}
+
+.loja-ultra .loja-nome-vencedor {
+    color: var(--ultra-color);
+}
+
+@keyframes nomeVencedorPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Estrelas decorativas */
+.loja-estrelas {
+    font-size: 1.5rem;
+    animation: estrelasRotate 4s ease-in-out infinite;
+    margin-top: 1rem;
+}
+
+@keyframes estrelasRotate {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(5deg); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(-5deg); }
+    100% { transform: rotate(0deg); }
+}
+
+/* Confetti de celebração */
+.confetti-celebration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.confetti-celebration-piece {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    animation: confettiCelebrationFall 4s linear infinite;
+}
+
+@keyframes confettiCelebrationFall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg) scale(0);
+        opacity: 1;
+    }
+    10% {
+        transform: translateY(-80vh) rotate(180deg) scale(1);
+        opacity: 1;
+    }
+    90% {
+        transform: translateY(80vh) rotate(1080deg) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(1260deg) scale(0);
+        opacity: 0;
+    }
+}
+
+/* Status de salvamento */
+.status-salvamento {
+    border: none;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #17a2b8, #20c997);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 5px 15px rgba(23, 162, 184, 0.3);
+}
+
+/* Animação de spin */
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Botão de dashboard melhorado */
+.btn-dashboard-voltar {
+    background: linear-gradient(135deg, #6c757d, #5a6268);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+}
+
+.btn-dashboard-voltar:hover {
+    background: linear-gradient(135deg, #5a6268, #495057);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+    color: white;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .parabenss-texto-animado {
+        font-size: 1.8rem;
+    }
+    
+    .lojas-vencedoras-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .loja-nome-vencedor {
+        font-size: 1.4rem;
+    }
+    
+    .resultado-final-container {
+        padding: 1.5rem;
+        min-height: 300px !important;
+    }
+    
+    .data-sorteio-elegante {
+        font-size: 1rem;
+        padding: 0.6rem 1.2rem;
+    }
+}
+
+/* ========================================
+   ESTILOS PARA PÁGINA INICIAL UNIFICADA
+======================================== */
+
+/* Hero Section */
+.hero-section {
+    margin-bottom: 3rem;
+}
+
+.hero-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 25px;
+    padding: 4rem 2rem;
+    color: white;
+    box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-icon {
+    font-size: 4rem;
+    color: #F9CA24;
+    animation: heroIconFloat 3s ease-in-out infinite;
+}
+
+@keyframes heroIconFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    animation: heroTitleSlide 1s ease-out;
+}
+
+@keyframes heroTitleSlide {
+    0% { 
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    font-weight: 400;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.info-box {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 2rem;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.info-box h4 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.info-box p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Section Headers */
+.section-header {
+    margin-bottom: 2.5rem;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Lojas Vencedoras */
+.loja-card {
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    animation: lojaCardEntrada 0.8s ease-out;
+}
+
+@keyframes lojaCardEntrada {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.loja-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+}
+
+.loja-big {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.loja-ultra {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+}
+
+.loja-header {
+    padding: 1.5rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.loja-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.loja-content {
+    padding: 2rem;
+    text-align: center;
+}
+
+.loja-star {
+    font-size: 3rem;
+    color: #F9CA24;
+    margin-bottom: 1rem;
+    animation: lojaStarSpin 4s ease-in-out infinite;
+}
+
+@keyframes lojaStarSpin {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(5deg); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(-5deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.loja-nome {
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.loja-codigo {
+    font-size: 1rem;
+    opacity: 0.8;
+    margin-bottom: 1.5rem;
+}
+
+.loja-parabens {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 0.8rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    animation: lojaParabensPulse 2s ease-in-out infinite;
+}
+
+@keyframes lojaParabensPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Colaboradores Cards */
+.colaborador-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    animation: colaboradorEntrada 0.6s ease-out;
+}
+
+@keyframes colaboradorEntrada {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.colaborador-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+.colaborador-header {
+    padding: 1rem;
+    text-align: center;
+    color: white;
+    font-weight: 600;
+}
+
+.header-big {
+    background: linear-gradient(135deg, var(--big-color), #9b59b6);
+}
+
+.header-ultra {
+    background: linear-gradient(135deg, var(--ultra-color), #27ae60);
+}
+
+.colaborador-content {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.colaborador-avatar {
+    font-size: 3rem;
+    color: #667eea;
+    margin-bottom: 1rem;
+}
+
+.colaborador-nome {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.colaborador-setor {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+.premio-info {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 1rem;
+}
+
+.premio-icon {
+    margin-bottom: 0.5rem;
+}
+
+.premio-icon i {
+    font-size: 1.5rem;
+}
+
+.premio-tipo {
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.premio-nome {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.premio-data {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Histórico Cards */
+.historico-card {
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    animation: historicoEntrada 0.5s ease-out;
+}
+
+@keyframes historicoEntrada {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.historico-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+.historico-header {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+.historico-data {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.historico-content {
+    padding: 1.5rem;
+}
+
+.historico-loja {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    padding: 0.5rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.historico-big {
+    background: rgba(142, 68, 173, 0.1);
+    border: 1px solid rgba(142, 68, 173, 0.2);
+}
+
+.historico-ultra {
+    background: rgba(0, 166, 81, 0.1);
+    border: 1px solid rgba(0, 166, 81, 0.2);
+}
+
+.bandeira-badge {
+    background: var(--big-color);
+    color: white;
+    padding: 0.3rem 0.6rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-right: 0.8rem;
+    min-width: 50px;
+    text-align: center;
+}
+
+.historico-ultra .bandeira-badge {
+    background: var(--ultra-color);
+}
+
+.loja-nome-historico {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.9rem;
+}
+
+.historico-stats {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+    text-align: center;
+}
+
+/* Empty State */
+.empty-state {
+    padding: 4rem 0;
+}
+
+.empty-card {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+    animation: emptyIconPulse 2s ease-in-out infinite;
+}
+
+@keyframes emptyIconPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+.empty-card h4 {
+    color: #2c3e50;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.empty-card p {
+    color: #6c757d;
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .hero-card {
+        padding: 3rem 1.5rem;
+    }
+    
+    .info-box {
+        padding: 1.5rem;
+    }
+    
+    .loja-content {
+        padding: 1.5rem;
+    }
+    
+    .colaborador-content {
+        padding: 1rem;
+    }
+}
+
+/* ========================================
+   ESTILOS PARA SORTEIO DE COLABORADORES
+======================================== */
+
+/* Header do Sorteio */
+.card-header-sorteio {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.titulo-sorteio {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.subtitulo-sorteio {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.badge-loja {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+}
+
+/* Container Principal */
+.sorteio-container-colaboradores {
+    min-height: 60vh;
+}
+
+/* Card de Configuração */
+.config-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.config-header h3 {
+    color: #2c3e50;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.premio-select {
+    border-radius: 15px;
+    border: 2px solid #e9ecef;
+    padding: 1rem;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.premio-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Status Info */
+.status-info {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 15px;
+    padding: 1rem;
+    text-align: center;
+    border: 2px solid #dee2e6;
+}
+
+.status-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: 900;
+    color: #667eea;
+    line-height: 1;
+}
+
+.status-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 600;
+}
+
+/* Área de Confirmação */
+.confirmacao-area {
+    background: rgba(23, 162, 184, 0.1);
+    border-radius: 15px;
+    padding: 1.5rem;
+    border: 2px solid rgba(23, 162, 184, 0.2);
+}
+
+.form-check-lg .form-check-input {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 1rem;
+}
+
+.form-check-lg .form-check-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Botões de Ação */
+.botoes-acao {
+    margin-top: 2rem;
+}
+
+.btn-chacoalhar {
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    border: none;
+    border-radius: 25px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+.btn-chacoalhar:hover:not(:disabled) {
+    background: linear-gradient(45deg, #ee5a24, #ff6b6b);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
+    color: white;
+}
+
+.btn-chacoalhar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-sortear-final {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 25px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-sortear-final:hover:not(:disabled) {
+    background: linear-gradient(45deg, #764ba2, #667eea);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+    color: white;
+}
+
+.btn-sortear-final:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-sortear-simples {
+    background: linear-gradient(45deg, #6c757d, #495057);
+    border: none;
+    border-radius: 25px;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(108, 117, 125, 0.3);
+}
+
+.btn-sortear-simples:hover {
+    background: linear-gradient(45deg, #495057, #6c757d);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+    color: white;
+}
+
+/* Pote de Colaboradores */
+.pote-colaboradores {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    border: 3px solid #17a2b8;
+    margin-bottom: 2rem;
+    animation: poteEntrada 0.8s ease-out;
+}
+
+@keyframes poteEntrada {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.pote-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.pote-header h4 {
+    color: #17a2b8;
+    font-weight: 800;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.contador-colaboradores {
+    background: linear-gradient(135deg, #17a2b8, #20c997);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 700;
+    display: inline-block;
+}
+
+/* Lista de Colaboradores */
+.colaboradores-lista {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 15px;
+    border: 2px solid #e9ecef;
+}
+
+/* Design Elegante dos Colaboradores no Pote */
+.colaborador-item-elegante {
+    background: white;
+    margin-bottom: 0.8rem;
+    padding: 1.2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s ease;
+    border: 2px solid transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.colaborador-item-elegante::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.6s ease;
+}
+
+.colaborador-item-elegante:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(23, 162, 184, 0.2);
+    border-color: #17a2b8;
+    background: linear-gradient(135deg, #ffffff, #f8f9fa);
+}
+
+.colaborador-item-elegante:hover::before {
+    left: 100%;
+}
+
+.colaborador-avatar {
+    font-size: 2.5rem;
+    color: #17a2b8;
+    flex-shrink: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.colaborador-detalhes {
+    flex: 1;
+    text-align: left;
+}
+
+.colaborador-nome-elegante {
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.3px;
+}
+
+.colaborador-setor-elegante {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.colaborador-icone {
+    font-size: 1.2rem;
+    color: #ffc107;
+    flex-shrink: 0;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.colaborador-item-elegante:hover .colaborador-icone {
+    opacity: 1;
+    transform: rotate(18deg) scale(1.2);
+    color: #ff9500;
+}
+
+/* Animações de Embaralhamento Elegante */
+.colaborador-item-elegante.embaralhar-elegante {
+    animation: embaralharColaboradorElegante 0.4s ease-in-out;
+}
+
+@keyframes embaralharColaboradorElegante {
+    0% { 
+        transform: translateX(0) scale(1);
+        background: white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+    25% {
+        transform: translateX(-8px) scale(1.03);
+        background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+        box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3);
+    }
+    75% { 
+        transform: translateX(8px) scale(1.03);
+        background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+        box-shadow: 0 6px 20px rgba(23, 162, 184, 0.3);
+    }
+    100% { 
+        transform: translateX(0) scale(1);
+        background: white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+}
+
+/* Link para Lista de Colaboradores */
+.link-colaboradores {
+    color: #17a2b8;
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+    padding-bottom: 2px;
+}
+
+.link-colaboradores:hover {
+    color: #138496;
+    border-bottom-color: #138496;
+    text-decoration: none;
+}
+
+/* Resultado Colaborador Elegante */
+.resultado-colaborador-elegante {
+    text-align: center;
+    padding: 2rem;
+    position: relative;
+}
+
+/* Loja em Destaque no Resultado */
+.loja-destaque-colaborador {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 1.5rem;
+    color: white;
+    margin: 0 auto;
+    max-width: 400px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    animation: pulseLoja 2s infinite;
+}
+
+@keyframes pulseLoja {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+.loja-header-colaborador {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.loja-icone-colaborador {
+    font-size: 3rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.loja-info-colaborador {
+    text-align: left;
+}
+
+.loja-bandeira-colaborador {
+    font-size: 1.2rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    opacity: 0.9;
+}
+
+.loja-nome-colaborador {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0.2rem 0;
+}
+
+.loja-codigo-colaborador {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* Colaborador Ganhador */
+.colaborador-ganhador {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 0 auto;
+    max-width: 350px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    border: 3px solid #28a745;
+    position: relative;
+    animation: celebracaoColaborador 3s ease-in-out infinite;
+}
+
+@keyframes celebracaoColaborador {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    }
+    50% { 
+        transform: scale(1.02);
+        box-shadow: 0 20px 50px rgba(40, 167, 69, 0.2);
+    }
+}
+
+.colaborador-ganhador::before {
+    content: '🌟';
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    font-size: 2rem;
+    animation: estrelaGirando 2s linear infinite;
+}
+
+.colaborador-ganhador::after {
+    content: '🌟';
+    position: absolute;
+    bottom: -15px;
+    left: -15px;
+    font-size: 2rem;
+    animation: estrelaGirando 2s linear infinite reverse;
+}
+
+@keyframes estrelaGirando {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.colaborador-avatar-grande {
+    font-size: 4rem;
+    color: #28a745;
+    margin-bottom: 1rem;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.colaborador-nome-grande {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.5px;
+}
+
+.colaborador-setor-grande {
+    font-size: 1.1rem;
+    color: #6c757d;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Prêmio Ganho */
+.premio-ganho {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 15px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+    border: 2px solid #dee2e6;
+}
+
+.premio-icone {
+    font-size: 3rem;
+    animation: premioFloat 2s ease-in-out infinite;
+}
+
+@keyframes premioFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.premio-detalhes {
+    text-align: left;
+    flex: 1;
+}
+
+.premio-nome {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.3rem;
+}
+
+.premio-data {
+    font-size: 1rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Confetti Celebration Melhorado */
+.confetti-celebration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+.confetti-celebration-piece {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #ff6b6b;
+    animation: confettiCelebrationFall 3s linear infinite;
+    border-radius: 2px;
+}
+
+@keyframes confettiCelebrationFall {
+    0% {
+        opacity: 1;
+        transform: translateY(-100vh) rotate(0deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(100vh) rotate(1260deg);
+    }
+}
+
+/* Tremor do Pote */
+.tremor {
+    animation: tremorPote 0.1s infinite;
+}
+
+@keyframes tremorPote {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    50% { transform: translateX(2px); }
+    75% { transform: translateX(-1px); }
+    100% { transform: translateX(0); }
+}
+
+/* Scroll Customizado */
+.colaboradores-lista::-webkit-scrollbar {
+    width: 6px;
+}
+
+.colaboradores-lista::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.colaboradores-lista::-webkit-scrollbar-thumb {
+    background: #17a2b8;
+    border-radius: 10px;
+}
+
+.colaboradores-lista::-webkit-scrollbar-thumb:hover {
+    background: #138496;
+}
+
+/* Resultado Final Compacto das Lojas */
+.resultado-final-compacto {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    padding: 1rem;
+}
+
+.resultado-lojas-elegante {
+    text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.titulo-resultado-compacto {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.data-discreta {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+    opacity: 0.8;
+    margin-bottom: 1.5rem;
+}
+
+.lojas-ganhadoras-compacto {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.loja-ganhadora-compacta {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem 1rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 140px;
+    justify-content: center;
+}
+
+.loja-ganhadora-compacta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    transition: all 0.3s ease;
+}
+
+.loja-big-elegante {
+    border-color: rgba(102, 126, 234, 0.2);
+}
+
+.loja-big-elegante::before {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.loja-big-elegante:hover {
+    border-color: #667eea;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.25);
+}
+
+.loja-ultra-elegante {
+    border-color: rgba(32, 201, 151, 0.2);
+}
+
+.loja-ultra-elegante::before {
+    background: linear-gradient(90deg, #20c997, #17a2b8);
+}
+
+.loja-ultra-elegante:hover {
+    border-color: #20c997;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(32, 201, 151, 0.25);
+}
+
+.loja-badge-compacto {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.loja-big-elegante .loja-badge-compacto {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.loja-ultra-elegante .loja-badge-compacto {
+    background: linear-gradient(135deg, #20c997, #17a2b8);
+}
+
+.loja-icone-compacto {
+    font-size: 2.5rem;
+    margin: 0.5rem 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    animation: iconeFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconeFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+.loja-nome-compacto {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #2c3e50;
+    text-align: center;
+    line-height: 1.2;
+    margin-bottom: 0.2rem;
+    word-wrap: break-word;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+}
+
+.loja-codigo-compacto {
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+/* Confetti para resultado compacto */
+.resultado-lojas-elegante .confetti-celebration {
+    border-radius: 20px;
+}
+
+/* Responsividade do Resultado Compacto */
+@media (max-width: 768px) {
+    .resultado-lojas-elegante {
+        padding: 1.5rem 1rem;
+        max-width: 90%;
+    }
+    
+    .lojas-ganhadoras-compacto {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+    
+    .loja-ganhadora-compacta {
+        min-height: 120px;
+        padding: 1.2rem 0.8rem;
+    }
+    
+    .titulo-resultado-compacto {
+        font-size: 1.5rem;
+    }
+    
+    .loja-icone-compacto {
+        font-size: 2rem;
+    }
+    
+    .loja-nome-compacto {
+        font-size: 0.9rem;
+    }
+}
+
+/* Responsividade Geral */
+@media (max-width: 768px) {
+    .titulo-sorteio {
+        font-size: 1.8rem;
+    }
+    
+    .config-card {
+        padding: 1.5rem;
+    }
+    
+    .pote-colaboradores {
+        padding: 1.5rem;
+    }
+    
+    .botoes-acao .btn {
+        margin-bottom: 0.5rem;
+        width: 100%;
+    }
+    
+    .btn-chacoalhar, .btn-sortear-final {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+/* ========================================
    ESTILOS PARA INTERFACE FILMÁVEL
 ======================================== */
 
