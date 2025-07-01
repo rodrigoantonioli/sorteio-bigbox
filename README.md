@@ -1,144 +1,166 @@
-# 🎯 Sistema de Sorteios - Big Box & UltraBox
+# 🎲 Sistema de Sorteios Big Box & UltraBox v1.0.0
 
-Sistema web completo para gerenciar sorteios semanais de ingressos do **Festival Na Praia** para colaboradores das lojas Big Box e UltraBox.
+## 📋 Descrição
 
-## 🚀 Funcionalidades Principais
+Sistema web completo para gerenciamento de sorteios semanais de ingressos do Festival Na Praia para colaboradores das lojas Big Box e UltraBox. 
 
-### 🎲 Sorteios Semanais
-- Sorteio automático de **1 loja BIG + 1 loja ULTRA** por semana
-- Histórico completo de todos os sorteios realizados
-- Interface intuitiva para visualização dos resultados
-- Admin pode excluir sorteios quando necessário
+### ✨ Funcionalidades Principais
 
-### 👥 Gerenciamento Completo de Colaboradores
-- **Upload de planilhas Excel** que **SUBSTITUI TODOS** os colaboradores da loja
-- **Proteção automática** para colaboradores com histórico de sorteios
-- **CRUD completo**: Criar, Editar, Ativar/Desativar, Excluir
-- Listagem com filtros e controles por loja
-- Relatórios detalhados de cada operação
+- **Sorteios Semanais de Lojas**: Sistema automático que sorteia 1 loja BIG e 1 loja ULTRA por semana
+- **Gerenciamento de Colaboradores**: Upload via Excel e gerenciamento individual
+- **Sistema de Prêmios**: Cadastro e atribuição de prêmios específicos por loja ou gerais
+- **Controle de Usuários**: Sistema com administrador e assistentes das lojas
+- **Histórico Completo**: Acompanhamento de todos os sorteios realizados
+- **Interface Responsiva**: Design moderno e amigável
 
-### 🎁 Sistema de Prêmios
-- **Cadastro de prêmios** pelo admin baseado no comunicado oficial
-- Prêmios configuráveis: Shows e Day Use
-- Gerentes selecionam prêmios específicos para cada sorteio
-- Controle de prêmios ativos/inativos
+### 🔧 Funcionalidades Administrativas
 
-### 🎯 Sorteios de Colaboradores
-- **Sistema de confirmação obrigatória** antes do sorteio
-- Seleção de prêmios cadastrados pelo admin
-- Snapshot da lista de colaboradores no momento do sorteio
-- Histórico individual de participações
-- Transparência total: quem sorteou, quando, quantos participaram
+#### Zona Verde (Operações Seguras)
+- ✅ Gerenciamento de Lojas
+- ✅ Gerenciamento de Usuários Assistentes
+- ✅ Gerenciamento de Prêmios
+- ✅ Upload de Colaboradores via Excel
+- ✅ Histórico de Sorteios
 
-## 🛡️ Comportamento Especial: Upload de Colaboradores
+#### Zona Vermelha (Operações Perigosas)
+- ⚠️ **Resetar Pote de Lojas**: Remove todos os sorteios permitindo que todas as lojas participem novamente
+- 🚨 **Reset Completo**: Remove TODOS os dados exceto lojas e administrador
 
-### ⚠️ IMPORTANTE: O upload SEMPRE substitui TODOS os colaboradores da loja específica
+### 🏗️ Arquitetura
 
-**✅ Como funciona:**
-- Remove **TODOS** os colaboradores atuais da loja do gerente
-- **PROTEGE automaticamente** colaboradores que já participaram de sorteios
-- Adiciona os novos colaboradores da planilha
-- Gera relatório detalhado do que foi feito
-- Afeta **APENAS** a loja do gerente logado
-
-**📊 Exemplo:**
 ```
-Antes: 50 colaboradores na loja
-Upload: 30 colaboradores novos
-Resultado: 32 colaboradores (30 novos + 2 protegidos com histórico)
+sorteioBigbox/
+├── app/                    # Aplicação principal
+│   ├── models.py          # Modelos de dados (5 tabelas)
+│   ├── extensions.py      # Extensões Flask
+│   ├── forms/            # Formulários WTForms
+│   ├── routes/           # Rotas organizadas por módulo
+│   ├── templates/        # Templates Jinja2
+│   └── static/           # CSS, JS e assets
+├── config.py             # Configurações
+├── run.py               # Arquivo principal
+├── requirements.txt     # Dependências
+└── render.yaml         # Configuração para deploy
 ```
 
-Veja detalhes completos no [📋 Guia de Upload](GUIA_UPLOAD_COLABORADORES.md).
+### 📊 Modelos de Dados
 
-## 🎯 Prêmios Disponíveis (Festival Na Praia 2025)
+1. **usuarios**: Administradores e assistentes
+2. **lojas**: Lojas BIG e ULTRA 
+3. **colaboradores**: Funcionários aptos para sorteios
+4. **sorteios_semanais**: Sorteios de lojas por semana
+5. **sorteios_colaboradores**: Sorteios individuais de prêmios
 
-1. **Show Sexta - Alcione** (05/07/2025)
-2. **Show Sábado - Wesley Safadão** (06/07/2025)
-3. **Day Use Sábado** (06/07/2025)
-4. **Show Domingo - Vintage Culture** (07/07/2025)
-5. **Day Use Domingo** (07/07/2025)
+### 🚀 Instalação e Configuração
 
-## 🛠️ Tecnologias
+#### Desenvolvimento Local
 
-- **Backend**: Python Flask 3.0+
-- **Banco de Dados**: SQLite com SQLAlchemy
-- **Frontend**: HTML5, CSS3, JavaScript (Bootstrap 5)
-- **Autenticação**: Flask-Login com sessões seguras
-- **Upload**: Pandas para processamento de planilhas Excel
-
-## 🚀 Instalação e Execução
-
-### 1. Clone o repositório
 ```bash
-git clone https://github.com/rodrigoantonioli/sorteioBigbox.git
-cd sorteioBigbox
-```
+# 1. Clone o repositório
+git clone https://github.com/seu-usuario/sorteio-bigbox.git
+cd sorteio-bigbox
 
-### 2. Ambiente virtual
-```bash
-python -m venv venv
-
-# Windows
-venv\Scripts\activate
-
-# Linux/Mac
-source venv/bin/activate
-```
-
-### 3. Instale dependências
-```bash
+# 2. Instale as dependências
 pip install -r requirements.txt
-```
 
-### 4. Execute a aplicação
-```bash
+# 3. Configure variáveis de ambiente
+set FLASK_APP=run.py
+set FLASK_ENV=development
+set SECRET_KEY=sua-chave-secreta-aqui
+
+# 4. Execute a aplicação
 python run.py
 ```
 
-### 5. Acesse o sistema
-- **URL**: http://127.0.0.1:5000
-- **Admin**: admin@bigbox.com / BigBox2025!
-- **Gerente**: gerente@big106norte.com / gerente123
+#### Deploy no Render
 
-## 🎯 Fluxo de Trabalho
+1. Conecte seu repositório GitHub ao Render
+2. Use as configurações do `render.yaml`
+3. Configure as variáveis de ambiente:
+   - `SECRET_KEY`
+   - `DATABASE_URL` (PostgreSQL)
+   - `MAIL_*` (configurações de email)
 
-### 1. **Admin** (Configuração)
-- Gerencia usuários e lojas
-- Cadastra e edita prêmios
-- Realiza sorteios semanais de lojas
-- Controla todos os sorteios realizados
+### 📧 Configuração de Email
 
-### 2. **Gerente** (Operação)
-- Faz upload de colaboradores (substitui todos)
-- Gerencia colaboradores (CRUD completo)
-- Realiza sorteios de colaboradores
-- Confirma listas antes dos sorteios
+Para envio de notificações, configure:
 
-### 3. **Público** (Transparência)
-- Visualiza histórico completo
-- Acompanha resultados em tempo real
-- Acessa informações sobre prêmios
+```bash
+MAIL_SERVER=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USE_TLS=True
+MAIL_USERNAME=seu-email@gmail.com
+MAIL_PASSWORD=sua-senha-app
+```
 
-## 📚 Documentação
+### 👥 Usuários Padrão
 
-- [📋 Guia de Upload de Colaboradores](GUIA_UPLOAD_COLABORADORES.md)
-- [📖 Documentação Completa](DOCUMENTACAO_FINAL.md)
-- [🚀 Deploy no Render](DEPLOYMENT.md)
+**Administrador:**
+- Email: admin@bigbox.com.br
+- Senha: BigBox2025!
 
-## 👨‍💻 Autor
+### 📁 Upload de Colaboradores
 
-**Rodrigo Antonioli**
-- 📧 Email: rodrigoantonioli@gmail.com
-- 🐙 GitHub: [@rodrigoantonioli](https://github.com/rodrigoantonioli)
-- 💼 LinkedIn: [Rodrigo Antonioli](https://linkedin.com/in/rodrigoantonioli)
-- 🌐 Especialista em: Python, Power BI, Solidity, Web3
+O sistema aceita planilhas Excel (.xlsx/.xls) com o formato:
+- **Coluna A**: Código da Loja
+- **Coluna C**: Matrícula
+- **Coluna D**: Nome
+- **Coluna E**: Setor
+
+### 🔒 Segurança
+
+- ✅ Autenticação por sessão
+- ✅ Proteção CSRF
+- ✅ Validação de formulários
+- ✅ Controle de acesso por roles
+- ✅ Confirmações para operações perigosas
+
+### 🎨 Interface
+
+- **Bootstrap 5**: Framework CSS responsivo
+- **Font Awesome**: Ícones
+- **JavaScript**: Animações de sorteio
+- **Design Moderno**: Interface intuitiva e profissional
+
+### 📱 Responsividade
+
+- ✅ Desktop (1200px+)
+- ✅ Tablet (768px - 1199px)
+- ✅ Mobile (< 768px)
+
+### 📈 Estatísticas
+
+O sistema fornece estatísticas em tempo real:
+- Total de lojas, colaboradores e prêmios
+- Sorteios realizados
+- Colaboradores por loja
+- Histórico completo
+
+### 🆔 Versão
+
+**v1.0.0** - Sistema completo e funcional
+- ✅ Todas as funcionalidades implementadas
+- ✅ Interface totalmente responsiva
+- ✅ Sistema de configurações avançadas
+- ✅ Zona vermelha para operações administrativas
+- ✅ Pronto para produção
+
+### 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch para sua feature
+3. Commit suas mudanças
+4. Push para a branch
+5. Abra um Pull Request
+
+### 📝 Licença
+
+Este projeto é proprietário da Big Box & UltraBox.
+
+### 🐛 Suporte
+
+Para suporte técnico, entre em contato com a equipe de desenvolvimento.
 
 ---
 
-<div align="center">
-
-**⭐ Se este projeto foi útil, deixe uma estrela!**
-
-**🎯 Sistema desenvolvido para automatizar e dar transparência aos sorteios do Festival Na Praia 2025**
-
-</div> 
+**Desenvolvido com ❤️ para Big Box & UltraBox** 

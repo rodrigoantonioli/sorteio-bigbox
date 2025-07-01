@@ -445,7 +445,7 @@ def resetar_pote_lojas():
         
         if total_sorteios == 0:
             flash('Não há sorteios para resetar.', 'info')
-            return redirect(url_for('admin.sorteios'))
+            return redirect(url_for('admin.configuracoes'))
         
         # Remove todos os sorteios de colaboradores primeiro (FK constraint)
         SorteioColaborador.query.delete()
@@ -461,7 +461,7 @@ def resetar_pote_lojas():
         db.session.rollback()
         flash(f'❌ Erro ao resetar pote de lojas: {str(e)}', 'danger')
     
-    return redirect(url_for('admin.sorteios'))
+    return redirect(url_for('admin.configuracoes'))
 
 @admin_bp.route('/sorteios/semanal/<int:id>/excluir')
 @admin_required
@@ -879,7 +879,6 @@ def lojas():
 @admin_required
 def adicionar_loja():
     """Adicionar nova loja"""
-    from app.forms.admin import LojaForm
     
     form = LojaForm()
     
@@ -911,7 +910,6 @@ def adicionar_loja():
 @admin_required
 def editar_loja(id):
     """Editar loja"""
-    from app.forms.admin import LojaForm
     
     loja = Loja.query.get_or_404(id)
     form = LojaForm(obj=loja)
@@ -974,4 +972,70 @@ def excluir_loja(id):
     db.session.commit()
     
     flash(f'Loja {codigo} - {nome} foi excluída com sucesso.', 'success')
-    return redirect(url_for('admin.lojas')) 
+    return redirect(url_for('admin.lojas'))
+
+@admin_bp.route('/configuracoes')
+@admin_required
+def configuracoes():
+    """Página de configurações avançadas do sistema"""
+    # Estatísticas para mostrar o impacto das operações
+    total_sorteios = SorteioSemanal.query.count()
+    total_sorteios_colaboradores = SorteioColaborador.query.count()
+    total_colaboradores = Colaborador.query.count()
+    total_usuarios = Usuario.query.filter_by(tipo='assistente').count()
+    total_premios = Premio.query.count()
+    
+    return render_template('admin/configuracoes.html',
+                         total_sorteios=total_sorteios,
+                         total_sorteios_colaboradores=total_sorteios_colaboradores,
+                         total_colaboradores=total_colaboradores,
+                         total_usuarios=total_usuarios,
+                         total_premios=total_premios)
+
+@admin_bp.route('/configuracoes/reset-completo', methods=['POST'])
+@admin_required
+def reset_completo():
+    """OPERAÇÃO PERIGOSA: Reseta o sistema para configurações iniciais - mantém apenas lojas e admin"""
+    try:
+        # Confirma que é o admin principal
+        if not current_user.is_authenticated or current_user.tipo != 'admin':
+            flash('❌ Acesso negado. Apenas administradores podem executar esta operação.', 'danger')
+            return redirect(url_for('admin.configuracoes'))
+        
+        # Remove todos os sorteios de colaboradores
+        sorteios_colaboradores_removidos = SorteioColaborador.query.count()
+        SorteioColaborador.query.delete()
+        
+        # Remove todos os sorteios semanais
+        sorteios_semanais_removidos = SorteioSemanal.query.count()
+        SorteioSemanal.query.delete()
+        
+        # Remove todos os prêmios
+        premios_removidos = Premio.query.count()
+        Premio.query.delete()
+        
+        # Remove todos os colaboradores
+        colaboradores_removidos = Colaborador.query.count()
+        Colaborador.query.delete()
+        
+        # Remove todos os usuários assistentes (mantém apenas admin)
+        usuarios_removidos = Usuario.query.filter_by(tipo='assistente').count()
+        Usuario.query.filter_by(tipo='assistente').delete()
+        
+        db.session.commit()
+        
+        flash(f'⚠️ RESET COMPLETO EXECUTADO COM SUCESSO!\n'
+              f'📊 Dados removidos:\n'
+              f'• {sorteios_colaboradores_removidos} sorteios de colaboradores\n'
+              f'• {sorteios_semanais_removidos} sorteios semanais\n'
+              f'• {premios_removidos} prêmios\n'
+              f'• {colaboradores_removidos} colaboradores\n'
+              f'• {usuarios_removidos} usuários assistentes\n\n'
+              f'✅ Sistema resetado para configurações iniciais!\n'
+              f'Apenas lojas e usuário administrador foram mantidos.', 'warning')
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'❌ Erro ao executar reset completo: {str(e)}', 'danger')
+    
+    return redirect(url_for('admin.configuracoes')) 

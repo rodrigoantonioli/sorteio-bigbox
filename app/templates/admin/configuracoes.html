@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}Configurações do Sistema{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">⚙️ Configurações do Sistema</h1>
+                    <small class="text-muted">Configurações avançadas e operações administrativas</small>
+                </div>
+                <div>
+                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estatísticas atuais -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-bar"></i> Situação Atual do Sistema
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="text-center">
+                                <h4 class="text-primary">{{ total_sorteios }}</h4>
+                                <small class="text-muted">Sorteios Semanais</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="text-center">
+                                <h4 class="text-success">{{ total_sorteios_colaboradores }}</h4>
+                                <small class="text-muted">Sorteios de Colaboradores</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="text-center">
+                                <h4 class="text-info">{{ total_colaboradores }}</h4>
+                                <small class="text-muted">Colaboradores</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="text-center">
+                                <h4 class="text-warning">{{ total_usuarios }}</h4>
+                                <small class="text-muted">Usuários Assistentes</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="text-center">
+                                <h4 class="text-purple">{{ total_premios }}</h4>
+                                <small class="text-muted">Prêmios</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="text-center">
+                                <h4 class="text-dark">v1.0.0</h4>
+                                <small class="text-muted">Versão</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configurações Normais -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-cogs"></i> Configurações Gerais
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">Configurações básicas e operações seguras do sistema.</p>
+                    
+                    <div class="list-group">
+                        <a href="{{ url_for('admin.lojas') }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="fas fa-store"></i> Gerenciar Lojas</h6>
+                                <small class="text-muted">Seguro</small>
+                            </div>
+                            <p class="mb-1">Adicionar, editar ou remover lojas do sistema.</p>
+                        </a>
+                        
+                        <a href="{{ url_for('admin.usuarios') }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="fas fa-users"></i> Gerenciar Usuários</h6>
+                                <small class="text-muted">Seguro</small>
+                            </div>
+                            <p class="mb-1">Gerenciar usuários assistentes das lojas.</p>
+                        </a>
+                        
+                        <a href="{{ url_for('admin.premios') }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="fas fa-gift"></i> Gerenciar Prêmios</h6>
+                                <small class="text-muted">Seguro</small>
+                            </div>
+                            <p class="mb-1">Configurar prêmios disponíveis para os sorteios.</p>
+                        </a>
+                        
+                        <a href="{{ url_for('admin.sorteios') }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="fas fa-history"></i> Histórico de Sorteios</h6>
+                                <small class="text-muted">Seguro</small>
+                            </div>
+                            <p class="mb-1">Visualizar e gerenciar histórico de sorteios realizados.</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ZONA VERMELHA -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> 🚨 ZONA VERMELHA - OPERAÇÕES PERIGOSAS
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger" role="alert">
+                        <h6><i class="fas fa-skull-crossbones"></i> <strong>ATENÇÃO!</strong></h6>
+                        <p class="mb-0">As operações abaixo são <strong>IRREVERSÍVEIS</strong> e podem causar <strong>PERDA TOTAL DE DADOS</strong>. Use apenas se tiver certeza absoluta do que está fazendo!</p>
+                    </div>
+
+                    <div class="row">
+                        <!-- Resetar Pote de Lojas -->
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-warning">
+                                <div class="card-header bg-warning text-dark">
+                                    <h6 class="card-title mb-0">
+                                        <i class="fas fa-redo"></i> Resetar Pote de Lojas
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        <strong>Remove todos os sorteios</strong> e permite que todas as lojas participem novamente dos sorteios semanais.
+                                    </p>
+                                    <p class="text-muted mb-3">
+                                        <small>
+                                            <strong>Será removido:</strong><br>
+                                            • {{ total_sorteios }} sorteios semanais<br>
+                                            • {{ total_sorteios_colaboradores }} sorteios de colaboradores
+                                        </small>
+                                    </p>
+                                    
+                                    <form method="POST" action="{{ url_for('admin.resetar_pote_lojas') }}" 
+                                          onsubmit="return confirm('⚠️ CONFIRMAÇÃO NECESSÁRIA ⚠️\n\nEsta operação irá REMOVER TODOS OS SORTEIOS do sistema!\n\nTodos os sorteios semanais e de colaboradores serão perdidos permanentemente.\n\nTem certeza ABSOLUTA que deseja continuar?')">
+                                        <button type="submit" class="btn btn-warning">
+                                            <i class="fas fa-redo"></i> Resetar Pote
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reset Completo -->
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-danger">
+                                <div class="card-header bg-danger text-white">
+                                    <h6 class="card-title mb-0">
+                                        <i class="fas fa-nuclear"></i> Reset Completo do Sistema
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        <strong>OPERAÇÃO EXTREMAMENTE PERIGOSA!</strong> Remove TODOS os dados exceto lojas e administrador.
+                                    </p>
+                                    <p class="text-muted mb-3">
+                                        <small>
+                                            <strong>Será removido:</strong><br>
+                                            • {{ total_sorteios }} sorteios semanais<br>
+                                            • {{ total_sorteios_colaboradores }} sorteios de colaboradores<br>
+                                            • {{ total_colaboradores }} colaboradores<br>
+                                            • {{ total_usuarios }} usuários assistentes<br>
+                                            • {{ total_premios }} prêmios<br>
+                                            <strong>Será mantido apenas:</strong><br>
+                                            • Lojas cadastradas<br>
+                                            • Usuário administrador
+                                        </small>
+                                    </p>
+                                    
+                                    <form method="POST" action="{{ url_for('admin.reset_completo') }}" 
+                                          onsubmit="return confirm('🚨 OPERAÇÃO ULTRA PERIGOSA 🚨\n\nVocê está prestes a DESTRUIR TODOS OS DADOS do sistema!\n\nISSO INCLUI:\n- Todos os sorteios\n- Todos os colaboradores\n- Todos os usuários assistentes\n- Todos os prêmios\n\nAPENAS AS LOJAS E O ADMIN SERÃO MANTIDOS!\n\nEsta operação é IRREVERSÍVEL!\n\nTem certeza ABSOLUTA?')">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fas fa-nuclear"></i> DESTRUIR TUDO
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-3" role="alert">
+                        <h6><i class="fas fa-info-circle"></i> Informação</h6>
+                        <p class="mb-0">Após qualquer operação desta zona vermelha, você pode repovoar o sistema importando colaboradores e criando novos usuários através das opções normais do sistema.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
