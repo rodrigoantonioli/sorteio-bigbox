@@ -820,11 +820,29 @@ function initializeSorteioPaget() {
         console.log('🚀 Todas as validações passaram! Iniciando sorteio...');
         
         // Usa a seed gerada no chacoalhar para determinismo
-        if (typeof Math.seedrandom === 'function') {
-            console.log('🎲 Aplicando seed determinística:', seedRandom);
-            Math.seedrandom(seedRandom);
-        } else {
-            console.warn('⚠️ Math.seedrandom não disponível, usando random padrão');
+        try {
+            console.log('🎲 Configurando seed determinística:', seedRandom);
+            
+            // Usa nossa implementação simples e confiável
+            if (typeof Math.customRandom === 'function') {
+                window.customRandomGenerator = Math.customRandom(seedRandom);
+                console.log('✅ Seed personalizada configurada com sucesso');
+                
+                // Sobrescreve Math.random temporariamente para usar nossa seed
+                const originalRandom = Math.random;
+                Math.random = window.customRandomGenerator;
+                
+                // Restaura Math.random após o sorteio (será feito no modal)
+                window.restoreOriginalRandom = function() {
+                    Math.random = originalRandom;
+                    console.log('🔄 Math.random restaurado ao padrão');
+                };
+            } else {
+                console.warn('⚠️ CustomRandom não disponível, usando random padrão');
+            }
+        } catch (error) {
+            console.warn('⚠️ Erro na configuração da seed, usando random padrão:', error.message);
+            // Continua sem seed - não quebra o fluxo
         }
         
         // Atualiza interface
@@ -920,6 +938,11 @@ function initializeSorteioPaget() {
     // Sobrescreve função AJAX do sorteio
     window.sorteioAnimado.submitarFormularioAjax = function(resultados) {
         console.log('💾 Salvando resultados:', resultados);
+        
+        // Restaura Math.random ao padrão após o sorteio
+        if (typeof window.restoreOriginalRandom === 'function') {
+            window.restoreOriginalRandom();
+        }
         
         const lojaBig = resultados.find(r => r.tipo === 'Loja BIG');
         const lojaUltra = resultados.find(r => r.tipo === 'Loja ULTRA');
@@ -1025,7 +1048,22 @@ function initializeSorteioPaget() {
     console.log('✅ INICIALIZAÇÃO COMPLETA!');
 }
 
-// Adiciona biblioteca para seed random
-!function(a,b){function c(c,d,e){var f=[];d=1==d?{entropy:!0}:d||{};var g=h(i(d.entropy?[c,j(a)]:null==c?k():c,3),f),l=new m(f),n=function(){for(var a=l.g(o),b=p,c=0;q>a;)a=(a+c)*r,b*=r,c=l.g(1);for(;a>=s;)a/=2,b/=2,c>>>=1;return(a+c)/b};return n.int32=function(){return 0|l.g(4)},n.quick=function(){return l.g(4)/4294967296},n.double=n,h(j(l.S),a),(d.pass||e||function(a,c,d,e){return e&&(e.S&&n(e,l),a.state=function(){return n(l,{})}),d?(b[t]=a,c):a})(n,g,"global"in d?d.global:this==b,d.state)}function d(a){return typeof a==="string"?a:String(a)}function e(a,b){return typeof a==="number"?a:parseInt(b,10)}function f(a,b){return a>b?a:b}function g(a,b){return a<b?a:b}function h(a,b){var c,d=a.length,e=0,f=0;for(c=0;d>c;c++)e=19*e+a.charCodeAt(c),f=e&((1<<6)-1);return(b[f]=(b[f]||0)+1,String.fromCharCode(f))}function i(a,b){var c=a+"",d,e=0;for(b=0;b<c.length;)d=.02519603282416938*c.charCodeAt(b++),d-=~~d,e+=d*d*d*7*5e6;return e}function j(a){for(var b,c=a.length,d=this,e=0,f=d.i=d.j=0,g=d.S=[];c>e;)g[e]=e++;for(e=0;c>e;e++)g[e]=g[f=w&f+g[e]+g[(d.i=w&d.i+1)]],g[f]=g[d.i];(d.i=d.j=0)}function k(){try{var b;return u&&(b=u.randomBytes)?b=b(r):(b=new Uint8Array(r),(v.crypto||v.msCrypto).getRandomValues(b)),j(b)}catch(c){var d=v.navigator,e=d&&d.plugins;return j([+new Date,v,e,v.screen,j(a)])}}function l(a){try{return u.createHash("sha256").update(a).digest()}catch(b){return[a]}}function m(a){j(this,a)}function n(a,b){return b.i=a.i,b.j=a.j,b.S=a.S.slice(),b}var o=6,p=52,q=1,r=4,s=Math.pow(2,53),t="random",u=c.crypto,v=c;if("object"==typeof module&&module.exports){module.exports=c;try{u=require("crypto")}catch(w){}}else"function"==typeof define&&define.amd?define(function(){return c}):v["seed"+t]=c;var x=Math.pow(r,o),y=Math.pow(2,p),z=2*y,A=r-1,w=4294967295;if(l(b[t])!=b[t]&&l(Math.random())!=Math.random()){b[t]=c}Math.seedrandom=c}([],"",Math);
+// Sistema de Random Simples e Confiável
+// Substitui a biblioteca seedrandom problemática por implementação própria
+function simpleSeededRandom(seed) {
+    // Implementação simples de LCG (Linear Congruential Generator)
+    var m = 0x80000000; // 2**31
+    var a = 1103515245;
+    var c = 12345;
+    var state = seed ? seed : Math.floor(Math.random() * (m - 1));
+    
+    return function() {
+        state = (a * state + c) % m;
+        return state / (m - 1);
+    };
+}
+
+// Substitui Math.seedrandom por nossa implementação
+Math.customRandom = simpleSeededRandom;
 </script>
 {% endblock %} 
