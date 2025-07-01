@@ -74,13 +74,29 @@
                                     <i class="bi bi-shuffle"></i> Gerar
                                 </button>
                             </div>
+                            
+                            {% if 'Editar' in titulo and usuario %}
+                                <!-- Modo Edição: Mostrar senha atual ou campo para nova -->
+                                <div id="senhaAtualDiv" class="mb-2">
+                                    <div class="alert alert-info d-flex align-items-center">
+                                        <i class="bi bi-shield-lock me-2"></i>
+                                        <div class="flex-grow-1">
+                                            <strong>Senha atual definida</strong>
+                                            <small class="d-block">Clique em "Gerar" para criar uma nova senha ou digite uma personalizada abaixo</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            
                             <div class="input-group">
                                 <input type="password" name="password" id="password" class="form-control" 
+                                       placeholder="{% if 'Editar' in titulo %}Digite nova senha ou use 'Gerar'{% else %}Digite a senha{% endif %}"
                                        value="{{ form.password.data if form.password.data else '' }}">
                                 <button type="button" class="btn btn-outline-secondary" id="togglePassword" title="Mostrar/Ocultar senha">
                                     <i class="bi bi-eye" id="eyeIcon"></i>
                                 </button>
                             </div>
+                            
                             {% if form.password.errors %}
                                 <div class="invalid-feedback d-block">
                                     {% for error in form.password.errors %}
@@ -88,6 +104,7 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                            
                             {% if 'Editar' in titulo %}
                                 <div class="form-text">
                                     <i class="bi bi-info-circle"></i> 
@@ -99,6 +116,25 @@
                                     Use o botão "Gerar" para criar uma senha simples ou digite uma personalizada
                                 </div>
                             {% endif %}
+                            
+                            <!-- Alert para senha gerada -->
+                            <div id="senhaGeradaAlert" class="alert alert-success mt-2" style="display: none;">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    <div class="flex-grow-1">
+                                        <strong>Nova senha gerada!</strong>
+                                        <div class="mt-1">
+                                            <small>Copie e envie esta senha para o assistente:</small>
+                                            <div class="input-group input-group-sm mt-1">
+                                                <input type="text" id="senhaParaCopiar" class="form-control" readonly>
+                                                <button type="button" class="btn btn-outline-primary" id="copiarSenha" title="Copiar senha">
+                                                    <i class="bi bi-clipboard"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="d-grid gap-2">
@@ -121,6 +157,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const toggleButton = document.getElementById('togglePassword');
     const eyeIcon = document.getElementById('eyeIcon');
     const gerarSenhaButton = document.getElementById('gerarSenha');
+    const senhaGeradaAlert = document.getElementById('senhaGeradaAlert');
+    const senhaParaCopiar = document.getElementById('senhaParaCopiar');
+    const copiarSenhaButton = document.getElementById('copiarSenha');
     
     // Toggle password visibility
     toggleButton.addEventListener('click', function() {
@@ -157,6 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
             senhaGerada = palavraAleatoria + numeroAleatorio;
         }
         
+        // Atualiza o campo de senha
         passwordField.value = senhaGerada;
         
         // Mostra a senha gerada temporariamente
@@ -166,12 +206,67 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleButton.title = 'Ocultar senha';
         }
         
-        // Adiciona efeito visual de sucesso
+        // Atualiza o campo para copiar
+        senhaParaCopiar.value = senhaGerada;
+        
+        // Mostra o alert de senha gerada
+        senhaGeradaAlert.style.display = 'block';
+        
+        // Adiciona efeito visual de sucesso no botão
         gerarSenhaButton.innerHTML = '<i class="bi bi-check"></i> Gerada!';
+        gerarSenhaButton.classList.remove('btn-success');
+        gerarSenhaButton.classList.add('btn-primary');
         
         setTimeout(() => {
             gerarSenhaButton.innerHTML = '<i class="bi bi-shuffle"></i> Gerar';
-        }, 2000);
+            gerarSenhaButton.classList.remove('btn-primary');
+            gerarSenhaButton.classList.add('btn-success');
+        }, 3000);
+        
+        // Foca no campo para facilitar a visualização
+        passwordField.focus();
+    });
+    
+    // Funcionalidade de copiar senha
+    if (copiarSenhaButton) {
+        copiarSenhaButton.addEventListener('click', function() {
+            senhaParaCopiar.select();
+            senhaParaCopiar.setSelectionRange(0, 99999); // Para mobile
+            
+            try {
+                navigator.clipboard.writeText(senhaParaCopiar.value).then(function() {
+                    // Sucesso ao copiar
+                    copiarSenhaButton.innerHTML = '<i class="bi bi-check"></i>';
+                    copiarSenhaButton.classList.remove('btn-outline-primary');
+                    copiarSenhaButton.classList.add('btn-success');
+                    
+                    setTimeout(() => {
+                        copiarSenhaButton.innerHTML = '<i class="bi bi-clipboard"></i>';
+                        copiarSenhaButton.classList.remove('btn-success');
+                        copiarSenhaButton.classList.add('btn-outline-primary');
+                    }, 2000);
+                }).catch(function() {
+                    // Fallback para navegadores antigos
+                    document.execCommand('copy');
+                    copiarSenhaButton.innerHTML = '<i class="bi bi-check"></i>';
+                });
+            } catch (err) {
+                // Fallback adicional
+                try {
+                    document.execCommand('copy');
+                    copiarSenhaButton.innerHTML = '<i class="bi bi-check"></i>';
+                } catch (err2) {
+                    alert('Não foi possível copiar automaticamente. Selecione e copie manualmente.');
+                }
+            }
+        });
+    }
+    
+    // Esconde o alert quando o usuário digita no campo de senha
+    passwordField.addEventListener('input', function() {
+        if (senhaGeradaAlert.style.display === 'block' && passwordField.value !== senhaParaCopiar.value) {
+            senhaGeradaAlert.style.display = 'none';
+        }
     });
 });
 </script>

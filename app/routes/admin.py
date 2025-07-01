@@ -440,7 +440,7 @@ def editar_usuario(id):
         usuario_existente = Usuario.query.filter_by(email=form.email.data).filter(Usuario.id != id).first()
         if usuario_existente:
             flash('Este email já está cadastrado por outro assistente!', 'danger')
-            return render_template('admin/usuario_form.html', form=form, titulo='Editar Assistente')
+            return render_template('admin/usuario_form.html', form=form, titulo='Editar Assistente', usuario=usuario)
         
         usuario.nome = form.nome.data
         usuario.email = form.email.data
@@ -455,7 +455,7 @@ def editar_usuario(id):
         flash(f'Assistente {usuario.nome} atualizado com sucesso!', 'success')
         return redirect(url_for('admin.usuarios'))
     
-    return render_template('admin/usuario_form.html', form=form, titulo='Editar Assistente')
+    return render_template('admin/usuario_form.html', form=form, titulo='Editar Assistente', usuario=usuario)
 
 @admin_bp.route('/usuarios/<int:id>/toggle')
 @admin_required
