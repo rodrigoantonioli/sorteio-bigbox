@@ -388,7 +388,7 @@ def novo_usuario():
     
     # Popula lojas disponíveis
     lojas = Loja.query.filter_by(ativo=True).order_by(Loja.nome).all()
-    form.loja_id.choices = [(0, 'Selecione uma loja')] + [(l.id, f"{l.codigo} - {l.nome}") for l in lojas]
+    form.loja_id.choices = [(0, 'Selecione uma loja')] + [(l.id, f"{l.nome} ({l.codigo} - {l.nome})") for l in lojas]
     
     # Se loja_id foi passada como parâmetro, pré-seleciona
     loja_id_param = request.args.get('loja_id', type=int)
@@ -400,11 +400,11 @@ def novo_usuario():
         usuario_existente = Usuario.query.filter_by(email=form.email.data).first()
         if usuario_existente:
             flash('Este email já está cadastrado!', 'danger')
-            return render_template('admin/usuario_form.html', form=form, titulo='Novo Usuário')
+            return render_template('admin/usuario_form.html', form=form, titulo='Novo Assistente')
         
         if not form.password.data:
-            flash('Senha é obrigatória para novo usuário!', 'danger')
-            return render_template('admin/usuario_form.html', form=form, titulo='Novo Usuário')
+            flash('Senha é obrigatória para novo assistente!', 'danger')
+            return render_template('admin/usuario_form.html', form=form, titulo='Novo Assistente')
         
         usuario = Usuario(
             nome=form.nome.data,
@@ -418,10 +418,10 @@ def novo_usuario():
         db.session.add(usuario)
         db.session.commit()
         
-        flash(f'Usuário {usuario.nome} criado com sucesso!', 'success')
+        flash(f'Assistente {usuario.nome} criado com sucesso!', 'success')
         return redirect(url_for('admin.usuarios'))
     
-    return render_template('admin/usuario_form.html', form=form, titulo='Novo Usuário')
+    return render_template('admin/usuario_form.html', form=form, titulo='Novo Assistente')
 
 @admin_bp.route('/usuarios/<int:id>/editar', methods=['GET', 'POST'])
 @admin_required
@@ -433,14 +433,14 @@ def editar_usuario(id):
     
     # Popula lojas disponíveis
     lojas = Loja.query.filter_by(ativo=True).order_by(Loja.nome).all()
-    form.loja_id.choices = [(0, 'Selecione uma loja')] + [(l.id, f"{l.codigo} - {l.nome}") for l in lojas]
+    form.loja_id.choices = [(0, 'Selecione uma loja')] + [(l.id, f"{l.nome} ({l.codigo} - {l.nome})") for l in lojas]
     
     if form.validate_on_submit():
         # Verifica se email já existe (exceto o próprio)
         usuario_existente = Usuario.query.filter_by(email=form.email.data).filter(Usuario.id != id).first()
         if usuario_existente:
-            flash('Este email já está cadastrado por outro usuário!', 'danger')
-            return render_template('admin/usuario_form.html', form=form, titulo='Editar Usuário')
+            flash('Este email já está cadastrado por outro assistente!', 'danger')
+            return render_template('admin/usuario_form.html', form=form, titulo='Editar Assistente')
         
         usuario.nome = form.nome.data
         usuario.email = form.email.data
@@ -452,10 +452,10 @@ def editar_usuario(id):
         
         db.session.commit()
         
-        flash(f'Usuário {usuario.nome} atualizado com sucesso!', 'success')
+        flash(f'Assistente {usuario.nome} atualizado com sucesso!', 'success')
         return redirect(url_for('admin.usuarios'))
     
-    return render_template('admin/usuario_form.html', form=form, titulo='Editar Usuário')
+    return render_template('admin/usuario_form.html', form=form, titulo='Editar Assistente')
 
 @admin_bp.route('/usuarios/<int:id>/toggle')
 @admin_required
@@ -467,7 +467,7 @@ def toggle_usuario(id):
     db.session.commit()
     
     status = 'ativado' if usuario.ativo else 'desativado'
-    flash(f'Usuário {usuario.nome} foi {status}.', 'success')
+    flash(f'Assistente {usuario.nome} foi {status}.', 'success')
     
     return redirect(url_for('admin.usuarios'))
 
@@ -481,7 +481,7 @@ def excluir_usuario(id):
     db.session.delete(usuario)
     db.session.commit()
     
-    flash(f'Usuário {nome} foi excluído com sucesso.', 'success')
+    flash(f'Assistente {nome} foi excluído com sucesso.', 'success')
     return redirect(url_for('admin.usuarios'))
 
 @admin_bp.route('/premios')

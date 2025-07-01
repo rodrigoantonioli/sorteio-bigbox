@@ -63,13 +63,22 @@
                             {% endif %}
                             <div class="form-text">
                                 <i class="fas fa-info-circle"></i> 
-                                Opcional: associe o usuário a uma loja específica
+                                Opcional: associe o assistente a uma loja específica
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            {{ form.password.label(class="form-label") }}
-                            {{ form.password(class="form-control") }}
+                            <label for="password" class="form-label">Senha</label>
+                            <div class="input-group">
+                                <input type="password" name="password" id="password" class="form-control" 
+                                       value="{{ form.password.data if form.password.data else '' }}">
+                                <button type="button" class="btn btn-outline-secondary" id="togglePassword" title="Mostrar/Ocultar senha">
+                                    <i class="fas fa-eye" id="eyeIcon"></i>
+                                </button>
+                                <button type="button" class="btn btn-success" id="gerarSenha" title="Gerar senha aleatória">
+                                    <i class="fas fa-dice"></i> Gerar
+                                </button>
+                            </div>
                             {% if form.password.errors %}
                                 <div class="invalid-feedback d-block">
                                     {% for error in form.password.errors %}
@@ -82,13 +91,18 @@
                                     <i class="fas fa-info-circle"></i> 
                                     Deixe em branco para manter a senha atual
                                 </div>
+                            {% else %}
+                                <div class="form-text">
+                                    <i class="fas fa-lightbulb"></i> 
+                                    Use o botão "Gerar" para criar uma senha simples ou digite uma personalizada
+                                </div>
                             {% endif %}
                         </div>
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="fas fa-save"></i> 
-                                {{ 'Atualizar' if 'Editar' in titulo else 'Criar' }} Usuário
+                                {{ 'Atualizar' if 'Editar' in titulo else 'Criar' }} Assistente
                             </button>
                         </div>
                     </form>
@@ -97,4 +111,63 @@
         </div>
     </div>
 </div>
+
+<script>
+// Funcionalidade de mostrar/ocultar senha
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordField = document.getElementById('password');
+    const toggleButton = document.getElementById('togglePassword');
+    const eyeIcon = document.getElementById('eyeIcon');
+    const gerarSenhaButton = document.getElementById('gerarSenha');
+    
+    // Toggle password visibility
+    toggleButton.addEventListener('click', function() {
+        const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordField.setAttribute('type', type);
+        
+        if (type === 'text') {
+            eyeIcon.className = 'fas fa-eye-slash';
+            toggleButton.title = 'Ocultar senha';
+        } else {
+            eyeIcon.className = 'fas fa-eye';
+            toggleButton.title = 'Mostrar senha';
+        }
+    });
+    
+    // Gerar senha aleatória
+    gerarSenhaButton.addEventListener('click', function() {
+        const palavrasSupermercado = [
+            'queijo', 'leite', 'pao', 'cafe', 'acucar', 'arroz', 'feijao', 'macarrao',
+            'carne', 'frango', 'peixe', 'banana', 'maca', 'laranja', 'tomate', 'cebola',
+            'batata', 'cenoura', 'alface', 'ovos', 'manteiga', 'iogurte', 'biscoito',
+            'chocolate', 'sabao', 'detergente', 'shampoo', 'pasta', 'escova', 'papel',
+            'agua', 'suco', 'refrigerante', 'cerveja', 'vinho', 'massa', 'molho',
+            'tempero', 'sal', 'oleo', 'vinagre', 'farinha', 'aveia', 'granola'
+        ];
+        
+        const palavraAleatoria = palavrasSupermercado[Math.floor(Math.random() * palavrasSupermercado.length)];
+        const numeroAleatorio = Math.floor(Math.random() * 99) + 1; // 1-99
+        const senhaGerada = palavraAleatoria + numeroAleatorio;
+        
+        passwordField.value = senhaGerada;
+        
+        // Mostra a senha gerada temporariamente
+        if (passwordField.getAttribute('type') === 'password') {
+            passwordField.setAttribute('type', 'text');
+            eyeIcon.className = 'fas fa-eye-slash';
+            toggleButton.title = 'Ocultar senha';
+        }
+        
+        // Adiciona efeito visual de sucesso
+        gerarSenhaButton.classList.add('btn-success');
+        gerarSenhaButton.innerHTML = '<i class="fas fa-check"></i> Gerada!';
+        
+        setTimeout(() => {
+            gerarSenhaButton.classList.remove('btn-success');
+            gerarSenhaButton.innerHTML = '<i class="fas fa-dice"></i> Gerar';
+        }, 2000);
+    });
+});
+</script>
+
 {% endblock %} 
