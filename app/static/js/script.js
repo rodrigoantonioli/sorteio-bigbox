@@ -44,6 +44,7 @@ class SorteioAnimado {
         this.intervalId = null;
         this.timeoutIds = [];
         this.ultimoVencedor = null; // Para armazenar o último item mostrado
+        this.sorteioLojasComSucesso = false; // Flag para controlar reload
     }
 
     // Inicializa o sorteio de lojas
@@ -110,6 +111,26 @@ class SorteioAnimado {
         // Event listeners para o X
         document.getElementById('fecharModalX')?.addEventListener('click', () => {
             this.modal.hide();
+        });
+
+        // Event listener para quando o modal é fechado - RELOAD APÓS SORTEIO DE LOJAS
+        document.getElementById('sorteioModal').addEventListener('hidden.bs.modal', () => {
+            // Se houve sucesso no sorteio de lojas, recarrega a página para mostrar resultado
+            if (this.sorteioLojasComSucesso) {
+                console.log('🔄 Recarregando página após sorteio de lojas bem-sucedido...');
+                // Reset da flag para próximos sorteios
+                this.sorteioLojasComSucesso = false;
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
+            }
+        });
+
+        // Permite fechar clicando no backdrop após sucesso
+        document.getElementById('sorteioModal').addEventListener('click', (e) => {
+            if (e.target.id === 'sorteioModal' && this.sorteioLojasComSucesso) {
+                this.modal.hide();
+            }
         });
     }
 
@@ -449,16 +470,26 @@ class SorteioAnimado {
         this.submitarFormularioColaboradoresAjax(resultados);
     }
 
-    // Exibe sucesso no sorteio - VERSÃO SILENCIOSA
+    // Exibe sucesso no sorteio - VERSÃO SILENCIOSA COM RELOAD
     exibirSucesso(mensagem) {
         const status = document.getElementById('sorteioStatus');
         const alertDiv = document.getElementById('statusAlert');
         const botoesDiv = document.getElementById('botoesAcao');
         const colaboradorContainer = document.getElementById('resultadoColaboradorContainer');
         
-        // Para sorteio de lojas: apenas remove elementos desnecessários silenciosamente
+        // Para sorteio de lojas: marca sucesso para reload automático
         if (status && !colaboradorContainer) {
-            status.style.display = 'none'; // Oculta status em vez de mostrar mensagem
+            this.sorteioLojasComSucesso = true; // Marca para reload quando fechar modal
+            status.textContent = '✅ Sorteio salvo! Feche para ver o resultado na página.';
+            status.style.display = 'block';
+            status.className = 'sorteio-status sucesso-discreto';
+            console.log('✅ Sorteio de lojas salvo com sucesso - página será recarregada ao fechar');
+            
+            // Mostra o X para fechar após sucesso
+            const fecharBtn = document.getElementById('fecharModalX');
+            if (fecharBtn) {
+                fecharBtn.classList.remove('d-none');
+            }
         }
         
         // Remove alert de salvamento (não precisamos mostrar)

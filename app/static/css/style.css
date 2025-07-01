@@ -2052,6 +2052,31 @@ main {
     }
 }
 
+/* Status de Sucesso Discreto */
+.sucesso-discreto {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb) !important;
+    color: #155724 !important;
+    border: 1px solid #c3e6cb !important;
+    border-radius: 15px !important;
+    padding: 1rem !important;
+    text-align: center !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    box-shadow: 0 4px 15px rgba(21, 87, 36, 0.15) !important;
+    animation: sucessoPulse 2s ease-in-out infinite;
+}
+
+@keyframes sucessoPulse {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 4px 15px rgba(21, 87, 36, 0.15);
+    }
+    50% { 
+        transform: scale(1.02);
+        box-shadow: 0 6px 20px rgba(21, 87, 36, 0.25);
+    }
+}
+
 /* ========================================
    ESTILOS PARA INTERFACE FILMÁVEL
 ======================================== */
