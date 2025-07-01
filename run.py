@@ -128,6 +128,35 @@ def create_app(config_name='default'):
             db.session.rollback()
             raise
 
+    # Comando CLI para testar conexão com banco
+    @app.cli.command()
+    def test_db():
+        """Testa a conexão com o banco de dados"""
+        try:
+            print("🔍 Testando conexão com o banco de dados...")
+            print(f"Database URI: {app.config['SQLALCHEMY_DATABASE_URI'][:50]}...")
+            
+            # Testa conexão básica
+            with db.engine.connect() as conn:
+                conn.execute(db.text('SELECT 1'))
+            print("✓ Conexão com banco estabelecida com sucesso!")
+            
+            # Verifica tabelas
+            from sqlalchemy import inspect
+            inspector = inspect(db.engine)
+            tables = inspector.get_table_names()
+            print(f"✓ Tabelas encontradas: {tables}")
+            
+            # Conta registros
+            total_usuarios = Usuario.query.count()
+            total_lojas = Loja.query.count()
+            print(f"✓ Usuários no banco: {total_usuarios}")
+            print(f"✓ Lojas no banco: {total_lojas}")
+            
+        except Exception as e:
+            print(f"❌ Erro na conexão: {e}")
+            raise
+
     return app
 
 # Cria a aplicação

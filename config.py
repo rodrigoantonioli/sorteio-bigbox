@@ -20,13 +20,22 @@ class Config:
     # Flask
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     
-    # SQLAlchemy - Usa caminho absoluto para o DB dentro da pasta instance
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or f'sqlite:///{db_path}'
-    # Corrige URL do PostgreSQL para SQLAlchemy (Render usa postgres://)
-    if 'postgres' in SQLALCHEMY_DATABASE_URI:
-        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace("postgres://", "postgresql://", 1)
+    # SQLAlchemy - Configuração melhorada para PostgreSQL
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    if DATABASE_URL:
+        # Corrige URL do PostgreSQL para SQLAlchemy (Render pode usar postgres://)
+        if DATABASE_URL.startswith("postgres://"):
+            DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+        SQLALCHEMY_DATABASE_URI = DATABASE_URL
+    else:
+        # Fallback para SQLite em desenvolvimento
+        SQLALCHEMY_DATABASE_URI = f'sqlite:///{db_path}'
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True,
+        'pool_recycle': 300,
+    }
     
     # Upload de arquivos
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB máximo
@@ -62,6 +71,8 @@ class ProductionConfig(Config):
     """Configurações de produção"""
     DEBUG = False
     SESSION_COOKIE_SECURE = True  # HTTPS apenas
+    # Remove SQLALCHEMY_ECHO em produção
+    SQLALCHEMY_ECHO = False
 
 class TestingConfig(Config):
     """Configurações de teste"""

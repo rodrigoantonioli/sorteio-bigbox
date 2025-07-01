@@ -14,7 +14,7 @@ class Usuario(UserMixin, db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     senha_hash = db.Column(db.String(255), nullable=False)
     nome = db.Column(db.String(100), nullable=False)
-    tipo = db.Column(db.Enum('admin', 'assistente', name='tipo_usuario'), nullable=False)
+    tipo = db.Column(db.String(20), nullable=False)  # 'admin' ou 'assistente'
     loja_id = db.Column(db.Integer, db.ForeignKey('lojas.id'), nullable=True)
     ativo = db.Column(db.Boolean, default=True)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
@@ -31,7 +31,7 @@ class Loja(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     codigo = db.Column(db.String(50), unique=True, nullable=False)
     nome = db.Column(db.String(100), nullable=False)
-    bandeira = db.Column(db.Enum('BIG', 'ULTRA', name='bandeira_loja'), nullable=False)
+    bandeira = db.Column(db.String(10), nullable=False)  # 'BIG' ou 'ULTRA'
     ativo = db.Column(db.Boolean, default=True)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -56,7 +56,7 @@ class Premio(db.Model):
     nome = db.Column(db.String(100), nullable=False)
     descricao = db.Column(db.Text)
     data_evento = db.Column(db.Date, nullable=False)
-    tipo = db.Column(db.Enum('show', 'day_use', name='tipo_premio'), nullable=False)
+    tipo = db.Column(db.String(20), nullable=False)  # 'show' ou 'day_use'
     loja_id = db.Column(db.Integer, db.ForeignKey('lojas.id'), nullable=True)  # Vinculação com loja ganhadora
     ativo = db.Column(db.Boolean, default=True)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
