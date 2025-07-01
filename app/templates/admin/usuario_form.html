@@ -90,12 +90,12 @@
                             {% endif %}
                             {% if 'Editar' in titulo %}
                                 <div class="form-text">
-                                    <i class="fas fa-info-circle"></i> 
-                                    Deixe em branco para manter a senha atual
+                                    <i class="bi bi-info-circle"></i> 
+                                    Deixe em branco para manter a senha atual. Digite uma nova senha ou use "Gerar" para alterar.
                                 </div>
                             {% else %}
                                 <div class="form-text">
-                                    <i class="fas fa-lightbulb"></i> 
+                                    <i class="bi bi-lightbulb"></i> 
                                     Use o botão "Gerar" para criar uma senha simples ou digite uma personalizada
                                 </div>
                             {% endif %}
@@ -148,8 +148,14 @@ document.addEventListener('DOMContentLoaded', function() {
         ];
         
         const palavraAleatoria = palavrasSupermercado[Math.floor(Math.random() * palavrasSupermercado.length)];
-        const numeroAleatorio = Math.floor(Math.random() * 99) + 1; // 1-99
-        const senhaGerada = palavraAleatoria + numeroAleatorio;
+        let numeroAleatorio = Math.floor(Math.random() * 99) + 1; // 1-99
+        let senhaGerada = palavraAleatoria + numeroAleatorio;
+        
+        // Garantir pelo menos 6 caracteres
+        while (senhaGerada.length < 6) {
+            numeroAleatorio = Math.floor(Math.random() * 99) + 10; // 10-99 para números maiores
+            senhaGerada = palavraAleatoria + numeroAleatorio;
+        }
         
         passwordField.value = senhaGerada;
         
