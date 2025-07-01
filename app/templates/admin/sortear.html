@@ -26,48 +26,126 @@ body {
 }
 
 .pote-container {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 15px;
-    padding: 15px;
-    margin-bottom: 15px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    border: 2px solid transparent;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    border: 3px solid transparent;
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.pote-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    opacity: 0.6;
 }
 
 .pote-big {
     border-color: #8e44ad;
-    background: linear-gradient(145deg, rgba(142, 68, 173, 0.1), rgba(155, 89, 182, 0.05));
+    color: #8e44ad;
+}
+
+.pote-big::before {
+    background: linear-gradient(90deg, transparent, #8e44ad, transparent);
 }
 
 .pote-ultra {
     border-color: #00a651;
-    background: linear-gradient(145deg, rgba(0, 166, 81, 0.1), rgba(39, 174, 96, 0.05));
+    color: #00a651;
+}
+
+.pote-ultra::before {
+    background: linear-gradient(90deg, transparent, #00a651, transparent);
+}
+
+.pote-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.contador-lojas {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 25px;
+    padding: 8px 16px;
+    margin: 10px auto;
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.secao-lojas {
+    margin-bottom: 15px;
+}
+
+.secao-titulo {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .loja-item {
     display: inline-block;
-    background: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    padding: 4px 8px;
-    margin: 2px;
-    font-size: 0.75rem;
-    font-weight: 500;
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 8px 14px;
+    margin: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
     transition: all 0.3s ease;
+    cursor: default;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .loja-disponivel {
-    background: linear-gradient(45deg, #d4edda, #c3e6cb);
+    background: linear-gradient(145deg, #d4edda, #c3e6cb);
     border-color: #28a745;
     color: #155724;
 }
 
+.loja-disponivel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
 .loja-sorteada {
-    background: linear-gradient(45deg, #f8d7da, #f5c6cb);
+    background: linear-gradient(145deg, #f8d7da, #f5c6cb);
     border-color: #dc3545;
     color: #721c24;
-    opacity: 0.7;
+    opacity: 0.8;
+    position: relative;
+}
+
+.loja-sorteada::after {
+    content: '🏆';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 0.7rem;
 }
 
 .btn-chacoalhar {
@@ -82,6 +160,8 @@ body {
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 1px;
+    width: 100%;
+    margin-bottom: 10px;
 }
 
 .btn-chacoalhar:hover:not(:disabled) {
@@ -102,7 +182,7 @@ body {
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-top: 10px;
+    width: 100%;
 }
 
 .btn-sortear-final:hover:not(:disabled) {
@@ -110,16 +190,12 @@ body {
     box-shadow: 0 12px 24px rgba(102, 126, 234, 0.4);
 }
 
-.btn-sortear-final:disabled {
-    background: #6c757d;
+.btn-sortear-final:disabled, .btn-chacoalhar:disabled {
+    background: linear-gradient(45deg, #6c757d, #5a6268);
     cursor: not-allowed;
     opacity: 0.6;
-}
-
-.btn-chacoalhar:disabled {
-    background: #6c757d;
-    cursor: not-allowed;
-    opacity: 0.6;
+    transform: none !important;
+    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.2);
 }
 
 .tremor {
@@ -203,14 +279,6 @@ body {
     opacity: 0.9;
 }
 
-.contador-lojas {
-    text-align: center;
-    color: #495057;
-    font-weight: 600;
-    font-size: 0.85rem;
-    margin-bottom: 10px;
-}
-
 .embaralhar {
     animation: spin 0.5s ease-in-out;
 }
@@ -221,24 +289,34 @@ body {
     100% { transform: rotate(360deg) scale(1); }
 }
 
-.pote-title {
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-}
-
-.secao-lojas h6 {
-    font-size: 0.8rem;
-    margin-bottom: 8px;
-}
-
 .botoes-container {
     text-align: center;
     margin-top: 15px;
 }
 
 .compacto {
-    max-height: 400px;
+    max-height: 450px;
     overflow-y: auto;
+    padding-right: 10px;
+}
+
+.compacto::-webkit-scrollbar {
+    width: 6px;
+}
+
+.compacto::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.compacto::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.status-icon {
+    font-size: 1.2rem;
+    margin-right: 5px;
 }
 </style>
 
@@ -285,7 +363,7 @@ body {
 
                 <!-- Status do Sorteio -->
                 <div id="statusSorteio" class="alert alert-info text-center">
-                    <small id="statusTexto">Selecione uma data para começar</small>
+                    <small id="statusTexto">Inicializando sistema...</small>
                 </div>
             </div>
 
@@ -298,15 +376,17 @@ body {
                 <div id="potesContainer">
                     <!-- Pote BIG -->
                     <div class="pote-container pote-big compacto">
-                        <h4 class="text-center pote-title">
+                        <div class="pote-title">
                             🏢 POTE BIG
                             <div class="contador-lojas">
                                 <span id="contadorBig">{{ lojas_big|length }}</span> disponíveis
                             </div>
-                        </h4>
+                        </div>
                         
-                        <div class="secao-lojas mb-2">
-                            <h6>🟢 Disponíveis:</h6>
+                        <div class="secao-lojas">
+                            <div class="secao-titulo">
+                                <span class="status-icon">🟢</span>Disponíveis
+                            </div>
                             <div id="lojasBigDisponiveis">
                                 {% for loja in lojas_big %}
                                 <span class="loja-item loja-disponivel" data-id="{{ loja.id }}">
@@ -318,7 +398,9 @@ body {
                         
                         {% if lojas_big_sorteadas %}
                         <div class="secao-lojas">
-                            <h6>⭕ Já Sorteadas:</h6>
+                            <div class="secao-titulo">
+                                <span class="status-icon">🏆</span>Já Sorteadas
+                            </div>
                             <div>
                                 {% for loja in lojas_big_sorteadas %}
                                 <span class="loja-item loja-sorteada">
@@ -332,15 +414,17 @@ body {
 
                     <!-- Pote ULTRA -->
                     <div class="pote-container pote-ultra compacto">
-                        <h4 class="text-center pote-title">
+                        <div class="pote-title">
                             🏬 POTE ULTRA
                             <div class="contador-lojas">
                                 <span id="contadorUltra">{{ lojas_ultra|length }}</span> disponíveis
                             </div>
-                        </h4>
+                        </div>
                         
-                        <div class="secao-lojas mb-2">
-                            <h6>🟢 Disponíveis:</h6>
+                        <div class="secao-lojas">
+                            <div class="secao-titulo">
+                                <span class="status-icon">🟢</span>Disponíveis
+                            </div>
                             <div id="lojasUltraDisponiveis">
                                 {% for loja in lojas_ultra %}
                                 <span class="loja-item loja-disponivel" data-id="{{ loja.id }}">
@@ -352,7 +436,9 @@ body {
                         
                         {% if lojas_ultra_sorteadas %}
                         <div class="secao-lojas">
-                            <h6>⭕ Já Sorteadas:</h6>
+                            <div class="secao-titulo">
+                                <span class="status-icon">🏆</span>Já Sorteadas
+                            </div>
                             <div>
                                 {% for loja in lojas_ultra_sorteadas %}
                                 <span class="loja-item loja-sorteada">
@@ -392,6 +478,17 @@ document.addEventListener('DOMContentLoaded', function() {
     let poteChacoalhado = false;
     let seedRandom = Date.now();
     let sorteioJaRealizado = false;
+    
+    // Inicialização automática com a data pré-selecionada
+    setTimeout(() => {
+        if (semanaInicio.value) {
+            statusTexto.textContent = 'Data pré-selecionada. Verificando...';
+            verificarSorteioExistente(semanaInicio.value);
+        } else {
+            statusTexto.textContent = 'Selecione uma data para começar';
+            statusSorteio.className = 'alert alert-info text-center';
+        }
+    }, 500);
     
     // Verifica sorteio existente quando data muda
     semanaInicio.addEventListener('change', function() {
@@ -570,8 +667,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 300);
     }
     
-    // Sortear final
+    // Sortear final - CORREÇÃO DO BUG!
     btnSortearFinal.addEventListener('click', function() {
+        console.log('Botão clicado!'); // DEBUG
+        
         if (sorteioJaRealizado) {
             alert('⚠️ Sorteio já foi realizado para esta semana!');
             return;
@@ -582,14 +681,28 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        // Verifica se o objeto sorteioAnimado existe
+        if (!window.sorteioAnimado) {
+            console.error('SorteioAnimado não encontrado!');
+            alert('❌ Erro: Sistema de sorteio não carregado. Recarregue a página.');
+            return;
+        }
+        
         // Usa a seed gerada no chacoalhar para determinismo
-        Math.seedrandom(seedRandom);
+        if (typeof Math.seedrandom === 'function') {
+            Math.seedrandom(seedRandom);
+        }
         
         statusTexto.textContent = 'Iniciando sorteio...';
         statusSorteio.className = 'alert alert-warning text-center';
         
         // Chama a função corretamente
-        window.sorteioAnimado.iniciarSorteioLojas(lojasBig, lojasUltra);
+        try {
+            window.sorteioAnimado.iniciarSorteioLojas(lojasBig, lojasUltra);
+        } catch (error) {
+            console.error('Erro ao iniciar sorteio:', error);
+            alert('❌ Erro ao iniciar sorteio: ' + error.message);
+        }
     });
     
     // Resetar interface
@@ -609,6 +722,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Sobrescreve função AJAX do sorteio
     window.sorteioAnimado.submitarFormularioAjax = function(resultados) {
+        console.log('Salvando resultados:', resultados); // DEBUG
+        
         const lojaBig = resultados.find(r => r.tipo === 'Loja BIG');
         const lojaUltra = resultados.find(r => r.tipo === 'Loja ULTRA');
         
