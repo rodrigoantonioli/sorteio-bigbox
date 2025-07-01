@@ -196,8 +196,8 @@ def sortear_lojas():
         form.semana_inicio.data = terca_feira_atual
     
     # Busca lojas por bandeira
-    lojas_big = Loja.query.filter_by(bandeira='BIG', ativo=True).all()
-    lojas_ultra = Loja.query.filter_by(bandeira='ULTRA', ativo=True).all()
+    todas_lojas_big = Loja.query.filter_by(bandeira='BIG', ativo=True).all()
+    todas_lojas_ultra = Loja.query.filter_by(bandeira='ULTRA', ativo=True).all()
     
     # Busca sorteios já realizados para filtrar lojas
     sorteios_realizados = SorteioSemanal.query.all()
@@ -205,12 +205,18 @@ def sortear_lojas():
     lojas_ultra_sorteadas_ids = {s.loja_ultra_id for s in sorteios_realizados}
     
     # Filtra lojas disponíveis (que não foram sorteadas)
-    lojas_big_disponiveis = [l for l in lojas_big if l.id not in lojas_big_sorteadas_ids]
-    lojas_ultra_disponiveis = [l for l in lojas_ultra if l.id not in lojas_ultra_sorteadas_ids]
+    lojas_big_disponiveis = [l for l in todas_lojas_big if l.id not in lojas_big_sorteadas_ids]
+    lojas_ultra_disponiveis = [l for l in todas_lojas_ultra if l.id not in lojas_ultra_sorteadas_ids]
     
     # Lojas já sorteadas
-    lojas_big_sorteadas = [l for l in lojas_big if l.id in lojas_big_sorteadas_ids]
-    lojas_ultra_sorteadas = [l for l in lojas_ultra if l.id in lojas_ultra_sorteadas_ids]
+    lojas_big_sorteadas = [l for l in todas_lojas_big if l.id in lojas_big_sorteadas_ids]
+    lojas_ultra_sorteadas = [l for l in todas_lojas_ultra if l.id in lojas_ultra_sorteadas_ids]
+    
+    # Converte para JSON serializável
+    lojas_big_json = [{'id': l.id, 'codigo': l.codigo, 'nome': l.nome} for l in lojas_big_disponiveis]
+    lojas_ultra_json = [{'id': l.id, 'codigo': l.codigo, 'nome': l.nome} for l in lojas_ultra_disponiveis]
+    lojas_big_sorteadas_json = [{'id': l.id, 'codigo': l.codigo, 'nome': l.nome} for l in lojas_big_sorteadas]
+    lojas_ultra_sorteadas_json = [{'id': l.id, 'codigo': l.codigo, 'nome': l.nome} for l in lojas_ultra_sorteadas]
     
     # Verifica se já existe sorteio para a data atual
     sorteio_existente = None
@@ -223,10 +229,10 @@ def sortear_lojas():
             flash('Já existe um sorteio para esta semana!', 'warning')
             return render_template('admin/sortear.html', 
                                  form=form,
-                                 lojas_big=lojas_big_disponiveis,
-                                 lojas_ultra=lojas_ultra_disponiveis,
-                                 lojas_big_sorteadas=lojas_big_sorteadas,
-                                 lojas_ultra_sorteadas=lojas_ultra_sorteadas,
+                                 lojas_big=lojas_big_json,
+                                 lojas_ultra=lojas_ultra_json,
+                                 lojas_big_sorteadas=lojas_big_sorteadas_json,
+                                 lojas_ultra_sorteadas=lojas_ultra_sorteadas_json,
                                  sorteio_existente=sorteio_existente)
         
         # Sorteia uma loja de cada bandeira
@@ -234,10 +240,10 @@ def sortear_lojas():
             flash('Não há lojas suficientes para sortear!', 'danger')
             return render_template('admin/sortear.html', 
                                  form=form,
-                                 lojas_big=lojas_big_disponiveis,
-                                 lojas_ultra=lojas_ultra_disponiveis,
-                                 lojas_big_sorteadas=lojas_big_sorteadas,
-                                 lojas_ultra_sorteadas=lojas_ultra_sorteadas,
+                                 lojas_big=lojas_big_json,
+                                 lojas_ultra=lojas_ultra_json,
+                                 lojas_big_sorteadas=lojas_big_sorteadas_json,
+                                 lojas_ultra_sorteadas=lojas_ultra_sorteadas_json,
                                  sorteio_existente=sorteio_existente)
         
         # Realiza o sorteio
@@ -261,10 +267,10 @@ def sortear_lojas():
     
     return render_template('admin/sortear.html',
                          form=form,
-                         lojas_big=lojas_big_disponiveis,
-                         lojas_ultra=lojas_ultra_disponiveis,
-                         lojas_big_sorteadas=lojas_big_sorteadas,
-                         lojas_ultra_sorteadas=lojas_ultra_sorteadas,
+                         lojas_big=lojas_big_json,
+                         lojas_ultra=lojas_ultra_json,
+                         lojas_big_sorteadas=lojas_big_sorteadas_json,
+                         lojas_ultra_sorteadas=lojas_ultra_sorteadas_json,
                          sorteio_existente=sorteio_existente)
 
 @admin_bp.route('/sortear/ajax', methods=['POST'])
