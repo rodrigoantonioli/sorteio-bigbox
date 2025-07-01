@@ -477,15 +477,13 @@ class SorteioAnimado {
         const botoesDiv = document.getElementById('botoesAcao');
         const colaboradorContainer = document.getElementById('resultadoColaboradorContainer');
         
-        // Para sorteio de lojas: marca sucesso para reload automático
+        // Para sorteio de lojas: marca sucesso para reload automático SILENCIOSO
         if (status && !colaboradorContainer) {
             this.sorteioLojasComSucesso = true; // Marca para reload quando fechar modal
-            status.textContent = '✅ Sorteio salvo! Feche para ver o resultado na página.';
-            status.style.display = 'block';
-            status.className = 'sorteio-status sucesso-discreto';
-            console.log('✅ Sorteio de lojas salvo com sucesso - página será recarregada ao fechar');
+            status.style.display = 'none'; // Mantém silencioso como antes (melhor para filmagem)
+            console.log('✅ Sorteio de lojas salvo com sucesso - página será recarregada ao fechar (silencioso)');
             
-            // Mostra o X para fechar após sucesso
+            // Mostra o X para fechar após sucesso (mas sem mensagem)
             const fecharBtn = document.getElementById('fecharModalX');
             if (fecharBtn) {
                 fecharBtn.classList.remove('d-none');
