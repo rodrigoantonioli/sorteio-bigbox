@@ -136,4 +136,272 @@ main {
 
 #acoes-lote.d-block {
     display: block !important;
+}
+
+/* ========================================
+   ESTILOS DO SORTEIO ANIMADO
+======================================== */
+
+/* Modal do sorteio */
+.sorteio-modal {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.sorteio-modal .modal-header {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    text-align: center;
+}
+
+.sorteio-modal .modal-body {
+    padding: 3rem 2rem;
+    text-align: center;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Container do display do sorteio */
+.sorteio-display {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 1rem 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Nome sendo sorteado */
+.nome-sorteio {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* Animação de troca rápida */
+@keyframes sorteioRapido {
+    0% { 
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    50% { 
+        transform: translateY(-20px) scale(1.1);
+        opacity: 0.8;
+    }
+    100% { 
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.nome-sorteio.animando {
+    animation: sorteioRapido 0.3s ease-in-out;
+}
+
+/* Animação do resultado final */
+@keyframes resultadoFinal {
+    0% { 
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    50% { 
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+    100% { 
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.nome-sorteio.vencedor {
+    animation: resultadoFinal 1s ease-out;
+    color: #28a745;
+    text-shadow: 3px 3px 6px rgba(40, 167, 69, 0.3);
+}
+
+/* Efeitos de confetti */
+.confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #ff6b6b;
+    border-radius: 50%;
+    animation: confetti-fall 3s linear infinite;
+}
+
+.confetti:nth-child(2n) { background: #4ecdc4; }
+.confetti:nth-child(3n) { background: #45b7d1; }
+.confetti:nth-child(4n) { background: #f9ca24; }
+.confetti:nth-child(5n) { background: #6c5ce7; }
+
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Botão de sorteio animado */
+.btn-sortear {
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-sortear:hover {
+    background: linear-gradient(45deg, #ee5a24, #ff6b6b);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(238, 90, 36, 0.4);
+    color: white;
+}
+
+.btn-sortear:active {
+    transform: translateY(0);
+}
+
+.btn-sortear.sorteando {
+    background: linear-gradient(45deg, #ffa502, #ff6348);
+    animation: pulse 1s infinite;
+    pointer-events: none;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Indicador de bandeira */
+.bandeira-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.bandeira-big {
+    background: var(--big-color);
+    color: white;
+}
+
+.bandeira-ultra {
+    background: var(--ultra-color);
+    color: white;
+}
+
+/* Contador regressivo */
+.contador {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #ff6b6b;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    animation: countdown 1s ease-in-out;
+}
+
+@keyframes countdown {
+    0% { 
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    50% { 
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    100% { 
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Status do sorteio */
+.sorteio-status {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    margin: 1rem 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Botão de nova tentativa */
+.btn-novo-sorteio {
+    background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+    border: none;
+    border-radius: 25px;
+    padding: 0.8rem 1.5rem;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-novo-sorteio:hover {
+    background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+    transform: translateY(-2px);
+    color: white;
+}
+
+/* Responsividade para o sorteio */
+@media (max-width: 768px) {
+    .nome-sorteio {
+        font-size: 1.8rem;
+    }
+    
+    .sorteio-display {
+        padding: 1.5rem;
+        min-height: 150px;
+    }
+    
+    .contador {
+        font-size: 2rem;
+    }
+}
+
+/* Efeito de brilho para o vencedor */
+@keyframes brilho {
+    0% { box-shadow: 0 0 20px rgba(40, 167, 69, 0.5); }
+    50% { box-shadow: 0 0 40px rgba(40, 167, 69, 0.8); }
+    100% { box-shadow: 0 0 20px rgba(40, 167, 69, 0.5); }
+}
+
+.sorteio-display.vencedor {
+    animation: brilho 2s ease-in-out infinite;
 } 

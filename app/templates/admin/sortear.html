@@ -24,7 +24,7 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST">
+                    <form method="POST" id="sorteioForm">
                         {{ form.hidden_tag() }}
                         
                         <div class="mb-3">
@@ -54,8 +54,11 @@
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-dice"></i> Realizar Sorteio
+                            <button type="button" class="btn btn-sortear btn-lg" id="btnSortear">
+                                <i class="fas fa-dice"></i> 🎲 Realizar Sorteio Animado
+                            </button>
+                            <button type="submit" class="btn btn-outline-primary" id="btnSortearSimples">
+                                <i class="fas fa-list"></i> Sorteio Simples (sem animação)
                             </button>
                         </div>
                     </form>
@@ -64,4 +67,63 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const btnSortear = document.getElementById('btnSortear');
+    const form = document.getElementById('sorteioForm');
+    
+    // Dados das lojas (passados do backend)
+    const lojasBig = JSON.parse('{{ lojas_big | tojson | safe }}');
+    const lojasUltra = JSON.parse('{{ lojas_ultra | tojson | safe }}');
+    
+    btnSortear.addEventListener('click', function() {
+        // Valida se a data foi selecionada
+        const semanaInicio = document.querySelector('input[name="semana_inicio"]').value;
+        if (!semanaInicio) {
+            alert('Por favor, selecione a data da semana antes de realizar o sorteio.');
+            return;
+        }
+        
+        // Verifica se há lojas suficientes
+        if (lojasBig.length === 0) {
+            alert('Não há lojas BIG ativas para sortear.');
+            return;
+        }
+        
+        if (lojasUltra.length === 0) {
+            alert('Não há lojas ULTRA ativas para sortear.');
+            return;
+        }
+        
+        // Inicia o sorteio animado
+        iniciarSorteioLojas(lojasBig, lojasUltra);
+    });
+    
+    // Sobrescreve a função de submissão para incluir os resultados
+    window.sorteioAnimado.submitarFormulario = function(resultados) {
+        // Cria campos hidden com os resultados
+        const lojaBig = resultados.find(r => r.tipo === 'Loja BIG');
+        const lojaUltra = resultados.find(r => r.tipo === 'Loja ULTRA');
+        
+        if (lojaBig && lojaUltra) {
+            // Adiciona campos hidden ao formulário
+            const inputBig = document.createElement('input');
+            inputBig.type = 'hidden';
+            inputBig.name = 'loja_big_id';
+            inputBig.value = lojaBig.vencedor.id;
+            form.appendChild(inputBig);
+            
+            const inputUltra = document.createElement('input');
+            inputUltra.type = 'hidden';
+            inputUltra.name = 'loja_ultra_id';
+            inputUltra.value = lojaUltra.vencedor.id;
+            form.appendChild(inputUltra);
+            
+            // Submete o formulário
+            form.submit();
+        }
+    };
+});
+</script>
 {% endblock %} 

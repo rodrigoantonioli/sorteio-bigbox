@@ -503,10 +503,23 @@ def sortear_colaboradores():
         flash(f'Sorteio realizado com sucesso! {len(sorteados)} colaboradores sorteados para "{premio_selecionado.nome}".', 'success')
         return redirect(url_for('manager.dashboard'))
     
-    # Conta colaboradores aptos
-    colaboradores_count = Colaborador.query.filter_by(
+    # Busca colaboradores aptos para o frontend
+    colaboradores_aptos = Colaborador.query.filter_by(
         loja_id=current_user.loja_id,
         apto=True
-    ).count()
+    ).all()
     
-    return render_template('manager/sortear.html', form=form, colaboradores_count=colaboradores_count) 
+    # Serializa colaboradores para JSON
+    colaboradores_json = [
+        {
+            'id': c.id,
+            'matricula': c.matricula,
+            'nome': c.nome,
+            'setor': c.setor
+        } for c in colaboradores_aptos
+    ]
+    
+    return render_template('manager/sortear.html', 
+                         form=form, 
+                         colaboradores_count=len(colaboradores_aptos),
+                         colaboradores=colaboradores_json) 

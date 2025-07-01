@@ -152,6 +152,14 @@ def sortear_lojas():
     """Sorteia lojas semanalmente"""
     form = SorteioSemanalForm()
     
+    # Busca lojas ativas para o frontend
+    lojas_big = Loja.query.filter_by(bandeira='BIG', ativo=True).all()
+    lojas_ultra = Loja.query.filter_by(bandeira='ULTRA', ativo=True).all()
+    
+    # Serializa lojas para JSON
+    lojas_big_json = [{'id': l.id, 'codigo': l.codigo, 'nome': l.nome} for l in lojas_big]
+    lojas_ultra_json = [{'id': l.id, 'codigo': l.codigo, 'nome': l.nome} for l in lojas_ultra]
+    
     if form.validate_on_submit():
         semana_inicio = form.semana_inicio.data
         
@@ -159,19 +167,24 @@ def sortear_lojas():
         sorteio_existente = SorteioSemanal.query.filter_by(semana_inicio=semana_inicio).first()
         if sorteio_existente:
             flash(f'Já existe sorteio para a semana de {semana_inicio.strftime("%d/%m/%Y")}!', 'warning')
-            return render_template('admin/sortear.html', form=form)
-        
-        # Busca lojas ativas
-        lojas_big = Loja.query.filter_by(bandeira='BIG', ativo=True).all()
-        lojas_ultra = Loja.query.filter_by(bandeira='ULTRA', ativo=True).all()
+            return render_template('admin/sortear.html', form=form, lojas_big=lojas_big_json, lojas_ultra=lojas_ultra_json)
         
         if not lojas_big or not lojas_ultra:
             flash('Não há lojas suficientes para o sorteio!', 'danger')
-            return render_template('admin/sortear.html', form=form)
+            return render_template('admin/sortear.html', form=form, lojas_big=lojas_big_json, lojas_ultra=lojas_ultra_json)
         
-        # Sorteia uma loja de cada bandeira
-        loja_big_sorteada = random.choice(lojas_big)
-        loja_ultra_sorteada = random.choice(lojas_ultra)
+        # Verifica se é sorteio animado (com IDs das lojas escolhidas)
+        loja_big_id = request.form.get('loja_big_id', type=int)
+        loja_ultra_id = request.form.get('loja_ultra_id', type=int)
+        
+        if loja_big_id and loja_ultra_id:
+            # Sorteio animado - usa as lojas escolhidas pela animação
+            loja_big_sorteada = Loja.query.get(loja_big_id)
+            loja_ultra_sorteada = Loja.query.get(loja_ultra_id)
+        else:
+            # Sorteio simples - sorteia aleatoriamente
+            loja_big_sorteada = random.choice(lojas_big)
+            loja_ultra_sorteada = random.choice(lojas_ultra)
         
         # Cria o sorteio
         sorteio = SorteioSemanal(
@@ -187,7 +200,7 @@ def sortear_lojas():
         flash(f'Sorteio realizado! Lojas sorteadas: {loja_big_sorteada.nome} (BIG) e {loja_ultra_sorteada.nome} (ULTRA)', 'success')
         return redirect(url_for('admin.dashboard'))
     
-    return render_template('admin/sortear.html', form=form)
+    return render_template('admin/sortear.html', form=form, lojas_big=lojas_big_json, lojas_ultra=lojas_ultra_json)
 
 @admin_bp.route('/usuarios')
 @admin_required

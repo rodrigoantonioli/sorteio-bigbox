@@ -31,7 +31,7 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST">
+                    <form method="POST" id="sorteioColaboradoresForm">
                         {{ form.hidden_tag() }}
                         
                         <div class="mb-3">
@@ -96,8 +96,11 @@
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-warning btn-lg">
-                                <i class="fas fa-dice"></i> Realizar Sorteio
+                            <button type="button" class="btn btn-sortear btn-lg" id="btnSortearAnimado">
+                                <i class="fas fa-dice"></i> 🎲 Sortear com Animação
+                            </button>
+                            <button type="submit" class="btn btn-outline-warning" id="btnSortearSimples">
+                                <i class="fas fa-list"></i> Sorteio Simples (sem animação)
                             </button>
                         </div>
                     </form>
@@ -106,4 +109,74 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const btnSortearAnimado = document.getElementById('btnSortearAnimado');
+    const form = document.getElementById('sorteioColaboradoresForm');
+    
+    // Dados dos colaboradores (passados do backend)
+    const colaboradores = JSON.parse('{{ colaboradores | tojson | safe }}');
+    
+    btnSortearAnimado.addEventListener('click', function() {
+        // Valida o formulário
+        const premioId = document.querySelector('select[name="premio_id"]').value;
+        const quantidade = document.querySelector('input[name="quantidade_ingressos"]').value;
+        const confirmado = document.querySelector('input[name="confirmar_lista"]').checked;
+        
+        if (!premioId || premioId === '0') {
+            alert('Por favor, selecione um prêmio antes de realizar o sorteio.');
+            return;
+        }
+        
+        if (!quantidade || quantidade < 1) {
+            alert('Por favor, informe a quantidade de colaboradores a serem sorteados.');
+            return;
+        }
+        
+        if (!confirmado) {
+            alert('Por favor, confirme que a lista de colaboradores está atualizada.');
+            return;
+        }
+        
+        const quantidadeNum = parseInt(quantidade);
+        
+        // Verifica se há colaboradores suficientes
+        if (colaboradores.length === 0) {
+            alert('Não há colaboradores aptos para sortear.');
+            return;
+        }
+        
+        if (quantidadeNum > colaboradores.length) {
+            alert(`Não há colaboradores suficientes. Disponíveis: ${colaboradores.length}`);
+            return;
+        }
+        
+        // Inicia o sorteio animado
+        iniciarSorteioColaboradores(colaboradores, quantidadeNum);
+    });
+    
+    // Sobrescreve a função de submissão para incluir os resultados
+    window.sorteioAnimado.submitarFormularioColaboradores = function(resultados) {
+        // Cria campos hidden com os resultados
+        resultados.forEach((colaborador, index) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = `colaborador_sorteado_${index}`;
+            input.value = colaborador.id;
+            form.appendChild(input);
+        });
+        
+        // Adiciona flag indicando que foi sorteio animado
+        const flagAnimado = document.createElement('input');
+        flagAnimado.type = 'hidden';
+        flagAnimado.name = 'sorteio_animado';
+        flagAnimado.value = 'true';
+        form.appendChild(flagAnimado);
+        
+        // Submete o formulário
+        form.submit();
+    };
+});
+</script>
 {% endblock %} 
