@@ -76,7 +76,12 @@ def allowed_image_file(filename):
 
 def save_premio_image(image_file):
     """Salva a imagem do prêmio e retorna o nome do arquivo"""
-    if image_file and allowed_image_file(image_file.filename):
+    # Verifica se é um objeto FileStorage válido
+    if (image_file and 
+        hasattr(image_file, 'filename') and 
+        image_file.filename and 
+        allowed_image_file(image_file.filename)):
+        
         # Gera nome único para o arquivo
         filename = secure_filename(image_file.filename)
         unique_filename = f"{uuid.uuid4().hex}_{filename}"
@@ -398,9 +403,11 @@ def novo_premio():
     form = PremioForm()
     
     if form.validate_on_submit():
-        # Processa upload de imagem
+        # Processa upload de imagem APENAS se há um arquivo válido
         imagem_filename = None
-        if form.imagem.data:
+        if (form.imagem.data and 
+            hasattr(form.imagem.data, 'filename') and 
+            form.imagem.data.filename):
             imagem_filename = save_premio_image(form.imagem.data)
         
         premio = Premio(
@@ -437,15 +444,20 @@ def editar_premio(id):
     form = PremioForm(obj=premio)
     
     if form.validate_on_submit():
-        # Processa upload de imagem
-        if form.imagem.data:
+        # Processa upload de imagem APENAS se há um novo arquivo
+        if (form.imagem.data and 
+            hasattr(form.imagem.data, 'filename') and 
+            form.imagem.data.filename):
+            
             # Remove imagem anterior se existir
             if premio.imagem:
                 old_image_path = os.path.join('app/static/images/premios', premio.imagem)
                 safe_remove_file(old_image_path)
             
             # Salva nova imagem
-            premio.imagem = save_premio_image(form.imagem.data)
+            nova_imagem = save_premio_image(form.imagem.data)
+            if nova_imagem:
+                premio.imagem = nova_imagem
         
         premio.nome = form.nome.data
         premio.descricao = form.descricao.data
