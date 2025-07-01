@@ -444,10 +444,21 @@ def editar_premio(id):
     form = PremioForm(obj=premio)
     
     if form.validate_on_submit():
-        # Processa upload de imagem APENAS se há um novo arquivo
-        if (form.imagem.data and 
-            hasattr(form.imagem.data, 'filename') and 
-            form.imagem.data.filename):
+        # Verifica se deve remover a imagem
+        remover_imagem = request.form.get('remover_imagem') == 'true'
+        
+        if remover_imagem:
+            # Remove imagem atual se existir
+            if premio.imagem:
+                old_image_path = os.path.join('app/static/images/premios', premio.imagem)
+                safe_remove_file(old_image_path)
+            
+            # Define como None para usar imagem padrão
+            premio.imagem = None
+            
+        elif (form.imagem.data and 
+              hasattr(form.imagem.data, 'filename') and 
+              form.imagem.data.filename):
             
             # Remove imagem anterior se existir
             if premio.imagem:

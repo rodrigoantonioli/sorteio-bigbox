@@ -16,6 +16,9 @@
                     <form method="POST" enctype="multipart/form-data">
                         {{ form.hidden_tag() }}
                         
+                        <!-- Campo hidden para indicar remoção de imagem -->
+                        <input type="hidden" id="remover_imagem" name="remover_imagem" value="false">
+                        
                         <div class="row">
                             <div class="col-md-8">
                                 <!-- Nome do Prêmio -->
@@ -96,11 +99,18 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Preview da Imagem</label>
-                                    <div class="text-center">
+                                    <div class="text-center position-relative" id="imagePreviewContainer">
                                         {% if premio and premio.imagem %}
-                                            <img id="imagePreview" src="{{ premio.get_imagem_url() }}" 
-                                                 alt="Imagem do prêmio" class="img-fluid rounded shadow" 
-                                                 style="max-height: 200px; border: 2px solid #dee2e6;">
+                                            <div class="position-relative d-inline-block">
+                                                <img id="imagePreview" src="{{ premio.get_imagem_url() }}" 
+                                                     alt="Imagem do prêmio" class="img-fluid rounded shadow" 
+                                                     style="max-height: 200px; border: 2px solid #dee2e6;">
+                                                <button type="button" id="removeImageBtn" class="btn btn-danger btn-sm position-absolute" 
+                                                        style="top: -8px; right: -8px; width: 24px; height: 24px; border-radius: 50%; padding: 0; z-index: 10;"
+                                                        title="Remover imagem e usar padrão">
+                                                    <i class="bi bi-x" style="font-size: 14px; line-height: 1;"></i>
+                                                </button>
+                                            </div>
                                             <div class="mt-2">
                                                 <small class="text-muted">Imagem atual</small>
                                             </div>
@@ -158,24 +168,79 @@
 </div>
 
 <script>
+// Função para mostrar preview com botão X
+function showImagePreview(src, isNew) {
+    const container = document.getElementById('imagePreviewContainer');
+    const statusText = isNew ? 'Nova imagem selecionada' : 'Imagem atual';
+    const statusClass = isNew ? 'text-success' : 'text-muted';
+    const borderColor = isNew ? '#0d6efd' : '#dee2e6';
+    
+    container.innerHTML = 
+        '<div class="position-relative d-inline-block">' +
+            '<img id="imagePreview" src="' + src + '" alt="Preview da imagem" ' +
+                 'class="img-fluid rounded shadow" ' +
+                 'style="max-height: 200px; border: 2px solid ' + borderColor + ';">' +
+            '<button type="button" id="removeImageBtn" class="btn btn-danger btn-sm position-absolute" ' +
+                    'style="top: -8px; right: -8px; width: 24px; height: 24px; border-radius: 50%; padding: 0; z-index: 10;" ' +
+                    'title="Remover imagem e usar padrão">' +
+                '<i class="bi bi-x" style="font-size: 14px; line-height: 1;"></i>' +
+            '</button>' +
+        '</div>' +
+        '<div class="mt-2">' +
+            '<small class="' + statusClass + '">' + statusText + '</small>' +
+        '</div>';
+    
+    // Adiciona event listener ao botão X
+    document.getElementById('removeImageBtn').addEventListener('click', removeImage);
+}
+
+// Função para remover imagem
+function removeImage() {
+    const container = document.getElementById('imagePreviewContainer');
+    const fileInput = document.getElementById('imagem');
+    const removerCampo = document.getElementById('remover_imagem');
+    
+    // Marca para remoção
+    removerCampo.value = 'true';
+    
+    // Limpa o input de arquivo
+    fileInput.value = '';
+    
+    // Mostra placeholder
+    container.innerHTML = 
+        '<div id="imagePreview" class="border rounded d-flex align-items-center justify-content-center" ' +
+             'style="height: 200px; background-color: #f8f9fa;">' +
+            '<div class="text-center text-muted">' +
+                '<i class="bi bi-image" style="font-size: 3rem;"></i>' +
+                '<div class="mt-2">' +
+                    '<small>Imagem removida - será usada imagem padrão</small>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+}
+
 // Preview da imagem selecionada
 document.getElementById('imagem').addEventListener('change', function(e) {
     const file = e.target.files[0];
-    const preview = document.getElementById('imagePreview');
+    const removerCampo = document.getElementById('remover_imagem');
     
     if (file) {
+        // Cancela remoção se estava marcada
+        removerCampo.value = 'false';
+        
         const reader = new FileReader();
         reader.onload = function(e) {
-            preview.innerHTML = `
-                <img src="${e.target.result}" alt="Preview" 
-                     class="img-fluid rounded shadow" 
-                     style="max-height: 200px; border: 2px solid #0d6efd;">
-                <div class="mt-2">
-                    <small class="text-success">Nova imagem selecionada</small>
-                </div>
-            `;
+            showImagePreview(e.target.result, true);
         };
         reader.readAsDataURL(file);
+    }
+});
+
+// Event listener inicial para botão X (se existe)
+document.addEventListener('DOMContentLoaded', function() {
+    const removeBtn = document.getElementById('removeImageBtn');
+    if (removeBtn) {
+        removeBtn.addEventListener('click', removeImage);
     }
 });
 
@@ -187,25 +252,9 @@ document.getElementById('imagem').addEventListener('change', function(e) {
         if (!allowedTypes.includes(file.type)) {
             alert('Apenas arquivos JPG, JPEG e PNG são permitidos!');
             e.target.value = '';
-            // Restaura preview anterior ou mostra placeholder
-            const preview = document.getElementById('imagePreview');
-            {% if premio and premio.imagem %}
-                preview.innerHTML = `
-                    <img src="{{ premio.get_imagem_url() }}" alt="Imagem do prêmio" 
-                         class="img-fluid rounded shadow" style="max-height: 200px; border: 2px solid #dee2e6;">
-                    <div class="mt-2"><small class="text-muted">Imagem atual</small></div>
-                `;
-            {% else %}
-                preview.innerHTML = `
-                    <div class="border rounded d-flex align-items-center justify-content-center" 
-                         style="height: 200px; background-color: #f8f9fa;">
-                        <div class="text-center text-muted">
-                            <i class="bi bi-image" style="font-size: 3rem;"></i>
-                            <div class="mt-2"><small>Preview da imagem aparecerá aqui</small></div>
-                        </div>
-                    </div>
-                `;
-            {% endif %}
+            
+            // Restaura estado anterior
+            location.reload();
         }
     }
 });
