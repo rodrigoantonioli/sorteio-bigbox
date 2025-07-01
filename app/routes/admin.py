@@ -463,35 +463,6 @@ def resetar_pote_lojas():
     
     return redirect(url_for('admin.sorteios'))
 
-@admin_bp.route('/sorteios/resetar-pote', methods=['POST'])
-@admin_required
-def resetar_pote_lojas():
-    """Reseta o pote de lojas - permite que todas as lojas voltem a participar dos sorteios"""
-    try:
-        # Conta quantos sorteios serão removidos
-        total_sorteios = SorteioSemanal.query.count()
-        total_colaboradores = SorteioColaborador.query.count()
-        
-        if total_sorteios == 0:
-            flash('Não há sorteios para resetar.', 'info')
-            return redirect(url_for('admin.sorteios'))
-        
-        # Remove todos os sorteios de colaboradores primeiro (FK constraint)
-        SorteioColaborador.query.delete()
-        
-        # Remove todos os sorteios semanais
-        SorteioSemanal.query.delete()
-        
-        db.session.commit()
-        
-        flash(f'✅ Pote de lojas resetado com sucesso! {total_sorteios} sorteios semanais e {total_colaboradores} sorteios de colaboradores foram removidos. Todas as lojas podem participar novamente.', 'success')
-        
-    except Exception as e:
-        db.session.rollback()
-        flash(f'❌ Erro ao resetar pote de lojas: {str(e)}', 'danger')
-    
-    return redirect(url_for('admin.sorteios'))
-
 @admin_bp.route('/sorteios/semanal/<int:id>/excluir')
 @admin_required
 def excluir_sorteio_semanal(id):
