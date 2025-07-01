@@ -5,19 +5,67 @@ from app.forms.admin import SorteioSemanalForm, UsuarioForm, PremioForm, LojaFor
 from datetime import datetime, date, timedelta
 from functools import wraps
 import random
+import os
+import glob
 
 admin_bp = Blueprint('admin', __name__)
 
 def admin_required(f):
-    """Decorator para verificar se usuário é admin"""
+    """Decorador para verificar se o usuário é admin"""
     @wraps(f)
     @login_required
     def decorated_function(*args, **kwargs):
-        if current_user.tipo != 'admin':
-            flash('Acesso negado. Apenas administradores.', 'danger')
+        if not current_user.is_authenticated or current_user.tipo != 'admin':
+            flash('Acesso negado. Apenas administradores podem acessar esta página.', 'danger')
             return redirect(url_for('main.index'))
         return f(*args, **kwargs)
     return decorated_function
+
+def cleanup_temp_files():
+    """Remove arquivos temporários antigos da pasta uploads"""
+    try:
+        uploads_dir = 'uploads'
+        if not os.path.exists(uploads_dir):
+            return
+        
+        # Remove arquivos temporários com mais de 1 hora
+        cutoff_time = datetime.now() - timedelta(hours=1)
+        temp_files = glob.glob(os.path.join(uploads_dir, 'temp_colaboradores_*.xlsx'))
+        
+        for temp_file in temp_files:
+            try:
+                file_time = datetime.fromtimestamp(os.path.getmtime(temp_file))
+                if file_time < cutoff_time:
+                    os.remove(temp_file)
+            except:
+                pass  # Ignora erros individuais de arquivos
+    except:
+        pass  # Ignora erros gerais de limpeza
+
+def safe_remove_file(filepath):
+    """Remove arquivo de forma segura com fallback"""
+    try:
+        if os.path.exists(filepath):
+            os.remove(filepath)
+            return True
+    except PermissionError:
+        # Se não conseguir remover imediatamente, agenda para remoção posterior
+        import threading
+        import time
+        def remove_later():
+            time.sleep(3)  # Aguarda 3 segundos
+            try:
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+            except:
+                pass
+        
+        thread = threading.Thread(target=remove_later)
+        thread.daemon = True
+        thread.start()
+        return False
+    except Exception:
+        return False
 
 @admin_bp.route('/dashboard')
 @admin_required
@@ -436,6 +484,9 @@ def colaboradores():
 @admin_required
 def upload_colaboradores():
     """Upload de colaboradores pelo admin usando planilha Excel"""
+    # Limpa arquivos temporários antigos
+    cleanup_temp_files()
+    
     if request.method == 'POST':
         if 'arquivo' not in request.files:
             flash('Nenhum arquivo selecionado!', 'danger')
@@ -453,6 +504,9 @@ def upload_colaboradores():
         # Pega a opção de loja específica
         loja_especifica_id = request.form.get('loja_especifica')
         loja_especifica_id = int(loja_especifica_id) if loja_especifica_id and loja_especifica_id != '' else None
+        
+        workbook = None
+        filepath = None
         
         try:
             import openpyxl
@@ -485,6 +539,11 @@ def upload_colaboradores():
                     lojas_map = {loja_especifica.codigo: loja_especifica.id}
                 else:
                     flash('Loja específica não encontrada!', 'danger')
+                    # Limpa recursos e retorna
+                    if workbook:
+                        workbook.close()
+                    if filepath:
+                        safe_remove_file(filepath)
                     return redirect(request.url)
             
             # Processa cada linha (pula cabeçalho)
@@ -543,11 +602,13 @@ def upload_colaboradores():
                 except Exception as e:
                     erros.append(f"Linha {row_num}: {str(e)}")
             
+            # Fecha o workbook antes de salvar no banco
+            if workbook:
+                workbook.close()
+                workbook = None
+            
             # Salva no banco
             db.session.commit()
-            
-            # Remove arquivo temporário
-            os.remove(filepath)
             
             # Mensagem de sucesso
             mensagem = f"✅ Processamento concluído!\n"
@@ -563,13 +624,25 @@ def upload_colaboradores():
                     mensagem += f"\n... e mais {len(erros) - 5} erros."
             
             flash(mensagem, 'success' if not erros else 'warning')
+            
+            # Remove arquivo temporário
+            if filepath:
+                safe_remove_file(filepath)
+            
             return redirect(url_for('admin.colaboradores'))
             
         except Exception as e:
             flash(f'Erro ao processar arquivo: {str(e)}', 'danger')
-            # Remove arquivo temporário se existir
-            if 'filepath' in locals() and os.path.exists(filepath):
-                os.remove(filepath)
+            
+            # Limpa recursos em caso de erro
+            if workbook:
+                try:
+                    workbook.close()
+                except:
+                    pass
+            
+            if filepath:
+                safe_remove_file(filepath)
     
     # Carrega lojas para o formulário
     lojas = Loja.query.filter_by(ativo=True).order_by(Loja.codigo).all()
