@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Colaboradores - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">📊 Upload de Colaboradores</h1>
+                    <small class="text-muted">Importação em massa via planilha Excel</small>
+                </div>
+                <a href="{{ url_for('admin.colaboradores') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Instruções -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle"></i> Como Usar
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6>📋 Formato da Planilha Excel:</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Coluna A</th>
+                                    <th>Coluna B</th>
+                                    <th>Coluna C</th>
+                                    <th>Coluna D</th>
+                                    <th>Coluna E</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Código da Loja</strong></td>
+                                    <td>Bandeira</td>
+                                    <td><strong>Matrícula</strong></td>
+                                    <td><strong>Nome</strong></td>
+                                    <td><strong>Setor</strong></td>
+                                </tr>
+                                <tr class="table-light">
+                                    <td>BIG01 - 106 NORTE</td>
+                                    <td>BIG</td>
+                                    <td>1688</td>
+                                    <td>VALDEMIR SALVADOR NAZARIO</td>
+                                    <td>DOCS/DEPOSITO</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="alert alert-warning mt-3">
+                        <h6><i class="fas fa-exclamation-triangle"></i> Importante:</h6>
+                        <ul class="mb-0">
+                            <li><strong>Colunas obrigatórias:</strong> A (Código da Loja), C (Matrícula), D (Nome), E (Setor)</li>
+                            <li><strong>Primeira linha:</strong> Deve conter cabeçalhos (será ignorada)</li>
+                            <li><strong>Código da Loja:</strong> Deve corresponder exatamente aos códigos cadastrados</li>
+                            <li><strong>Comportamento:</strong> Colaboradores existentes serão atualizados, novos serão criados</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulário de Upload -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-upload"></i> Fazer Upload
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label for="loja_especifica" class="form-label">Atualizar colaboradores de:</label>
+                            <select id="loja_especifica" name="loja_especifica" class="form-select" title="Escolha se deseja atualizar todas as lojas ou apenas uma específica">
+                                <option value="">🌐 Todas as lojas (padrão)</option>
+                                {% for loja in lojas %}
+                                    <option value="{{ loja.id }}">
+                                        🏪 {{ loja.codigo }} - {{ loja.nome }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle text-info"></i> 
+                                <strong>Todas as lojas:</strong> Processa todos os colaboradores da planilha<br>
+                                <i class="fas fa-info-circle text-warning"></i> 
+                                <strong>Loja específica:</strong> Processa apenas colaboradores da loja selecionada
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="arquivo" class="form-label">Selecione o arquivo Excel:</label>
+                            <input type="file" 
+                                   class="form-control" 
+                                   id="arquivo" 
+                                   name="arquivo" 
+                                   accept=".xlsx,.xls"
+                                   required
+                                   title="Selecione um arquivo Excel (.xlsx ou .xls)">
+                            <div class="form-text">
+                                <i class="fas fa-file-excel text-success"></i> 
+                                Apenas arquivos Excel (.xlsx, .xls) são aceitos
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-cogs"></i> O que acontecerá:</h6>
+                            <ul class="mb-0">
+                                <li>✅ Sistema verificará se as lojas existem</li>
+                                <li>🔄 Colaboradores existentes (mesma matrícula + loja) serão atualizados</li>
+                                <li>🆕 Novos colaboradores serão criados como "Aptos"</li>
+                                <li>📊 Relatório detalhado será exibido ao final</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-upload"></i> Processar Planilha
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Exemplo de Códigos de Loja -->
+            <div class="card mt-4">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-list"></i> Códigos de Loja Disponíveis
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary">🏪 BIG BOX</h6>
+                            <small class="text-muted">Exemplos: BIG01 - 106 NORTE, BIG02 - ASA SUL, etc.</small>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-success">🏪 ULTRABOX</h6>
+                            <small class="text-muted">Exemplos: ULTRA01 - CENTRO, ULTRA02 - NORTE, etc.</small>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <a href="{{ url_for('admin.colaboradores') }}" class="btn btn-sm btn-outline-info">
+                            <i class="fas fa-eye"></i> Ver Todos os Códigos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

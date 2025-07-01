@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo }} - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">🏪 {{ titulo }}</h1>
+                    <small class="text-muted">Administração de lojas</small>
+                </div>
+                <a href="{{ url_for('admin.lojas') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-store"></i> {{ titulo }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.codigo.label(class="form-label") }}
+                            {{ form.codigo(class="form-control") }}
+                            {% if form.codigo.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.codigo.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-tag"></i> 
+                                Ex: BIG01 - 106 NORTE, ULTRA02 - ASA SUL
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.nome.label(class="form-label") }}
+                            {{ form.nome(class="form-control") }}
+                            {% if form.nome.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.nome.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-store"></i> 
+                                Nome da loja para exibição
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.bandeira.label(class="form-label") }}
+                            {{ form.bandeira(class="form-select") }}
+                            {% if form.bandeira.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.bandeira.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-flag"></i> 
+                                Bandeira da loja (BIG Box ou UltraBox)
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ form.ativo(class="form-check-input") }}
+                                {{ form.ativo.label(class="form-check-label") }}
+                            </div>
+                            <div class="form-text">
+                                <i class="fas fa-toggle-on"></i> 
+                                Loja pode participar de sorteios e ter colaboradores
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> 
+                                {{ 'Atualizar' if 'Editar' in titulo else 'Criar' }} Loja
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

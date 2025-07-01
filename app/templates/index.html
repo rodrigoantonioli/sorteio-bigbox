@@ -30,15 +30,121 @@
             Acesso Rápido
         </h2>
         
-        <div class="row">
-            {% if current_user.tipo == 'assistente' %}
+        {% if current_user.tipo == 'admin' %}
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="card border-primary h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-tachometer-alt fa-3x text-primary mb-3"></i>
+                            <h6 class="card-title">Dashboard Admin</h6>
+                            <p class="card-text small">Visão geral completa</p>
+                            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-arrow-right"></i> Acessar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card border-success h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-dice-six fa-3x text-success mb-3"></i>
+                            <h6 class="card-title">Sortear Lojas</h6>
+                            <p class="card-text small">Sorteio semanal</p>
+                            <a href="{{ url_for('admin.sortear_lojas') }}" class="btn btn-success btn-sm">
+                                <i class="fas fa-arrow-right"></i> Sortear
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card border-info h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-users fa-3x text-info mb-3"></i>
+                            <h6 class="card-title">Colaboradores</h6>
+                            <p class="card-text small">Gerenciar todos</p>
+                            <a href="{{ url_for('admin.colaboradores') }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-arrow-right"></i> Gerenciar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card border-warning h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-file-excel fa-3x text-warning mb-3"></i>
+                            <h6 class="card-title">Upload Excel</h6>
+                            <p class="card-text small">Importar colaboradores</p>
+                            <a href="{{ url_for('admin.upload_colaboradores') }}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-arrow-right"></i> Upload
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card border-secondary h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-store fa-3x text-secondary mb-3"></i>
+                            <h6 class="card-title">Lojas</h6>
+                            <p class="card-text small">Gerenciar lojas</p>
+                            <a href="{{ url_for('admin.lojas') }}" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-arrow-right"></i> Gerenciar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card border-secondary h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-gift fa-3x text-secondary mb-3"></i>
+                            <h6 class="card-title">Prêmios</h6>
+                            <p class="card-text small">Cadastrar e atribuir</p>
+                            <a href="{{ url_for('admin.premios') }}" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-arrow-right"></i> Gerenciar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card border-dark h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-user-cog fa-3x text-dark mb-3"></i>
+                            <h6 class="card-title">Usuários</h6>
+                            <p class="card-text small">Editar assistentes</p>
+                            <a href="{{ url_for('admin.usuarios') }}" class="btn btn-dark btn-sm">
+                                <i class="fas fa-arrow-right"></i> Gerenciar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card border-primary h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-history fa-3x text-primary mb-3"></i>
+                            <h6 class="card-title">Histórico</h6>
+                            <p class="card-text small">Sorteios realizados</p>
+                            <a href="{{ url_for('admin.sorteios') }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-arrow-right"></i> Ver
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="row">
                 <div class="col-md-4 mb-3">
                     <div class="card border-primary h-100">
                         <div class="card-body text-center">
                             <i class="fas fa-tachometer-alt fa-3x text-primary mb-3"></i>
-                            <h5 class="card-title">Meu Dashboard</h5>
-                            <p class="card-text">Acesse seu painel de controle e veja o status da sua loja</p>
-                            <a href="{{ url_for('manager.dashboard') }}" class="btn btn-primary">
+                            <h6 class="card-title">Dashboard</h6>
+                            <p class="card-text small">Status da sua loja</p>
+                            <a href="{{ url_for('manager.dashboard') }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-arrow-right"></i> Acessar
                             </a>
                         </div>
@@ -49,9 +155,9 @@
                     <div class="card border-success h-100">
                         <div class="card-body text-center">
                             <i class="fas fa-users fa-3x text-success mb-3"></i>
-                            <h5 class="card-title">Colaboradores</h5>
-                            <p class="card-text">Gerencie a lista de colaboradores da sua loja</p>
-                            <a href="{{ url_for('manager.colaboradores') }}" class="btn btn-success">
+                            <h6 class="card-title">Colaboradores</h6>
+                            <p class="card-text small">Gerenciar sua equipe</p>
+                            <a href="{{ url_for('manager.colaboradores') }}" class="btn btn-success btn-sm">
                                 <i class="fas fa-arrow-right"></i> Gerenciar
                             </a>
                         </div>
@@ -59,70 +165,19 @@
                 </div>
                 
                 <div class="col-md-4 mb-3">
-                    <div class="card border-warning h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-dice fa-3x text-warning mb-3"></i>
-                            <h5 class="card-title">Sortear</h5>
-                            <p class="card-text">Realize sorteios de colaboradores (apenas se sua loja foi sorteada)</p>
-                            <a href="{{ url_for('manager.sortear') }}" class="btn btn-warning">
-                                <i class="fas fa-arrow-right"></i> Sortear
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            {% else %}
-                <div class="col-md-3 mb-3">
-                    <div class="card border-danger h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-crown fa-3x text-danger mb-3"></i>
-                            <h5 class="card-title">Dashboard Admin</h5>
-                            <p class="card-text">Painel administrativo completo</p>
-                            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-danger">
-                                <i class="fas fa-arrow-right"></i> Acessar
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-3 mb-3">
-                    <div class="card border-primary h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-dice-six fa-3x text-primary mb-3"></i>
-                            <h5 class="card-title">Sortear Lojas</h5>
-                            <p class="card-text">Realizar sorteio semanal de lojas</p>
-                            <a href="{{ url_for('admin.sortear_lojas') }}" class="btn btn-primary">
-                                <i class="fas fa-arrow-right"></i> Sortear
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-3 mb-3">
-                    <div class="card border-success h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-gift fa-3x text-success mb-3"></i>
-                            <h5 class="card-title">Prêmios</h5>
-                            <p class="card-text">Gerenciar prêmios disponíveis</p>
-                            <a href="{{ url_for('admin.premios') }}" class="btn btn-success">
-                                <i class="fas fa-arrow-right"></i> Gerenciar
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-3 mb-3">
                     <div class="card border-info h-100">
                         <div class="card-body text-center">
-                            <i class="fas fa-history fa-3x text-info mb-3"></i>
-                            <h5 class="card-title">Sorteios</h5>
-                            <p class="card-text">Ver todos os sorteios realizados</p>
-                            <a href="{{ url_for('admin.sorteios') }}" class="btn btn-info">
-                                <i class="fas fa-arrow-right"></i> Ver Todos
+                            <i class="fas fa-dice fa-3x text-info mb-3"></i>
+                            <h6 class="card-title">Sortear</h6>
+                            <p class="card-text small">Sortear colaboradores</p>
+                            <a href="{{ url_for('manager.sortear') }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-arrow-right"></i> Sortear
                             </a>
                         </div>
                     </div>
                 </div>
-            {% endif %}
+                         </div>
+         {% endif %}
         </div>
     </div>
 </div>

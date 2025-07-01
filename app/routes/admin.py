@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
 from app.models import db, Usuario, Loja, SorteioSemanal, SorteioColaborador, Colaborador, Premio
-from app.forms.admin import SorteioSemanalForm, UsuarioForm, PremioForm
+from app.forms.admin import SorteioSemanalForm, UsuarioForm, PremioForm, LojaForm
 from datetime import datetime, date, timedelta
 from functools import wraps
 import random
@@ -31,6 +31,39 @@ def dashboard():
     # Sorteio atual
     sorteio_atual = SorteioSemanal.query.order_by(SorteioSemanal.semana_inicio.desc()).first()
     
+    # Lojas ganhadoras (todas as lojas que já foram sorteadas)
+    lojas_ganhadoras = []
+    if sorteio_atual:
+        # Loja BIG ganhadora
+        lojas_ganhadoras.append({
+            'loja': sorteio_atual.loja_big,
+            'tipo': 'BIG',
+            'semana': sorteio_atual.semana_inicio,
+            'colaboradores_sorteados': SorteioColaborador.query.join(Colaborador).filter(
+                SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+                Colaborador.loja_id == sorteio_atual.loja_big_id
+            ).count(),
+            'premios_disponiveis': Premio.query.filter(
+                db.or_(Premio.loja_id == sorteio_atual.loja_big_id, Premio.loja_id.is_(None)),
+                Premio.ativo == True
+            ).count()
+        })
+        
+        # Loja ULTRA ganhadora
+        lojas_ganhadoras.append({
+            'loja': sorteio_atual.loja_ultra,
+            'tipo': 'ULTRA',
+            'semana': sorteio_atual.semana_inicio,
+            'colaboradores_sorteados': SorteioColaborador.query.join(Colaborador).filter(
+                SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+                Colaborador.loja_id == sorteio_atual.loja_ultra_id
+            ).count(),
+            'premios_disponiveis': Premio.query.filter(
+                db.or_(Premio.loja_id == sorteio_atual.loja_ultra_id, Premio.loja_id.is_(None)),
+                Premio.ativo == True
+            ).count()
+        })
+    
     # Sorteios de colaboradores desta semana
     colaboradores_sorteados = []
     if sorteio_atual:
@@ -40,6 +73,8 @@ def dashboard():
     
     # Prêmios ativos
     premios_ativos = Premio.query.filter_by(ativo=True).count()
+    premios_por_loja = Premio.query.filter(Premio.loja_id.isnot(None), Premio.ativo == True).count()
+    premios_gerais = premios_ativos - premios_por_loja
     
     # Sorteios recentes para o dashboard
     sorteios_recentes = SorteioSemanal.query.order_by(SorteioSemanal.semana_inicio.desc()).limit(5).all()
@@ -55,8 +90,11 @@ def dashboard():
                          total_usuarios=total_usuarios,
                          total_colaboradores=total_colaboradores,
                          sorteio_atual=sorteio_atual,
+                         lojas_ganhadoras=lojas_ganhadoras,
                          colaboradores_sorteados=colaboradores_sorteados,
                          premios_ativos=premios_ativos,
+                         premios_por_loja=premios_por_loja,
+                         premios_gerais=premios_gerais,
                          sorteios_recentes=sorteios_recentes,
                          sorteios_colaboradores_count=sorteios_colaboradores_count)
 
@@ -343,4 +381,460 @@ def excluir_sorteio_colaborador(id):
     db.session.commit()
     
     flash(f'Sorteio de {colaborador_nome} para "{premio_nome}" foi excluído com sucesso.', 'success')
-    return redirect(url_for('admin.sorteios')) 
+    return redirect(url_for('admin.sorteios'))
+
+@admin_bp.route('/colaboradores')
+@admin_required
+def colaboradores():
+    """Lista todos os colaboradores com filtro por loja"""
+    loja_id = request.args.get('loja_id', type=int)
+    sort = request.args.get('sort', 'nome')
+    order = request.args.get('order', 'asc')
+    
+    # Query base
+    query = Colaborador.query
+    
+    # Filtro por loja se especificado
+    if loja_id:
+        query = query.filter_by(loja_id=loja_id)
+    
+    # Ordenação
+    if sort == 'nome':
+        if order == 'desc':
+            query = query.order_by(Colaborador.nome.desc())
+        else:
+            query = query.order_by(Colaborador.nome.asc())
+    elif sort == 'matricula':
+        if order == 'desc':
+            query = query.order_by(Colaborador.matricula.desc())
+        else:
+            query = query.order_by(Colaborador.matricula.asc())
+    elif sort == 'setor':
+        if order == 'desc':
+            query = query.order_by(Colaborador.setor.desc())
+        else:
+            query = query.order_by(Colaborador.setor.asc())
+    elif sort == 'loja':
+        if order == 'desc':
+            query = query.join(Loja).order_by(Loja.nome.desc())
+        else:
+            query = query.join(Loja).order_by(Loja.nome.asc())
+    
+    colaboradores = query.all()
+    
+    # Lista de lojas para o filtro
+    lojas = Loja.query.filter_by(ativo=True).order_by(Loja.codigo).all()
+    
+    return render_template('admin/colaboradores.html', 
+                         colaboradores=colaboradores,
+                         lojas=lojas,
+                         loja_selecionada=loja_id,
+                         current_sort=sort,
+                         current_order=order)
+
+@admin_bp.route('/colaboradores/upload', methods=['GET', 'POST'])
+@admin_required
+def upload_colaboradores():
+    """Upload de colaboradores pelo admin usando planilha Excel"""
+    if request.method == 'POST':
+        if 'arquivo' not in request.files:
+            flash('Nenhum arquivo selecionado!', 'danger')
+            return redirect(request.url)
+        
+        arquivo = request.files['arquivo']
+        if arquivo.filename == '':
+            flash('Nenhum arquivo selecionado!', 'danger')
+            return redirect(request.url)
+        
+        if not arquivo.filename.lower().endswith(('.xlsx', '.xls')):
+            flash('Apenas arquivos Excel (.xlsx, .xls) são permitidos!', 'danger')
+            return redirect(request.url)
+        
+        # Pega a opção de loja específica
+        loja_especifica_id = request.form.get('loja_especifica')
+        loja_especifica_id = int(loja_especifica_id) if loja_especifica_id and loja_especifica_id != '' else None
+        
+        try:
+            import openpyxl
+            import os
+            from datetime import datetime
+            
+            # Salva arquivo temporariamente
+            filename = f"temp_colaboradores_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+            filepath = os.path.join('uploads', filename)
+            arquivo.save(filepath)
+            
+            # Carrega planilha
+            workbook = openpyxl.load_workbook(filepath)
+            sheet = workbook.active
+            
+            colaboradores_processados = 0
+            colaboradores_atualizados = 0
+            colaboradores_criados = 0
+            erros = []
+            
+            # Mapeia códigos de loja para IDs
+            lojas_map = {}
+            for loja in Loja.query.all():
+                lojas_map[loja.codigo] = loja.id
+            
+            # Se loja específica foi selecionada, filtra apenas ela
+            if loja_especifica_id:
+                loja_especifica = Loja.query.get(loja_especifica_id)
+                if loja_especifica:
+                    lojas_map = {loja_especifica.codigo: loja_especifica.id}
+                else:
+                    flash('Loja específica não encontrada!', 'danger')
+                    return redirect(request.url)
+            
+            # Processa cada linha (pula cabeçalho)
+            for row_num, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+                if not row or len(row) < 4:
+                    continue
+                
+                try:
+                    codigo_loja = str(row[0]).strip() if row[0] else ''
+                    matricula = str(row[2]).strip() if row[2] else ''
+                    nome = str(row[3]).strip() if row[3] else ''
+                    setor = str(row[4]).strip() if row[4] else ''
+                    
+                    if not all([codigo_loja, matricula, nome, setor]):
+                        erros.append(f"Linha {row_num}: Dados incompletos")
+                        continue
+                    
+                    # Verifica se a loja existe no mapeamento (filtrado ou completo)
+                    if codigo_loja not in lojas_map:
+                        if loja_especifica_id:
+                            # Se filtro por loja específica, pula linhas de outras lojas
+                            continue
+                        else:
+                            erros.append(f"Linha {row_num}: Loja '{codigo_loja}' não encontrada")
+                            continue
+                    
+                    loja_id = lojas_map[codigo_loja]
+                    
+                    # Verifica se colaborador já existe
+                    colaborador_existente = Colaborador.query.filter_by(
+                        matricula=matricula, 
+                        loja_id=loja_id
+                    ).first()
+                    
+                    if colaborador_existente:
+                        # Atualiza dados
+                        colaborador_existente.nome = nome
+                        colaborador_existente.setor = setor
+                        colaborador_existente.ultima_atualizacao = datetime.utcnow()
+                        colaboradores_atualizados += 1
+                    else:
+                        # Cria novo colaborador
+                        novo_colaborador = Colaborador(
+                            matricula=matricula,
+                            nome=nome,
+                            setor=setor,
+                            loja_id=loja_id,
+                            apto=True,
+                            ultima_atualizacao=datetime.utcnow()
+                        )
+                        db.session.add(novo_colaborador)
+                        colaboradores_criados += 1
+                    
+                    colaboradores_processados += 1
+                    
+                except Exception as e:
+                    erros.append(f"Linha {row_num}: {str(e)}")
+            
+            # Salva no banco
+            db.session.commit()
+            
+            # Remove arquivo temporário
+            os.remove(filepath)
+            
+            # Mensagem de sucesso
+            mensagem = f"✅ Processamento concluído!\n"
+            if loja_especifica_id:
+                mensagem += f"🏪 Loja específica: {loja_especifica.nome}\n"
+            mensagem += f"📊 Colaboradores processados: {colaboradores_processados}\n"
+            mensagem += f"🆕 Novos colaboradores: {colaboradores_criados}\n"
+            mensagem += f"🔄 Colaboradores atualizados: {colaboradores_atualizados}"
+            
+            if erros:
+                mensagem += f"\n⚠️ Erros encontrados ({len(erros)}):\n" + "\n".join(erros[:5])
+                if len(erros) > 5:
+                    mensagem += f"\n... e mais {len(erros) - 5} erros."
+            
+            flash(mensagem, 'success' if not erros else 'warning')
+            return redirect(url_for('admin.colaboradores'))
+            
+        except Exception as e:
+            flash(f'Erro ao processar arquivo: {str(e)}', 'danger')
+            # Remove arquivo temporário se existir
+            if 'filepath' in locals() and os.path.exists(filepath):
+                os.remove(filepath)
+    
+    # Carrega lojas para o formulário
+    lojas = Loja.query.filter_by(ativo=True).order_by(Loja.codigo).all()
+    return render_template('admin/upload_colaboradores.html', lojas=lojas)
+
+@admin_bp.route('/colaboradores/adicionar', methods=['GET', 'POST'])
+@admin_required
+def adicionar_colaborador():
+    """Adicionar novo colaborador pelo admin"""
+    from app.forms.manager import ColaboradorForm
+    
+    form = ColaboradorForm()
+    
+    # Popula lojas disponíveis
+    lojas = Loja.query.filter_by(ativo=True).order_by(Loja.nome).all()
+    form.loja_id.choices = [(l.id, f"{l.codigo} - {l.nome}") for l in lojas]
+    
+    if form.validate_on_submit():
+        # Verifica se matrícula já existe nesta loja
+        colaborador_existente = Colaborador.query.filter_by(
+            matricula=form.matricula.data,
+            loja_id=form.loja_id.data
+        ).first()
+        
+        if colaborador_existente:
+            flash('Já existe um colaborador com esta matrícula nesta loja!', 'danger')
+            return render_template('admin/colaborador_form.html', form=form, titulo='Adicionar Colaborador')
+        
+        # Cria novo colaborador
+        novo_colaborador = Colaborador(
+            matricula=form.matricula.data,
+            nome=form.nome.data,
+            setor=form.setor.data,
+            loja_id=form.loja_id.data,
+            apto=form.apto.data,
+            ultima_atualizacao=datetime.utcnow()
+        )
+        
+        db.session.add(novo_colaborador)
+        db.session.commit()
+        
+        flash(f'Colaborador {novo_colaborador.nome} criado com sucesso!', 'success')
+        return redirect(url_for('admin.colaboradores'))
+    
+    return render_template('admin/colaborador_form.html', form=form, titulo='Adicionar Colaborador')
+
+@admin_bp.route('/colaboradores/<int:id>/editar', methods=['GET', 'POST'])
+@admin_required
+def editar_colaborador(id):
+    """Editar colaborador pelo admin"""
+    from app.forms.manager import ColaboradorForm
+    
+    colaborador = Colaborador.query.get_or_404(id)
+    form = ColaboradorForm(obj=colaborador)
+    
+    # Popula lojas disponíveis
+    lojas = Loja.query.filter_by(ativo=True).order_by(Loja.nome).all()
+    form.loja_id.choices = [(l.id, f"{l.codigo} - {l.nome}") for l in lojas]
+    
+    if form.validate_on_submit():
+        # Verifica se matrícula já existe em outra loja
+        colaborador_existente = Colaborador.query.filter_by(
+            matricula=form.matricula.data,
+            loja_id=form.loja_id.data
+        ).filter(Colaborador.id != id).first()
+        
+        if colaborador_existente:
+            flash('Já existe um colaborador com esta matrícula nesta loja!', 'danger')
+            return render_template('admin/colaborador_form.html', form=form, titulo='Editar Colaborador')
+        
+        colaborador.matricula = form.matricula.data
+        colaborador.nome = form.nome.data
+        colaborador.setor = form.setor.data
+        colaborador.loja_id = form.loja_id.data
+        colaborador.apto = form.apto.data
+        colaborador.ultima_atualizacao = datetime.utcnow()
+        
+        db.session.commit()
+        
+        flash(f'Colaborador {colaborador.nome} atualizado com sucesso!', 'success')
+        return redirect(url_for('admin.colaboradores'))
+    
+    return render_template('admin/colaborador_form.html', form=form, titulo='Editar Colaborador')
+
+@admin_bp.route('/colaboradores/<int:id>/toggle')
+@admin_required
+def toggle_colaborador(id):
+    """Ativar/desativar colaborador pelo admin"""
+    colaborador = Colaborador.query.get_or_404(id)
+    
+    colaborador.apto = not colaborador.apto
+    colaborador.ultima_atualizacao = datetime.utcnow()
+    db.session.commit()
+    
+    status = 'ativado' if colaborador.apto else 'desativado'
+    flash(f'Colaborador {colaborador.nome} foi {status}.', 'success')
+    
+    return redirect(url_for('admin.colaboradores'))
+
+@admin_bp.route('/colaboradores/<int:id>/excluir')
+@admin_required
+def excluir_colaborador(id):
+    """Excluir colaborador pelo admin"""
+    colaborador = Colaborador.query.get_or_404(id)
+    
+    # Verifica se colaborador tem histórico de sorteios
+    tem_historico = SorteioColaborador.query.filter_by(colaborador_id=id).first()
+    if tem_historico:
+        flash(f'Não é possível excluir {colaborador.nome} pois ele tem histórico de sorteios.', 'warning')
+        return redirect(url_for('admin.colaboradores'))
+    
+    nome = colaborador.nome
+    db.session.delete(colaborador)
+    db.session.commit()
+    
+    flash(f'Colaborador {nome} foi excluído com sucesso.', 'success')
+    return redirect(url_for('admin.colaboradores'))
+
+@admin_bp.route('/lojas')
+@admin_required
+def lojas():
+    """Lista todas as lojas"""
+    sort = request.args.get('sort', 'codigo')
+    order = request.args.get('order', 'asc')
+    bandeira = request.args.get('bandeira', '')
+    
+    # Query base
+    query = Loja.query
+    
+    # Filtro por bandeira
+    if bandeira:
+        query = query.filter_by(bandeira=bandeira)
+    
+    # Ordenação
+    if sort == 'codigo':
+        if order == 'desc':
+            query = query.order_by(Loja.codigo.desc())
+        else:
+            query = query.order_by(Loja.codigo.asc())
+    elif sort == 'nome':
+        if order == 'desc':
+            query = query.order_by(Loja.nome.desc())
+        else:
+            query = query.order_by(Loja.nome.asc())
+    elif sort == 'bandeira':
+        if order == 'desc':
+            query = query.order_by(Loja.bandeira.desc())
+        else:
+            query = query.order_by(Loja.bandeira.asc())
+    
+    lojas = query.all()
+    
+    # Estatísticas
+    total_lojas = len(lojas)
+    lojas_big = len([l for l in lojas if l.bandeira == 'BIG'])
+    lojas_ultra = len([l for l in lojas if l.bandeira == 'ULTRA'])
+    lojas_ativas = len([l for l in lojas if l.ativo])
+    
+    return render_template('admin/lojas.html', 
+                         lojas=lojas,
+                         current_sort=sort,
+                         current_order=order,
+                         bandeira_selecionada=bandeira,
+                         total_lojas=total_lojas,
+                         lojas_big=lojas_big,
+                         lojas_ultra=lojas_ultra,
+                         lojas_ativas=lojas_ativas)
+
+@admin_bp.route('/lojas/adicionar', methods=['GET', 'POST'])
+@admin_required
+def adicionar_loja():
+    """Adicionar nova loja"""
+    from app.forms.admin import LojaForm
+    
+    form = LojaForm()
+    
+    if form.validate_on_submit():
+        # Verifica se código já existe
+        loja_existente = Loja.query.filter_by(codigo=form.codigo.data).first()
+        
+        if loja_existente:
+            flash('Já existe uma loja com este código!', 'danger')
+            return render_template('admin/loja_form.html', form=form, titulo='Adicionar Loja')
+        
+        # Cria nova loja
+        nova_loja = Loja(
+            codigo=form.codigo.data,
+            nome=form.nome.data,
+            bandeira=form.bandeira.data,
+            ativo=form.ativo.data
+        )
+        
+        db.session.add(nova_loja)
+        db.session.commit()
+        
+        flash(f'Loja {nova_loja.codigo} - {nova_loja.nome} criada com sucesso!', 'success')
+        return redirect(url_for('admin.lojas'))
+    
+    return render_template('admin/loja_form.html', form=form, titulo='Adicionar Loja')
+
+@admin_bp.route('/lojas/<int:id>/editar', methods=['GET', 'POST'])
+@admin_required
+def editar_loja(id):
+    """Editar loja"""
+    from app.forms.admin import LojaForm
+    
+    loja = Loja.query.get_or_404(id)
+    form = LojaForm(obj=loja)
+    
+    if form.validate_on_submit():
+        # Verifica se código já existe em outra loja
+        loja_existente = Loja.query.filter_by(codigo=form.codigo.data).filter(Loja.id != id).first()
+        
+        if loja_existente:
+            flash('Já existe uma loja com este código!', 'danger')
+            return render_template('admin/loja_form.html', form=form, titulo='Editar Loja')
+        
+        loja.codigo = form.codigo.data
+        loja.nome = form.nome.data
+        loja.bandeira = form.bandeira.data
+        loja.ativo = form.ativo.data
+        
+        db.session.commit()
+        
+        flash(f'Loja {loja.codigo} - {loja.nome} atualizada com sucesso!', 'success')
+        return redirect(url_for('admin.lojas'))
+    
+    return render_template('admin/loja_form.html', form=form, titulo='Editar Loja')
+
+@admin_bp.route('/lojas/<int:id>/toggle')
+@admin_required
+def toggle_loja(id):
+    """Ativar/desativar loja"""
+    loja = Loja.query.get_or_404(id)
+    
+    loja.ativo = not loja.ativo
+    db.session.commit()
+    
+    status = 'ativada' if loja.ativo else 'desativada'
+    flash(f'Loja {loja.codigo} - {loja.nome} foi {status}.', 'success')
+    
+    return redirect(url_for('admin.lojas'))
+
+@admin_bp.route('/lojas/<int:id>/excluir')
+@admin_required
+def excluir_loja(id):
+    """Excluir loja"""
+    loja = Loja.query.get_or_404(id)
+    
+    # Verifica se loja tem colaboradores
+    tem_colaboradores = Colaborador.query.filter_by(loja_id=id).first()
+    if tem_colaboradores:
+        flash(f'Não é possível excluir a loja {loja.codigo} pois ela possui colaboradores cadastrados.', 'warning')
+        return redirect(url_for('admin.lojas'))
+    
+    # Verifica se loja tem usuários
+    tem_usuarios = Usuario.query.filter_by(loja_id=id).first()
+    if tem_usuarios:
+        flash(f'Não é possível excluir a loja {loja.codigo} pois ela possui usuários cadastrados.', 'warning')
+        return redirect(url_for('admin.lojas'))
+    
+    codigo = loja.codigo
+    nome = loja.nome
+    db.session.delete(loja)
+    db.session.commit()
+    
+    flash(f'Loja {codigo} - {nome} foi excluída com sucesso.', 'success')
+    return redirect(url_for('admin.lojas')) 

@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import IntegerField, DateField, SelectField, SubmitField, BooleanField, StringField, TextAreaField
-from wtforms.validators import DataRequired, NumberRange, Length
+from wtforms.validators import DataRequired, NumberRange, Length, Optional
 from datetime import date
 
 class UploadColaboradoresForm(FlaskForm):
@@ -14,7 +14,7 @@ class UploadColaboradoresForm(FlaskForm):
     submit = SubmitField('Enviar')
 
 class ColaboradorForm(FlaskForm):
-    """Formulário para criar/editar colaborador"""
+    """Formulário para criar/editar colaboradores"""
     matricula = StringField('Matrícula', validators=[
         DataRequired(message='Matrícula é obrigatória'),
         Length(min=1, max=20, message='Matrícula deve ter entre 1 e 20 caracteres')
@@ -27,6 +27,7 @@ class ColaboradorForm(FlaskForm):
         DataRequired(message='Setor é obrigatório'),
         Length(min=2, max=50, message='Setor deve ter entre 2 e 50 caracteres')
     ])
+    loja_id = SelectField('Loja', coerce=int, validators=[Optional()])  # Para uso do admin
     apto = BooleanField('Apto para sorteios', default=True)
     submit = SubmitField('Salvar')
 

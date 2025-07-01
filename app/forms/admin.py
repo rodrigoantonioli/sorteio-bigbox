@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, DateField, SelectField, SubmitField, IntegerField, TextAreaField
+from wtforms import StringField, PasswordField, DateField, SelectField, SubmitField, IntegerField, TextAreaField, BooleanField
 from wtforms.validators import DataRequired, Email, Length, Optional, NumberRange
 from datetime import date
 
@@ -44,4 +44,21 @@ class PremioForm(FlaskForm):
         ('day_use', 'Day Use')
     ], validators=[DataRequired(message='Tipo é obrigatório')])
     loja_id = SelectField('Loja Ganhadora', coerce=int, validators=[Optional()])
+    submit = SubmitField('Salvar')
+
+class LojaForm(FlaskForm):
+    """Formulário para criar/editar lojas"""
+    codigo = StringField('Código da Loja', validators=[
+        DataRequired(message='Código é obrigatório'),
+        Length(min=2, max=50, message='Código deve ter entre 2 e 50 caracteres')
+    ])
+    nome = StringField('Nome da Loja', validators=[
+        DataRequired(message='Nome é obrigatório'),
+        Length(min=2, max=100, message='Nome deve ter entre 2 e 100 caracteres')
+    ])
+    bandeira = SelectField('Bandeira', choices=[
+        ('BIG', 'BIG Box'),
+        ('ULTRA', 'UltraBox')
+    ], validators=[DataRequired(message='Bandeira é obrigatória')])
+    ativo = BooleanField('Loja Ativa', default=True)
     submit = SubmitField('Salvar') 
