@@ -48,7 +48,7 @@ class SorteioAnimado {
 
     // Inicializa o sorteio de lojas
     iniciarSorteioLojas(lojasBig, lojasUltra) {
-        this.criarModal('Sorteio de Lojas', 'Preparando sorteio das lojas...');
+        this.criarModal('Sortear Lojas Ganhadoras', 'Preparando sorteio das lojas...');
         
         setTimeout(() => {
             this.executarSorteioSequencial([
@@ -79,10 +79,13 @@ class SorteioAnimado {
             <div class="modal fade" id="sorteioModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content sorteio-modal">
-                        <div class="modal-header">
-                            <h4 class="modal-title text-white w-100">
+                        <div class="modal-header border-0 position-relative">
+                            <h4 class="modal-title text-white w-100 text-center">
                                 🎲 ${titulo}
                             </h4>
+                            <button type="button" id="fecharModalX" class="btn-close-custom d-none" data-bs-dismiss="modal" title="Fechar">
+                                <i class="bi bi-x"></i>
+                            </button>
                         </div>
                         <div class="modal-body">
                             <div class="sorteio-status" id="sorteioStatus">
@@ -94,14 +97,6 @@ class SorteioAnimado {
                                 </div>
                                 <div class="confetti-container" id="confettiContainer"></div>
                             </div>
-                            <div class="mt-3">
-                                <button type="button" class="btn btn-secondary d-none" id="fecharModal" data-bs-dismiss="modal">
-                                    Fechar
-                                </button>
-                                <button type="button" class="btn btn-novo-sorteio d-none" id="novoSorteio">
-                                    🎲 Novo Sorteio
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -112,10 +107,9 @@ class SorteioAnimado {
         this.modal = new bootstrap.Modal(document.getElementById('sorteioModal'));
         this.modal.show();
 
-        // Event listeners
-        document.getElementById('novoSorteio')?.addEventListener('click', () => {
+        // Event listeners para o X
+        document.getElementById('fecharModalX')?.addEventListener('click', () => {
             this.modal.hide();
-            location.reload();
         });
     }
 
@@ -267,11 +261,27 @@ class SorteioAnimado {
     // Exibe resultado final das lojas
     exibirResultadoFinal(resultados) {
         setTimeout(() => {
+            // Gera data e hora atual
+            const agora = new Date();
+            const dataHora = agora.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
             this.atualizarStatus('🎉 Sorteio concluído com sucesso!');
             
             const display = document.getElementById('sorteioDisplay');
             display.innerHTML = `
                 <div class="resultado-final">
+                    <div class="mb-4 text-center">
+                        <div class="data-sorteio mb-3">
+                            <i class="bi bi-calendar-check"></i> <strong>${dataHora}</strong>
+                        </div>
+                    </div>
                     ${resultados.map(r => `
                         <div class="mb-3">
                             <h5 class="text-primary">${r.tipo}</h5>
@@ -283,12 +293,11 @@ class SorteioAnimado {
                 </div>
             `;
 
-            // Mostra botões
-            document.getElementById('fecharModal').classList.remove('d-none');
-            document.getElementById('novoSorteio').classList.remove('d-none');
+            // Mostra botão X para fechar
+            document.getElementById('fecharModalX').classList.remove('d-none');
             
             // RESULTADO PERMANECE NA TELA - Não submete automaticamente
-            // Usuário decide quando fechar ou fazer novo sorteio
+            // Usuário decide quando fechar
             
         }, 2000);
     }
@@ -296,11 +305,27 @@ class SorteioAnimado {
     // Exibe resultado dos colaboradores
     exibirResultadoColaboradores(resultados) {
         setTimeout(() => {
+            // Gera data e hora atual
+            const agora = new Date();
+            const dataHora = agora.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
             this.atualizarStatus('🎉 Sorteio de colaboradores concluído!');
             
             const display = document.getElementById('sorteioDisplay');
             display.innerHTML = `
                 <div class="resultado-final">
+                    <div class="mb-4 text-center">
+                        <div class="data-sorteio mb-3">
+                            <i class="bi bi-calendar-check"></i> <strong>${dataHora}</strong>
+                        </div>
+                    </div>
                     <h5 class="text-primary mb-3">
                         ${resultados.length > 1 ? 'Colaboradores Sorteados' : 'Colaborador Sorteado'}
                     </h5>
@@ -315,12 +340,11 @@ class SorteioAnimado {
                 </div>
             `;
 
-            // Mostra botões
-            document.getElementById('fecharModal').classList.remove('d-none');
-            document.getElementById('novoSorteio').classList.remove('d-none');
+            // Mostra botão X para fechar
+            document.getElementById('fecharModalX').classList.remove('d-none');
             
             // RESULTADO PERMANECE NA TELA - Não submete automaticamente
-            // Usuário decide quando fechar ou fazer novo sorteio
+            // Usuário decide quando fechar
             
         }, 2000);
     }
