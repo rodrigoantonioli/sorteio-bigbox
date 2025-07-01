@@ -2,6 +2,36 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.1.0] - 2024-12-19
+
+### 🎁 Sistema de Prêmios Aprimorado
+
+#### ✨ Novo Fluxo de Prêmios
+- **Pool Geral**: Prêmios criados sem loja específica por padrão
+- **Atribuição Inteligente**: Admin atribui prêmios apenas a lojas ganhadoras
+- **Visibilidade Controlada**: Assistentes só veem prêmios da sua loja
+- **Proteção de Dados**: Prêmios sorteados não podem ser editados
+
+#### 🎨 Interface Visual Melhorada
+- **Dashboard Colorido**: 3 seções com estatísticas visuais
+- **Pool Geral** (🎁 Amarelo): Prêmios aguardando atribuição
+- **Atribuídos** (🏪 Azul): Prêmios prontos para sorteio
+- **Sorteados** (🏆 Verde): Histórico com ganhadores
+- **Cards Responsivos**: Design moderno e intuitivo
+
+#### 🔧 Funcionalidades Implementadas
+- **Atribuir Prêmio**: Modal específico para vincular à loja
+- **Desatribuir Prêmio**: Voltar prêmio para pool geral
+- **Formulário Simplificado**: Criação sem seleção de loja
+- **Histórico Detalhado**: Colaborador, loja, data, sorteador
+- **Validações Completas**: Proteções em todas as operações
+
+#### 📊 Melhorias de UX
+- **Interface Organizada**: Status visual claro para cada prêmio
+- **Ações Contextuais**: Botões específicos para cada situação
+- **Cores Semânticas**: Sistema de cores consistente
+- **Feedback Visual**: Alertas e confirmações amigáveis
+
 ## [1.0.0] - 2024-12-19
 
 ### ✨ Adicionado
@@ -60,5 +90,7 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 - **Templates**: Estrutura clara e organizada
 
 ---
+
+**Versão 1.1.0 - Sistema de Prêmios Aprimorado e Intuitivo**
 
 **Versão 1.0.0 - Sistema Completo e Pronto para Produção** 
