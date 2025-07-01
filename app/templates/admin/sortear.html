@@ -367,11 +367,6 @@ body {
                                 <button type="button" class="btn btn-sortear-final" id="btnSortearFinal" disabled>
                                     🎯 Realizar Sorteio
                                 </button>
-                                
-                                <!-- Botão de Teste de Emergência (aparece apenas em caso de problemas) -->
-                                <button type="button" class="btn btn-outline-danger btn-sm mt-2" id="btnTesteEmergencia" style="display: none; width: 100%; font-size: 0.7rem;">
-                                    🆘 Teste de Emergência
-                                </button>
                             </div>
                         </form>
                     </div>
@@ -499,7 +494,6 @@ function initializeSorteioPaget() {
     const form = document.getElementById('sorteioForm');
     const btnChacoalhar = document.getElementById('btnChacoalhar');
     const btnSortearFinal = document.getElementById('btnSortearFinal');
-    const btnTesteEmergencia = document.getElementById('btnTesteEmergencia');
     const potesContainer = document.getElementById('potesContainer');
     const resultadoExistente = document.getElementById('resultadoExistente');
     const semanaInicio = document.getElementById('semanaInicio');
@@ -510,7 +504,6 @@ function initializeSorteioPaget() {
     console.log('  - Form:', !!form);
     console.log('  - BtnChacoalhar:', !!btnChacoalhar);
     console.log('  - BtnSortearFinal:', !!btnSortearFinal);
-    console.log('  - BtnTesteEmergencia:', !!btnTesteEmergencia);
     console.log('  - PotesContainer:', !!potesContainer);
     console.log('  - SemanaInicio:', !!semanaInicio);
     console.log('  - StatusSorteio:', !!statusSorteio);
@@ -889,36 +882,7 @@ function initializeSorteioPaget() {
         console.log('🖱️ Mouseup detectado no botão Realizar Sorteio');
     });
     
-    // ===== SEÇÃO 8.5: BOTÃO DE TESTE DE EMERGÊNCIA =====
-    if (btnTesteEmergencia) {
-        console.log('🆘 Configurando botão de teste de emergência...');
-        
-        btnTesteEmergencia.addEventListener('click', function(event) {
-            console.log('🆘 === TESTE DE EMERGÊNCIA ATIVADO ===');
-            event.preventDefault();
-            event.stopPropagation();
-            
-            // Força os parâmetros para teste
-            poteChacoalhado = true;
-            sorteioJaRealizado = false;
-            
-            console.log('🔧 Parâmetros forçados para teste:');
-            console.log('  - poteChacoalhado:', poteChacoalhado);
-            console.log('  - sorteioJaRealizado:', sorteioJaRealizado);
-            
-            // Chama a mesma função do botão principal
-            handleSortearClick(event);
-        });
-        
-        // Mostra o botão de emergência após 10 segundos se o principal não funcionar
-        setTimeout(() => {
-            if (btnSortearFinal.disabled && !sorteioJaRealizado) {
-                console.log('⚠️ Ativando botão de emergência - botão principal não respondeu');
-                btnTesteEmergencia.style.display = 'block';
-                btnTesteEmergencia.title = 'Use apenas se o botão principal não funcionar';
-            }
-        }, 10000);
-    }
+
     
     // Resetar interface
     function resetarInterface() {

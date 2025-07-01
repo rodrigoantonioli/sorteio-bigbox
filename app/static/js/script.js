@@ -292,7 +292,7 @@ class SorteioAnimado {
                         <div class="mb-4 text-center">
                             <h4 class="text-primary">${r.tipo === 'Loja BIG' ? '🏢' : '🏬'} ${r.tipo}</h4>
                             <div class="ganhador-nome ${r.tipo === 'Loja BIG' ? 'ganhador-big' : 'ganhador-ultra'}" style="font-size: 3rem;">
-                                ${r.vencedor.codigo} - ${r.vencedor.nome}
+                                ${r.vencedor.nome}
                             </div>
                         </div>
                     `).join('')}
