@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from app.models import db, Usuario, Loja, SorteioSemanal, SorteioColaborador, Colaborador, Premio
 from app.forms.admin import SorteioSemanalForm, UsuarioForm, PremioForm, LojaForm, AtribuirPremioForm
+from app.utils import get_brazil_datetime, get_brazil_date, format_brazil_datetime
 from datetime import datetime, date, timedelta
 from functools import wraps
 from werkzeug.utils import secure_filename
@@ -887,7 +888,7 @@ def upload_colaboradores():
                         # Atualiza dados
                         colaborador_existente.nome = nome
                         colaborador_existente.setor = setor
-                        colaborador_existente.ultima_atualizacao = datetime.utcnow()
+                        colaborador_existente.ultima_atualizacao = get_brazil_datetime()
                         colaboradores_atualizados += 1
                     else:
                         # Cria novo colaborador
@@ -897,7 +898,7 @@ def upload_colaboradores():
                             setor=setor,
                             loja_id=loja_id,
                             apto=True,
-                            ultima_atualizacao=datetime.utcnow()
+                            ultima_atualizacao=get_brazil_datetime()
                         )
                         db.session.add(novo_colaborador)
                         colaboradores_criados += 1
@@ -988,7 +989,7 @@ def adicionar_colaborador():
             setor=form.setor.data,
             loja_id=form.loja_id.data,
             apto=form.apto.data,
-            ultima_atualizacao=datetime.utcnow()
+            ultima_atualizacao=get_brazil_datetime()
         )
         
         db.session.add(novo_colaborador)
@@ -1028,7 +1029,7 @@ def editar_colaborador(id):
         colaborador.setor = form.setor.data
         colaborador.loja_id = form.loja_id.data
         colaborador.apto = form.apto.data
-        colaborador.ultima_atualizacao = datetime.utcnow()
+        colaborador.ultima_atualizacao = get_brazil_datetime()
         
         db.session.commit()
         
@@ -1044,7 +1045,7 @@ def toggle_colaborador(id):
     colaborador = Colaborador.query.get_or_404(id)
     
     colaborador.apto = not colaborador.apto
-    colaborador.ultima_atualizacao = datetime.utcnow()
+    colaborador.ultima_atualizacao = get_brazil_datetime()
     db.session.commit()
     
     status = 'ativado' if colaborador.apto else 'desativado'

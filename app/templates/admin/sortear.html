@@ -332,7 +332,7 @@ body {
 </style>
 
 <div class="sortear-container">
-    <div class="container-fluid">
+<div class="container-fluid">
         <!-- Header do Festival -->
         <div class="festival-header">
             <h1>🎲 SORTEIO SEMANAL</h1>
@@ -340,7 +340,7 @@ body {
         </div>
 
         <!-- Layout Compacto: Data + Potes + Botões na mesma tela -->
-        <div class="row">
+    <div class="row">
             <!-- Coluna da Esquerda: Data e Botões -->
             <div class="col-lg-3">
                 <div class="sortear-card mb-2">
@@ -391,9 +391,9 @@ body {
                             🏢 POTE BIG
                             <div class="contador-lojas">
                                 <span id="contadorBig">{{ lojas_big|length }}</span> disponíveis
-                            </div>
-                        </div>
-                        
+        </div>
+    </div>
+
                         <div class="secao-lojas">
                             <div class="secao-titulo">
                                 <span class="status-icon">🟢</span>Disponíveis
@@ -405,7 +405,7 @@ body {
                                 </span>
                                 {% endfor %}
                             </div>
-                        </div>
+                </div>
                         
                         {% if lojas_big_sorteadas %}
                         <div class="secao-lojas">
@@ -417,10 +417,10 @@ body {
                                 <span class="loja-item loja-sorteada">
                                     {{ loja.nome }}
                                 </span>
-                                {% endfor %}
+                                    {% endfor %}
                             </div>
-                        </div>
-                        {% endif %}
+                                </div>
+                            {% endif %}
                     </div>
 
                     <!-- Pote ULTRA -->
@@ -431,7 +431,7 @@ body {
                                 <span id="contadorUltra">{{ lojas_ultra|length }}</span> disponíveis
                             </div>
                         </div>
-                        
+
                         <div class="secao-lojas">
                             <div class="secao-titulo">
                                 <span class="status-icon">🟢</span>Disponíveis
@@ -444,7 +444,7 @@ body {
                                 {% endfor %}
                             </div>
                         </div>
-                        
+
                         {% if lojas_ultra_sorteadas %}
                         <div class="secao-lojas">
                             <div class="secao-titulo">

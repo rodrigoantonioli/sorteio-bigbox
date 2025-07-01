@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from app.models import db, Colaborador, SorteioSemanal, SorteioColaborador, Premio
 from app.forms.manager import UploadColaboradoresForm, SorteioColaboradorForm, ColaboradorForm
+from app.utils import get_brazil_datetime, get_brazil_date, format_brazil_datetime
 from datetime import datetime, date, timedelta
 from functools import wraps
 import os
@@ -134,7 +135,7 @@ def novo_colaborador():
             setor=form.setor.data,
             loja_id=current_user.loja_id,
             apto=form.apto.data,
-            ultima_atualizacao=datetime.utcnow()
+            ultima_atualizacao=get_brazil_datetime()
         )
         
         db.session.add(colaborador)
@@ -168,7 +169,7 @@ def editar_colaborador(id):
         colaborador.nome = form.nome.data
         colaborador.setor = form.setor.data
         colaborador.apto = form.apto.data
-        colaborador.ultima_atualizacao = datetime.utcnow()
+        colaborador.ultima_atualizacao = get_brazil_datetime()
         
         db.session.commit()
         
@@ -184,7 +185,7 @@ def toggle_colaborador(id):
     colaborador = Colaborador.query.filter_by(id=id, loja_id=current_user.loja_id).first_or_404()
     
     colaborador.apto = not colaborador.apto
-    colaborador.ultima_atualizacao = datetime.utcnow()
+    colaborador.ultima_atualizacao = get_brazil_datetime()
     db.session.commit()
     
     status = 'habilitado' if colaborador.apto else 'desabilitado'
@@ -254,14 +255,14 @@ def acao_lote():
     if acao == 'ativar':
         for colaborador in colaboradores:
             colaborador.apto = True
-            colaborador.ultima_atualizacao = datetime.utcnow()
+            colaborador.ultima_atualizacao = get_brazil_datetime()
             sucesso += 1
         flash(f'{sucesso} colaboradores foram habilitados para sorteios.', 'success')
         
     elif acao == 'desativar':
         for colaborador in colaboradores:
             colaborador.apto = False
-            colaborador.ultima_atualizacao = datetime.utcnow()
+            colaborador.ultima_atualizacao = get_brazil_datetime()
             sucesso += 1
         flash(f'{sucesso} colaboradores foram desabilitados para sorteios.', 'success')
         
@@ -387,7 +388,7 @@ def upload_colaboradores():
                     setor=dados['setor'],
                     loja_id=current_user.loja_id,
                     apto=True,
-                    ultima_atualizacao=datetime.utcnow()
+                    ultima_atualizacao=get_brazil_datetime()
                 )
                 db.session.add(novo_colaborador)
                 adicionados += 1

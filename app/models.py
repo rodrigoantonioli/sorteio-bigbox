@@ -2,6 +2,7 @@ from app.extensions import db, login_manager
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from app.utils import get_brazil_datetime
 import os
 
 @login_manager.user_loader
@@ -82,7 +83,7 @@ class SorteioSemanal(db.Model):
     semana_inicio = db.Column(db.Date, unique=True, nullable=False)
     loja_big_id = db.Column(db.Integer, db.ForeignKey('lojas.id'), nullable=False)
     loja_ultra_id = db.Column(db.Integer, db.ForeignKey('lojas.id'), nullable=False)
-    data_sorteio = db.Column(db.DateTime, default=datetime.utcnow)
+    data_sorteio = db.Column(db.DateTime, default=get_brazil_datetime)
     sorteado_por = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
 
 class SorteioColaborador(db.Model):
@@ -92,7 +93,7 @@ class SorteioColaborador(db.Model):
     sorteio_semanal_id = db.Column(db.Integer, db.ForeignKey('sorteios_semanais.id'), nullable=False)
     premio_id = db.Column(db.Integer, db.ForeignKey('premios.id'), nullable=False)
     colaborador_id = db.Column(db.Integer, db.ForeignKey('colaboradores.id'), nullable=False)
-    data_sorteio = db.Column(db.DateTime, default=datetime.utcnow)
+    data_sorteio = db.Column(db.DateTime, default=get_brazil_datetime)
     sorteado_por = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     lista_confirmada = db.Column(db.Boolean, default=False)
     colaboradores_snapshot = db.Column(db.Text)
