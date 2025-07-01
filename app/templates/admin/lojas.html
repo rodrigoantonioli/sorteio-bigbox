@@ -164,7 +164,13 @@
                             <div class="col-md-3">
                                 <div class="card bg-success text-white text-center">
                                     <div class="card-body">
-                                        <h4>{{ lojas|selectattr('usuarios')|list|length }}</h4>
+                                        {% set lojas_com_assistente = namespace(count=0) %}
+                                        {% for loja in lojas %}
+                                            {% if loja.usuarios|selectattr('tipo', 'equalto', 'assistente')|selectattr('ativo')|list %}
+                                                {% set lojas_com_assistente.count = lojas_com_assistente.count + 1 %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        <h4>{{ lojas_com_assistente.count }}</h4>
                                         <small>Com Assistente</small>
                                     </div>
                                 </div>
@@ -172,7 +178,12 @@
                             <div class="col-md-3">
                                 <div class="card bg-info text-white text-center">
                                     <div class="card-body">
-                                        <h4>{{ lojas|sum(attribute='colaboradores')|selectattr('apto')|list|length }}</h4>
+                                        {% set total_colaboradores = namespace(count=0) %}
+                                        {% for loja in lojas %}
+                                            {% set colaboradores_ativos = loja.colaboradores|selectattr('apto')|list %}
+                                            {% set total_colaboradores.count = total_colaboradores.count + colaboradores_ativos|length %}
+                                        {% endfor %}
+                                        <h4>{{ total_colaboradores.count }}</h4>
                                         <small>Total Colaboradores</small>
                                     </div>
                                 </div>
