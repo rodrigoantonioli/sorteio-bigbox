@@ -388,7 +388,7 @@ def novo_usuario():
     
     # Popula lojas disponíveis
     lojas = Loja.query.filter_by(ativo=True).order_by(Loja.nome).all()
-    form.loja_id.choices = [(0, 'Selecione uma loja')] + [(l.id, f"{l.nome} ({l.codigo} - {l.nome})") for l in lojas]
+    form.loja_id.choices = [(0, 'Selecione uma loja')] + [(l.id, f"{l.nome} ({l.codigo})") for l in lojas]
     
     # Se loja_id foi passada como parâmetro, pré-seleciona
     loja_id_param = request.args.get('loja_id', type=int)
@@ -433,7 +433,7 @@ def editar_usuario(id):
     
     # Popula lojas disponíveis
     lojas = Loja.query.filter_by(ativo=True).order_by(Loja.nome).all()
-    form.loja_id.choices = [(0, 'Selecione uma loja')] + [(l.id, f"{l.nome} ({l.codigo} - {l.nome})") for l in lojas]
+    form.loja_id.choices = [(0, 'Selecione uma loja')] + [(l.id, f"{l.nome} ({l.codigo})") for l in lojas]
     
     if form.validate_on_submit():
         # Verifica se email já existe (exceto o próprio)
