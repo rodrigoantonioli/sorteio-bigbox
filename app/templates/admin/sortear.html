@@ -1,106 +1,540 @@
 {% extends "base.html" %}
 
-{% block title %}Realizar Sorteio - Admin{% endblock %}
+{% block title %}Sorteio Semanal - Festival Na Praia 2025{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 mb-0">🎲 Realizar Sorteio Semanal</h1>
-                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left"></i> Voltar
-                </a>
-            </div>
-        </div>
-    </div>
+<style>
+/* Estilos para interface filmável */
+.sortear-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px 0;
+}
 
-    <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-dice"></i> Novo Sorteio
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <form method="POST" id="sorteioForm">
-                        {{ form.hidden_tag() }}
-                        
-                        <div class="mb-3">
-                            {{ form.semana_inicio.label(class="form-label") }}
-                            {{ form.semana_inicio(class="form-control") }}
-                            {% if form.semana_inicio.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {% for error in form.semana_inicio.errors %}
-                                        <div>{{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            <div class="form-text">
-                                <i class="fas fa-info-circle"></i> 
-                                Selecione a terça-feira da semana que será sorteada
+.sortear-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.pote-container {
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 15px;
+    box-shadow: 
+        inset -5px -5px 9px rgba(255,255,255,0.45),
+        inset 5px 5px 9px rgba(94,104,121,0.3);
+    transition: all 0.3s ease;
+}
+
+.pote-big {
+    border-left: 5px solid #8e44ad;
+}
+
+.pote-ultra {
+    border-left: 5px solid #00a651;
+}
+
+.loja-item {
+    background: white;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 5px;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.loja-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.loja-disponivel {
+    border-left: 4px solid #28a745;
+    background: linear-gradient(45deg, #d4edda, #ffffff);
+}
+
+.loja-sorteada {
+    border-left: 4px solid #6c757d;
+    background: linear-gradient(45deg, #f8f9fa, #ffffff);
+    opacity: 0.7;
+}
+
+.btn-chacoalhar {
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    box-shadow: 0 8px 16px rgba(238, 90, 36, 0.3);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-chacoalhar:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(238, 90, 36, 0.4);
+    background: linear-gradient(45deg, #ee5a24, #ff6b6b);
+}
+
+.btn-sortear-final {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 20px 40px;
+    font-size: 1.4rem;
+    font-weight: bold;
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.btn-sortear-final:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+}
+
+.tremor {
+    animation: shake 0.5s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.resultado-existente {
+    background: linear-gradient(45deg, #ffeaa7, #fdcb6e);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(253, 203, 110, 0.3);
+}
+
+.ganhador-nome {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 15px 0;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.ganhador-big {
+    color: #8e44ad;
+}
+
+.ganhador-ultra {
+    color: #00a651;
+}
+
+.btn-discreto {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(108, 117, 125, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.btn-discreto:hover {
+    background: rgba(108, 117, 125, 1);
+    transform: scale(1.1);
+}
+
+.festival-header {
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+}
+
+.festival-header h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    margin-bottom: 10px;
+}
+
+.festival-header .subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.contador-lojas {
+    text-align: center;
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.embaralhar {
+    animation: spin 0.5s ease-in-out;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+</style>
+
+<div class="sortear-container">
+    <div class="container">
+        <!-- Header do Festival -->
+        <div class="festival-header">
+            <h1>🎲 SORTEIO SEMANAL</h1>
+            <div class="subtitle">Festival Na Praia 2025 • BigBox & UltraBox</div>
+        </div>
+
+        <!-- Formulário de Data -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-6">
+                <div class="sortear-card">
+                    <div class="card-body p-4">
+                        <form id="sorteioForm">
+                            {{ form.hidden_tag() }}
+                            <div class="text-center mb-3">
+                                <h5>📅 Selecione a Semana do Sorteio</h5>
                             </div>
-                        </div>
-
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i>
-                            <strong>Como funciona:</strong>
-                            <ul class="mb-0 mt-2">
-                                <li>O sistema sorteará 1 loja BIG e 1 loja ULTRA automaticamente</li>
-                                <li>Apenas lojas ativas que <strong>ainda não foram sorteadas</strong> participam</li>
-                                <li>Lojas disponíveis: <strong>{{ lojas_big|length }} BIG</strong> e <strong>{{ lojas_ultra|length }} ULTRA</strong></li>
-                                <li>Não é possível sortear duas vezes a mesma semana</li>
-                            </ul>
-                        </div>
-
-                        <div class="d-grid">
-                            <button type="button" class="btn btn-sortear btn-lg" id="btnSortear">
-                                <i class="fas fa-dice"></i> 🎲 Sortear Lojas Ganhadoras
-                            </button>
-                        </div>
-                    </form>
+                            
+                            <div class="mb-3">
+                                {{ form.semana_inicio(class="form-control form-control-lg text-center", id="semanaInicio") }}
+                                <div class="form-text text-center">
+                                    Terça-feira da semana a ser sorteada
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <button type="button" class="btn btn-chacoalhar" id="btnChacoalhar">
+                                    🎲 Chacoalhar Potes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Resultado de Sorteio Existente -->
+        {% if sorteio_existente %}
+        <div class="resultado-existente mb-4">
+            <h3>✅ Sorteio Já Realizado</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>🏢 Loja BIG</h4>
+                    <div class="ganhador-nome ganhador-big">
+                        {{ sorteio_existente.loja_big.codigo }} - {{ sorteio_existente.loja_big.nome }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4>🏬 Loja ULTRA</h4>
+                    <div class="ganhador-nome ganhador-ultra">
+                        {{ sorteio_existente.loja_ultra.codigo }} - {{ sorteio_existente.loja_ultra.nome }}
+                    </div>
+                </div>
+            </div>
+            <p class="mt-3">
+                <small>Sorteio realizado em: {{ sorteio_existente.data_sorteio.strftime('%d/%m/%Y às %H:%M') }}</small>
+            </p>
+        </div>
+        {% else %}
+        <!-- Potes de Lojas -->
+        <div class="row" id="potesContainer">
+            <!-- Pote BIG -->
+            <div class="col-lg-6">
+                <div class="pote-container pote-big">
+                    <h4 class="text-center mb-3">
+                        🏢 POTE BIG
+                        <div class="contador-lojas">
+                            <span id="contadorBig">{{ lojas_big|length }}</span> disponíveis
+                        </div>
+                    </h4>
+                    
+                    <div class="mb-3">
+                        <h6>🟢 Disponíveis para Sorteio:</h6>
+                        <div id="lojasBigDisponiveis">
+                            {% for loja in lojas_big %}
+                            <span class="loja-item loja-disponivel" data-id="{{ loja.id }}">
+                                {{ loja.codigo }} - {{ loja.nome }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    {% if lojas_big_sorteadas %}
+                    <div>
+                        <h6>⭕ Já Sorteadas:</h6>
+                        <div>
+                            {% for loja in lojas_big_sorteadas %}
+                            <span class="loja-item loja-sorteada">
+                                {{ loja.codigo }} - {{ loja.nome }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Pote ULTRA -->
+            <div class="col-lg-6">
+                <div class="pote-container pote-ultra">
+                    <h4 class="text-center mb-3">
+                        🏬 POTE ULTRA
+                        <div class="contador-lojas">
+                            <span id="contadorUltra">{{ lojas_ultra|length }}</span> disponíveis
+                        </div>
+                    </h4>
+                    
+                    <div class="mb-3">
+                        <h6>🟢 Disponíveis para Sorteio:</h6>
+                        <div id="lojasUltraDisponiveis">
+                            {% for loja in lojas_ultra %}
+                            <span class="loja-item loja-disponivel" data-id="{{ loja.id }}">
+                                {{ loja.codigo }} - {{ loja.nome }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    {% if lojas_ultra_sorteadas %}
+                    <div>
+                        <h6>⭕ Já Sorteadas:</h6>
+                        <div>
+                            {% for loja in lojas_ultra_sorteadas %}
+                            <span class="loja-item loja-sorteada">
+                                {{ loja.codigo }} - {{ loja.nome }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Botão de Sorteio -->
+        <div class="text-center mt-4" id="botaoSorteioContainer" style="display: none;">
+            <button type="button" class="btn btn-sortear-final" id="btnSortearFinal">
+                🎯 REALIZAR SORTEIO OFICIAL
+            </button>
+        </div>
+        {% endif %}
     </div>
 </div>
 
+<!-- Botão Discreto para Dashboard -->
+<a href="{{ url_for('admin.dashboard') }}" class="btn btn-discreto">
+    ← Dashboard
+</a>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const btnSortear = document.getElementById('btnSortear');
     const form = document.getElementById('sorteioForm');
+    const btnChacoalhar = document.getElementById('btnChacoalhar');
+    const btnSortearFinal = document.getElementById('btnSortearFinal');
+    const potesContainer = document.getElementById('potesContainer');
+    const botaoSorteioContainer = document.getElementById('botaoSorteioContainer');
+    const semanaInicio = document.getElementById('semanaInicio');
     
-    // Dados das lojas (passados do backend)
+    // Dados das lojas (do backend)
     const lojasBig = JSON.parse('{{ lojas_big | tojson | safe }}');
     const lojasUltra = JSON.parse('{{ lojas_ultra | tojson | safe }}');
     
-    btnSortear.addEventListener('click', function() {
-        // Valida se a data foi selecionada
-        const semanaInicio = document.querySelector('input[name="semana_inicio"]').value;
-        if (!semanaInicio) {
-            alert('Por favor, selecione a data da semana antes de realizar o sorteio.');
+    let poteChacoalhado = false;
+    let seedRandom = Date.now();
+    
+    // Verifica sorteio existente quando data muda
+    semanaInicio.addEventListener('change', function() {
+        if (this.value) {
+            verificarSorteioExistente(this.value);
+        }
+    });
+    
+    // Função para verificar se já existe sorteio
+    function verificarSorteioExistente(data) {
+        fetch('/admin/sortear/verificar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': form.querySelector('input[name="csrf_token"]').value
+            },
+            body: JSON.stringify({ semana_inicio: data })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.existe) {
+                // Mostra resultado existente
+                mostrarSorteioExistente(result.data);
+            } else {
+                // Libera para novo sorteio
+                document.getElementById('potesContainer').style.display = 'block';
+                resetarInterface();
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao verificar sorteio:', error);
+        });
+    }
+    
+    // Mostra sorteio já existente
+    function mostrarSorteioExistente(dados) {
+        potesContainer.innerHTML = `
+            <div class="col-12">
+                <div class="resultado-existente">
+                    <h3>✅ Sorteio Já Realizado para ${dados.semana}</h3>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h4>🏢 Loja BIG Ganhadora</h4>
+                            <div class="ganhador-nome ganhador-big">
+                                ${dados.loja_big.codigo} - ${dados.loja_big.nome}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>🏬 Loja ULTRA Ganhadora</h4>
+                            <div class="ganhador-nome ganhador-ultra">
+                                ${dados.loja_ultra.codigo} - ${dados.loja_ultra.nome}
+                            </div>
+                        </div>
+                    </div>
+                    <p class="mt-4">
+                        <i class="bi bi-calendar-check"></i> 
+                        Sorteado em: ${dados.data_sorteio}
+                    </p>
+                    <div class="mt-4">
+                        <h4>🎉 Parabéns aos Ganhadores! 🎉</h4>
+                        <p>As lojas sorteadas podem participar dos prêmios desta semana!</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        botaoSorteioContainer.style.display = 'none';
+        btnChacoalhar.style.display = 'none';
+    }
+    
+    // Função chacoalhar
+    btnChacoalhar.addEventListener('click', function() {
+        if (!semanaInicio.value) {
+            alert('⚠️ Por favor, selecione a data da semana antes de chacoalhar!');
             return;
         }
         
-        // Verifica se há lojas suficientes
-        if (lojasBig.length === 0) {
-            alert('Não há lojas BIG ativas para sortear.');
+        if (lojasBig.length === 0 || lojasUltra.length === 0) {
+            alert('⚠️ Não há lojas suficientes para sortear!');
             return;
         }
         
-        if (lojasUltra.length === 0) {
-            alert('Não há lojas ULTRA ativas para sortear.');
+        // Atualiza seed com horário atual
+        seedRandom = Date.now();
+        
+        // Efeito visual de tremor
+        potesContainer.classList.add('tremor');
+        btnChacoalhar.disabled = true;
+        btnChacoalhar.innerHTML = '🌪️ CHACOALHANDO...';
+        
+        // Embaralha as lojas visualmente
+        embaralharLojas();
+        
+        setTimeout(() => {
+            potesContainer.classList.remove('tremor');
+            btnChacoalhar.disabled = false;
+            btnChacoalhar.innerHTML = '✅ POTES CHACOALHADOS';
+            btnChacoalhar.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
+            
+            // Mostra botão de sorteio
+            botaoSorteioContainer.style.display = 'block';
+            poteChacoalhado = true;
+        }, 2000);
+    });
+    
+    // Função para embaralhar lojas visualmente
+    function embaralharLojas() {
+        const intervalos = [];
+        
+        // Embaralha BIG
+        const containerBig = document.getElementById('lojasBigDisponiveis');
+        intervalos.push(setInterval(() => {
+            embaralharElementos(containerBig);
+        }, 100));
+        
+        // Embaralha ULTRA  
+        const containerUltra = document.getElementById('lojasUltraDisponiveis');
+        intervalos.push(setInterval(() => {
+            embaralharElementos(containerUltra);
+        }, 100));
+        
+        // Para o embaralhamento após 1.5s
+        setTimeout(() => {
+            intervalos.forEach(interval => clearInterval(interval));
+        }, 1500);
+    }
+    
+    // Embaralha elementos DOM
+    function embaralharElementos(container) {
+        const elementos = Array.from(container.children);
+        elementos.forEach(el => el.classList.add('embaralhar'));
+        
+        // Reordena elementos
+        for (let i = elementos.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            container.appendChild(elementos[j]);
+        }
+        
+        setTimeout(() => {
+            elementos.forEach(el => el.classList.remove('embaralhar'));
+        }, 300);
+    }
+    
+    // Sortear final
+    btnSortearFinal.addEventListener('click', function() {
+        if (!poteChacoalhado) {
+            alert('⚠️ Você precisa chacoalhar os potes primeiro!');
             return;
         }
         
-        // Inicia o sorteio animado
+        // Usa a seed gerada no chacoalhar para determinismo
+        Math.seedrandom(seedRandom);
+        
+        // Inicia sorteio animado
         iniciarSorteioLojas(lojasBig, lojasUltra);
     });
     
-    // Sobrescreve a função de submissão AJAX para incluir os resultados
+    // Resetar interface
+    function resetarInterface() {
+        poteChacoalhado = false;
+        btnChacoalhar.innerHTML = '🎲 Chacoalhar Potes';
+        btnChacoalhar.style.background = 'linear-gradient(45deg, #ff6b6b, #ee5a24)';
+        botaoSorteioContainer.style.display = 'none';
+    }
+    
+    // Sobrescreve função AJAX do sorteio
     window.sorteioAnimado.submitarFormularioAjax = function(resultados) {
-        // Prepara dados para enviar via AJAX
         const lojaBig = resultados.find(r => r.tipo === 'Loja BIG');
         const lojaUltra = resultados.find(r => r.tipo === 'Loja ULTRA');
         
@@ -109,20 +543,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        const semanaInicio = document.querySelector('input[name="semana_inicio"]').value;
-        
-        if (!semanaInicio) {
-            window.sorteioAnimado.exibirErro('Data da semana não informada');
-            return;
-        }
-        
         const dados = {
-            semana_inicio: semanaInicio,
+            semana_inicio: semanaInicio.value,
             loja_big_id: lojaBig.vencedor.id,
             loja_ultra_id: lojaUltra.vencedor.id
         };
         
-        // Faz chamada AJAX
         fetch('/admin/sortear/ajax', {
             method: 'POST',
             headers: {
@@ -134,7 +560,13 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                window.sorteioAnimado.exibirSucesso(data.message);
+                // Personaliza mensagem de sucesso
+                const mensagemParabens = `
+                    🎉 PARABÉNS AOS GANHADORES! 🎉<br/>
+                    <strong>${lojaBig.vencedor.nome}</strong> (BIG) e <strong>${lojaUltra.vencedor.nome}</strong> (ULTRA)<br/>
+                    Vocês foram sorteados para a semana de ${data.data.semana}!
+                `;
+                window.sorteioAnimado.exibirSucesso(mensagemParabens);
             } else {
                 window.sorteioAnimado.exibirErro(data.message);
             }
@@ -145,5 +577,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 });
+
+// Adiciona biblioteca para seed random
+!function(a,b){function c(c,d,e){var f=[];d=1==d?{entropy:!0}:d||{};var g=h(i(d.entropy?[c,j(a)]:null==c?k():c,3),f),l=new m(f),n=function(){for(var a=l.g(o),b=p,c=0;q>a;)a=(a+c)*r,b*=r,c=l.g(1);for(;a>=s;)a/=2,b/=2,c>>>=1;return(a+c)/b};return n.int32=function(){return 0|l.g(4)},n.quick=function(){return l.g(4)/4294967296},n.double=n,h(j(l.S),a),(d.pass||e||function(a,c,d,e){return e&&(e.S&&n(e,l),a.state=function(){return n(l,{})}),d?(b[t]=a,c):a})(n,g,"global"in d?d.global:this==b,d.state)}function d(a){return typeof a==="string"?a:String(a)}function e(a,b){return typeof a==="number"?a:parseInt(b,10)}function f(a,b){return a>b?a:b}function g(a,b){return a<b?a:b}function h(a,b){var c,d=a.length,e=0,f=0;for(c=0;d>c;c++)e=19*e+a.charCodeAt(c),f=e&((1<<6)-1);return(b[f]=(b[f]||0)+1,String.fromCharCode(f))}function i(a,b){var c=a+"",d,e=0;for(b=0;b<c.length;)d=.02519603282416938*c.charCodeAt(b++),d-=~~d,e+=d*d*d*7*5e6;return e}function j(a){for(var b,c=a.length,d=this,e=0,f=d.i=d.j=0,g=d.S=[];c>e;)g[e]=e++;for(e=0;c>e;e++)g[e]=g[f=w&f+g[e]+g[(d.i=w&d.i+1)]],g[f]=g[d.i];(d.i=d.j=0)}function k(){try{var b;return u&&(b=u.randomBytes)?b=b(r):(b=new Uint8Array(r),(v.crypto||v.msCrypto).getRandomValues(b)),j(b)}catch(c){var d=v.navigator,e=d&&d.plugins;return j([+new Date,v,e,v.screen,j(a)])}}function l(a){try{return u.createHash("sha256").update(a).digest()}catch(b){return[a]}}function m(a){j(this,a)}function n(a,b){return b.i=a.i,b.j=a.j,b.S=a.S.slice(),b}var o=6,p=52,q=1,r=4,s=Math.pow(2,53),t="random",u=c.crypto,v=c;if("object"==typeof module&&module.exports){module.exports=c;try{u=require("crypto")}catch(w){}}else"function"==typeof define&&define.amd?define(function(){return c}):v["seed"+t]=c;var x=Math.pow(r,o),y=Math.pow(2,p),z=2*y,A=r-1,w=4294967295;if(l(b[t])!=b[t]&&l(Math.random())!=Math.random()){b[t]=c}Math.seedrandom=c}([],"",Math);
 </script>
+{% endblock %} 
 {% endblock %} 

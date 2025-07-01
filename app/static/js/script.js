@@ -285,18 +285,21 @@ class SorteioAnimado {
                             <i class="bi bi-gear-fill"></i> Salvando resultados...
                         </div>
                     </div>
+                    <div class="text-center mb-4">
+                        <h3>🎉 PARABÉNS AOS GANHADORES! 🎉</h3>
+                    </div>
                     ${resultados.map(r => `
-                        <div class="mb-3">
-                            <h5 class="text-primary">${r.tipo}</h5>
-                            <div class="nome-sorteio vencedor" style="font-size: 1.8rem;">
-                                ${r.vencedor.nome || r.vencedor.codigo}
+                        <div class="mb-4 text-center">
+                            <h4 class="text-primary">${r.tipo === 'Loja BIG' ? '🏢' : '🏬'} ${r.tipo}</h4>
+                            <div class="ganhador-nome ${r.tipo === 'Loja BIG' ? 'ganhador-big' : 'ganhador-ultra'}" style="font-size: 3rem;">
+                                ${r.vencedor.codigo} - ${r.vencedor.nome}
                             </div>
                         </div>
                     `).join('')}
                     <div class="text-center mt-4" id="botoesAcao" style="display: none;">
-                        <a href="/admin/dashboard" class="btn btn-primary btn-lg">
-                            <i class="bi bi-arrow-left"></i> Ir para Dashboard
-                        </a>
+                        <button type="button" class="btn btn-discreto" onclick="window.location.href='/admin/dashboard'">
+                            ← Voltar ao Dashboard
+                        </button>
                     </div>
                 </div>
             `;

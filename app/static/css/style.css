@@ -444,4 +444,46 @@ main {
 
 .sorteio-display.vencedor {
     animation: brilho 2s ease-in-out infinite;
-} 
+}
+
+/* ========================================
+   ESTILOS PARA INTERFACE FILMÁVEL
+======================================== */
+
+/* Cores dos ganhadores */
+.ganhador-big {
+    color: var(--big-color) !important;
+    text-shadow: 3px 3px 6px rgba(142, 68, 173, 0.3);
+}
+
+.ganhador-ultra {
+    color: var(--ultra-color) !important;
+    text-shadow: 3px 3px 6px rgba(0, 166, 81, 0.3);
+}
+
+.ganhador-nome {
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    margin: 10px 0;
+}
+
+/* Botão discreto */
+.btn-discreto {
+    background: rgba(108, 117, 125, 0.8) !important;
+    color: white !important;
+    border: none;
+    border-radius: 50px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.btn-discreto:hover {
+    background: rgba(108, 117, 125, 1) !important;
+    color: white !important;
+    transform: scale(1.05);
+    text-decoration: none;
+}
