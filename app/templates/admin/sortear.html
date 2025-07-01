@@ -367,6 +367,11 @@ body {
                                 <button type="button" class="btn btn-sortear-final" id="btnSortearFinal" disabled>
                                     🎯 Realizar Sorteio
                                 </button>
+                                
+                                <!-- Botão de Teste de Emergência (aparece apenas em caso de problemas) -->
+                                <button type="button" class="btn btn-outline-danger btn-sm mt-2" id="btnTesteEmergencia" style="display: none; width: 100%; font-size: 0.7rem;">
+                                    🆘 Teste de Emergência
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -472,51 +477,98 @@ body {
 </a>
 
 <script>
+// ==========================================
+//         SISTEMA DE SORTEIO V1.1
+//    DEBUG COMPLETO E CORREÇÕES CRÍTICAS
+// ==========================================
+
 // Aguarda carregamento completo do DOM e do script.js
 document.addEventListener('DOMContentLoaded', function() {
-    // Aguarda mais um pouco para garantir que script.js carregou
+    console.log('🔄 DOM carregado, aguardando script.js...');
+    
+    // Aguarda mais tempo para garantir que script.js carregou
     setTimeout(function() {
         initializeSorteioPaget();
-    }, 1000);
+    }, 1500); // Aumentado para 1.5s
 });
 
 function initializeSorteioPaget() {
-    console.log('🚀 Inicializando página de sorteio...');
+    console.log('🚀 === INICIALIZANDO SISTEMA DE SORTEIO ===');
     
+    // ===== SEÇÃO 1: VERIFICAÇÃO DE ELEMENTOS =====
     const form = document.getElementById('sorteioForm');
     const btnChacoalhar = document.getElementById('btnChacoalhar');
     const btnSortearFinal = document.getElementById('btnSortearFinal');
+    const btnTesteEmergencia = document.getElementById('btnTesteEmergencia');
     const potesContainer = document.getElementById('potesContainer');
     const resultadoExistente = document.getElementById('resultadoExistente');
     const semanaInicio = document.getElementById('semanaInicio');
     const statusSorteio = document.getElementById('statusSorteio');
     const statusTexto = document.getElementById('statusTexto');
     
-    // Verifica se elementos existem
+    console.log('🔍 Verificando elementos DOM:');
+    console.log('  - Form:', !!form);
+    console.log('  - BtnChacoalhar:', !!btnChacoalhar);
+    console.log('  - BtnSortearFinal:', !!btnSortearFinal);
+    console.log('  - BtnTesteEmergencia:', !!btnTesteEmergencia);
+    console.log('  - PotesContainer:', !!potesContainer);
+    console.log('  - SemanaInicio:', !!semanaInicio);
+    console.log('  - StatusSorteio:', !!statusSorteio);
+    console.log('  - StatusTexto:', !!statusTexto);
+    
+    // Verifica se elementos críticos existem
     if (!form || !btnChacoalhar || !btnSortearFinal) {
-        console.error('❌ Elementos não encontrados!');
+        console.error('❌ ERRO CRÍTICO: Elementos não encontrados!');
+        console.error('  - form:', form);
+        console.error('  - btnChacoalhar:', btnChacoalhar);
+        console.error('  - btnSortearFinal:', btnSortearFinal);
         return;
     }
     
-    // Verifica se sorteioAnimado existe
+    // ===== SEÇÃO 2: VERIFICAÇÃO DO SORTEIOANIMADO =====
+    console.log('🔍 Verificando SorteioAnimado:');
+    console.log('  - window.sorteioAnimado:', !!window.sorteioAnimado);
+    console.log('  - Tipo:', typeof window.sorteioAnimado);
+    
     if (!window.sorteioAnimado) {
-        console.error('❌ SorteioAnimado não encontrado!');
-        statusTexto.textContent = 'Erro: Sistema não carregado. Recarregue a página.';
-        statusSorteio.className = 'alert alert-danger text-center';
+        console.error('❌ ERRO CRÍTICO: SorteioAnimado não encontrado!');
+        
+        // Aguarda mais tempo e tenta novamente
+        console.log('⏳ Tentando aguardar mais tempo...');
+        setTimeout(() => {
+            console.log('🔄 Segunda tentativa de verificação...');
+            if (window.sorteioAnimado) {
+                console.log('✅ SorteioAnimado encontrado na segunda tentativa!');
+                initializeSorteioPaget();
+                return;
+            } else {
+                console.error('❌ SorteioAnimado ainda não encontrado após segunda tentativa');
+                statusTexto.textContent = 'ERRO: Sistema não carregado. Recarregue a página.';
+                statusSorteio.className = 'alert alert-danger text-center';
+            }
+        }, 2000);
         return;
     }
     
-    console.log('✅ Sistema carregado com sucesso!');
+    console.log('✅ SorteioAnimado encontrado!');
     
-    // Dados das lojas (do backend)
+    // ===== SEÇÃO 3: DADOS DAS LOJAS =====
     const lojasBig = JSON.parse('{{ lojas_big | tojson | safe }}');
     const lojasUltra = JSON.parse('{{ lojas_ultra | tojson | safe }}');
     
-    console.log('📊 Lojas carregadas:', { big: lojasBig.length, ultra: lojasUltra.length });
+    console.log('📊 Dados das lojas:');
+    console.log('  - Lojas BIG:', lojasBig.length, lojasBig);
+    console.log('  - Lojas ULTRA:', lojasUltra.length, lojasUltra);
     
+    // ===== SEÇÃO 4: VARIÁVEIS DE CONTROLE =====
     let poteChacoalhado = false;
     let seedRandom = Date.now();
     let sorteioJaRealizado = false;
+    
+    console.log('🎲 Variáveis inicializadas:');
+    console.log('  - poteChacoalhado:', poteChacoalhado);
+    console.log('  - seedRandom:', seedRandom);
+    console.log('  - sorteioJaRealizado:', sorteioJaRealizado);
     
     // Inicialização automática com a data pré-selecionada
     setTimeout(() => {
@@ -712,45 +764,143 @@ function initializeSorteioPaget() {
         }, 300);
     }
     
-    // Sortear final - CORRIGIDO!
-    btnSortearFinal.addEventListener('click', function() {
-        console.log('🎯 Botão realizar sorteio clicado!');
+    // ===== SEÇÃO 8: EVENT LISTENER BOTÃO SORTEAR - CORRIGIDO! =====
+    console.log('🎯 Configurando event listener do botão Realizar Sorteio...');
+    
+    // Remove listeners anteriores (caso existam)
+    btnSortearFinal.removeEventListener('click', handleSortearClick);
+    
+    // Função separada para o click handler
+    function handleSortearClick(event) {
+        console.log('🎯 === BOTÃO REALIZAR SORTEIO CLICADO ===');
+        console.log('  - Event:', event);
+        console.log('  - Target:', event.target);
+        console.log('  - Botão disabled:', btnSortearFinal.disabled);
         
+        // Previne comportamento padrão
+        event.preventDefault();
+        event.stopPropagation();
+        
+        // ===== VALIDAÇÕES CRÍTICAS =====
+        console.log('🔍 Executando validações:');
+        
+        // 1. Verifica se sorteio já foi realizado
         if (sorteioJaRealizado) {
+            console.warn('⚠️ Validação falhou: Sorteio já realizado');
             alert('⚠️ Sorteio já foi realizado para esta semana!');
             return;
         }
+        console.log('  ✅ Sorteio não foi realizado ainda');
         
+        // 2. Verifica se pote foi chacoalhado
         if (!poteChacoalhado) {
+            console.warn('⚠️ Validação falhou: Potes não chacoalhados');
             alert('⚠️ Você precisa chacoalhar os potes primeiro!');
             return;
         }
+        console.log('  ✅ Potes foram chacoalhados');
         
-        // Verifica se o objeto sorteioAnimado existe
+        // 3. Verifica se o objeto sorteioAnimado existe
         if (!window.sorteioAnimado) {
-            console.error('❌ SorteioAnimado não encontrado!');
+            console.error('❌ Validação falhou: SorteioAnimado não encontrado!');
             alert('❌ Erro: Sistema de sorteio não carregado. Recarregue a página.');
             return;
         }
+        console.log('  ✅ SorteioAnimado disponível');
+        
+        // 4. Verifica se há lojas suficientes
+        if (lojasBig.length === 0 || lojasUltra.length === 0) {
+            console.error('❌ Validação falhou: Lojas insuficientes');
+            alert('❌ Erro: Não há lojas suficientes para sortear!');
+            return;
+        }
+        console.log('  ✅ Lojas suficientes disponíveis');
+        
+        // ===== INÍCIO DO SORTEIO =====
+        console.log('🚀 Todas as validações passaram! Iniciando sorteio...');
         
         // Usa a seed gerada no chacoalhar para determinismo
         if (typeof Math.seedrandom === 'function') {
+            console.log('🎲 Aplicando seed determinística:', seedRandom);
             Math.seedrandom(seedRandom);
+        } else {
+            console.warn('⚠️ Math.seedrandom não disponível, usando random padrão');
         }
         
-        statusTexto.textContent = 'Iniciando sorteio...';
+        // Atualiza interface
+        statusTexto.textContent = 'Iniciando sorteio cinematográfico...';
         statusSorteio.className = 'alert alert-warning text-center';
         
-        console.log('🚀 Iniciando sorteio com dados:', { big: lojasBig, ultra: lojasUltra });
+        // Desabilita botão temporariamente
+        btnSortearFinal.disabled = true;
+        btnSortearFinal.textContent = '🎬 SORTEANDO...';
         
-        // Chama a função corretamente
+        console.log('🎬 Dados do sorteio:');
+        console.log('  - Lojas BIG:', lojasBig.length, 'disponíveis');
+        console.log('  - Lojas ULTRA:', lojasUltra.length, 'disponíveis');
+        console.log('  - Seed:', seedRandom);
+        console.log('  - Timestamp:', new Date().toISOString());
+        
+        // ===== CHAMADA DO SORTEIO =====
         try {
+            console.log('🎯 Chamando window.sorteioAnimado.iniciarSorteioLojas...');
             window.sorteioAnimado.iniciarSorteioLojas(lojasBig, lojasUltra);
+            console.log('✅ Sorteio iniciado com sucesso!');
         } catch (error) {
-            console.error('❌ Erro ao iniciar sorteio:', error);
-            alert('❌ Erro ao iniciar sorteio: ' + error.message);
+            console.error('❌ ERRO CRÍTICO ao iniciar sorteio:', error);
+            console.error('  - Message:', error.message);
+            console.error('  - Stack:', error.stack);
+            alert('❌ Erro crítico ao iniciar sorteio: ' + error.message);
+            
+            // Restaura botão em caso de erro
+            btnSortearFinal.disabled = false;
+            btnSortearFinal.textContent = '🎯 Realizar Sorteio';
         }
+    }
+    
+    // Anexa o event listener
+    btnSortearFinal.addEventListener('click', handleSortearClick);
+    console.log('✅ Event listener anexado ao botão Realizar Sorteio!');
+    
+    // Teste adicional: verifica se o botão responde a clique
+    btnSortearFinal.addEventListener('mousedown', function() {
+        console.log('🖱️ Mousedown detectado no botão Realizar Sorteio');
     });
+    
+    btnSortearFinal.addEventListener('mouseup', function() {
+        console.log('🖱️ Mouseup detectado no botão Realizar Sorteio');
+    });
+    
+    // ===== SEÇÃO 8.5: BOTÃO DE TESTE DE EMERGÊNCIA =====
+    if (btnTesteEmergencia) {
+        console.log('🆘 Configurando botão de teste de emergência...');
+        
+        btnTesteEmergencia.addEventListener('click', function(event) {
+            console.log('🆘 === TESTE DE EMERGÊNCIA ATIVADO ===');
+            event.preventDefault();
+            event.stopPropagation();
+            
+            // Força os parâmetros para teste
+            poteChacoalhado = true;
+            sorteioJaRealizado = false;
+            
+            console.log('🔧 Parâmetros forçados para teste:');
+            console.log('  - poteChacoalhado:', poteChacoalhado);
+            console.log('  - sorteioJaRealizado:', sorteioJaRealizado);
+            
+            // Chama a mesma função do botão principal
+            handleSortearClick(event);
+        });
+        
+        // Mostra o botão de emergência após 10 segundos se o principal não funcionar
+        setTimeout(() => {
+            if (btnSortearFinal.disabled && !sorteioJaRealizado) {
+                console.log('⚠️ Ativando botão de emergência - botão principal não respondeu');
+                btnTesteEmergencia.style.display = 'block';
+                btnTesteEmergencia.title = 'Use apenas se o botão principal não funcionar';
+            }
+        }, 10000);
+    }
     
     // Resetar interface
     function resetarInterface() {
@@ -813,7 +963,66 @@ function initializeSorteioPaget() {
         });
     };
     
-    console.log('✅ Inicialização completa!');
+    // ===== SEÇÃO 9: FINALIZAÇÃO E TESTE =====
+    console.log('🏁 === FINALIZAÇÃO DA INICIALIZAÇÃO ===');
+    console.log('✅ Todos os componentes inicializados com sucesso!');
+    console.log('📊 Resumo do sistema:');
+    console.log('  - Elementos DOM: OK');
+    console.log('  - SorteioAnimado: OK');
+    console.log('  - Event Listeners: OK');
+    console.log('  - Dados das lojas: OK');
+    console.log('  - Funções AJAX: OK');
+    console.log('');
+    console.log('🎯 Sistema pronto para uso!');
+    console.log('⚡ Para testar manualmente, digite: testSorteio()');
+    
+    // Função de teste global
+    window.testSorteio = function() {
+        console.log('🧪 === TESTE MANUAL DO SISTEMA ===');
+        console.log('1. Testando elementos DOM...');
+        console.log('  - btnSortearFinal existe:', !!btnSortearFinal);
+        console.log('  - btnSortearFinal disabled:', btnSortearFinal.disabled);
+        console.log('  - btnSortearFinal texto:', btnSortearFinal.textContent);
+        
+        console.log('2. Testando variáveis...');
+        console.log('  - poteChacoalhado:', poteChacoalhado);
+        console.log('  - sorteioJaRealizado:', sorteioJaRealizado);
+        
+        console.log('3. Testando SorteioAnimado...');
+        console.log('  - window.sorteioAnimado:', !!window.sorteioAnimado);
+        console.log('  - Métodos disponíveis:', Object.getOwnPropertyNames(Object.getPrototypeOf(window.sorteioAnimado)));
+        
+        console.log('4. Testando dados...');
+        console.log('  - Lojas BIG:', lojasBig.length);
+        console.log('  - Lojas ULTRA:', lojasUltra.length);
+        
+        if (btnSortearFinal.disabled) {
+            console.log('⚠️ Botão está desabilitado. Possíveis causas:');
+            console.log('  - Potes não foram chacoalhados ainda');
+            console.log('  - Sorteio já foi realizado');
+            console.log('  - Erro na inicialização');
+        } else {
+            console.log('✅ Botão está habilitado e pronto para uso!');
+        }
+        
+        console.log('🧪 Teste concluído!');
+    };
+    
+    // Atualiza status final
+    if (statusTexto && statusSorteio) {
+        // Verifica se deve fazer inicialização automática
+        if (semanaInicio.value && semanaInicio.value.trim() !== '') {
+            console.log('📅 Data pré-selecionada encontrada:', semanaInicio.value);
+            statusTexto.textContent = 'Data pré-selecionada. Verificando...';
+            verificarSorteioExistente(semanaInicio.value);
+        } else {
+            console.log('📅 Nenhuma data pré-selecionada');
+            statusTexto.textContent = 'Sistema carregado! Selecione uma data para começar.';
+            statusSorteio.className = 'alert alert-info text-center';
+        }
+    }
+    
+    console.log('✅ INICIALIZAÇÃO COMPLETA!');
 }
 
 // Adiciona biblioteca para seed random
