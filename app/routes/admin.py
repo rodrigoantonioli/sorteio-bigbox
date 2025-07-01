@@ -241,6 +241,11 @@ def novo_usuario():
     lojas = Loja.query.filter_by(ativo=True).order_by(Loja.nome).all()
     form.loja_id.choices = [(0, 'Selecione uma loja')] + [(l.id, f"{l.codigo} - {l.nome}") for l in lojas]
     
+    # Se loja_id foi passada como parâmetro, pré-seleciona
+    loja_id_param = request.args.get('loja_id', type=int)
+    if loja_id_param and request.method == 'GET':
+        form.loja_id.data = loja_id_param
+    
     if form.validate_on_submit():
         # Verifica se email já existe
         usuario_existente = Usuario.query.filter_by(email=form.email.data).first()
@@ -777,6 +782,11 @@ def adicionar_colaborador():
     # Popula lojas disponíveis
     lojas = Loja.query.filter_by(ativo=True).order_by(Loja.nome).all()
     form.loja_id.choices = [(l.id, f"{l.codigo} - {l.nome}") for l in lojas]
+    
+    # Se loja_id foi passada como parâmetro, pré-seleciona
+    loja_id_param = request.args.get('loja_id', type=int)
+    if loja_id_param and request.method == 'GET':
+        form.loja_id.data = loja_id_param
     
     if form.validate_on_submit():
         # Verifica se matrícula já existe nesta loja

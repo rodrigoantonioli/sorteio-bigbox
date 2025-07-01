@@ -37,10 +37,10 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Código</th>
-                                        <th>Nome</th>
-                                        <th>Bandeira</th>
+                                        <th>Loja</th>
                                         <th>Status</th>
+                                        <th>Assistente</th>
+                                        <th>Colaboradores</th>
                                         <th>Ações</th>
                                     </tr>
                                 </thead>
@@ -48,31 +48,90 @@
                                     {% for loja in lojas %}
                                     <tr>
                                         <td>
-                                            <strong>{{ loja.codigo }}</strong>
-                                        </td>
-                                        <td>
-                                            {{ loja.nome }}
-                                        </td>
-                                        <td>
-                                            {% if loja.bandeira == 'BIG' %}
-                                                <span class="badge bg-primary">BIG</span>
-                                            {% else %}
-                                                <span class="badge bg-success">ULTRA</span>
-                                            {% endif %}
+                                            <div>
+                                                <strong>{{ loja.codigo }} - {{ loja.nome }}</strong>
+                                                <br>
+                                                <span class="badge bg-{{ 'primary' if loja.bandeira == 'BIG' else 'success' }}">
+                                                    {{ loja.bandeira }} Box
+                                                </span>
+                                            </div>
                                         </td>
                                         <td>
                                             {% if loja.ativo %}
-                                                <span class="badge bg-success">Ativa</span>
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check-circle"></i> Ativa
+                                                </span>
                                             {% else %}
-                                                <span class="badge bg-danger">Inativa</span>
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-times-circle"></i> Inativa
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% set assistente = loja.usuarios|selectattr('tipo', 'equalto', 'assistente')|selectattr('ativo')|first %}
+                                            {% if assistente %}
+                                                <div class="text-success">
+                                                    <i class="fas fa-user-check"></i> <strong>{{ assistente.nome }}</strong>
+                                                    <br>
+                                                    <small class="text-muted">{{ assistente.email }}</small>
+                                                </div>
+                                            {% else %}
+                                                <div class="text-warning">
+                                                    <i class="fas fa-user-plus"></i> <strong>Sem assistente</strong>
+                                                    <br>
+                                                    <a href="{{ url_for('admin.novo_usuario') }}?loja_id={{ loja.id }}" 
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-plus"></i> Cadastrar
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% set colaboradores_ativos = loja.colaboradores|selectattr('apto')|list %}
+                                            {% if colaboradores_ativos %}
+                                                <div class="text-success">
+                                                    <i class="fas fa-users"></i> <strong>{{ colaboradores_ativos|length }} colaborador{{ 'es' if colaboradores_ativos|length != 1 else '' }}</strong>
+                                                    <br>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a href="{{ url_for('admin.colaboradores', loja_id=loja.id) }}" 
+                                                           class="btn btn-outline-info">
+                                                            <i class="fas fa-eye"></i> Ver
+                                                        </a>
+                                                        <a href="{{ url_for('admin.upload_colaboradores') }}?loja_id={{ loja.id }}" 
+                                                           class="btn btn-outline-success">
+                                                            <i class="fas fa-upload"></i> Upload
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <div class="text-warning">
+                                                    <i class="fas fa-users-slash"></i> <strong>Sem colaboradores</strong>
+                                                    <br>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a href="{{ url_for('admin.upload_colaboradores') }}?loja_id={{ loja.id }}" 
+                                                           class="btn btn-outline-primary">
+                                                            <i class="fas fa-upload"></i> Upload Excel
+                                                        </a>
+                                                        <a href="{{ url_for('admin.adicionar_colaborador') }}?loja_id={{ loja.id }}" 
+                                                           class="btn btn-outline-success">
+                                                            <i class="fas fa-user-plus"></i> Adicionar
+                                                        </a>
+                                                    </div>
+                                                </div>
                                             {% endif %}
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm" role="group">
                                                 <a href="{{ url_for('admin.editar_loja', id=loja.id) }}" 
-                                                   class="btn btn-outline-primary" title="Editar">
+                                                   class="btn btn-outline-primary" title="Editar Loja">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
+                                                {% if assistente %}
+                                                    <a href="{{ url_for('admin.editar_usuario', id=assistente.id) }}" 
+                                                       class="btn btn-outline-info" title="Editar Assistente">
+                                                        <i class="fas fa-user-edit"></i>
+                                                    </a>
+                                                {% endif %}
                                                 {% if loja.ativo %}
                                                     <a href="{{ url_for('admin.toggle_loja', id=loja.id) }}" 
                                                        class="btn btn-outline-warning" title="Desativar">
@@ -84,17 +143,48 @@
                                                         <i class="fas fa-play"></i>
                                                     </a>
                                                 {% endif %}
-                                                <a href="{{ url_for('admin.excluir_loja', id=loja.id) }}" 
-                                                   class="btn btn-outline-danger" title="Excluir"
-                                                   onclick="return confirm('Tem certeza que deseja excluir esta loja?')">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
                                             </div>
                                         </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
+                        </div>
+
+                        <!-- Resumo de Status -->
+                        <div class="row mt-4">
+                            <div class="col-md-3">
+                                <div class="card bg-primary text-white text-center">
+                                    <div class="card-body">
+                                        <h4>{{ lojas|length }}</h4>
+                                        <small>Total de Lojas</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-success text-white text-center">
+                                    <div class="card-body">
+                                        <h4>{{ lojas|selectattr('usuarios')|list|length }}</h4>
+                                        <small>Com Assistente</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-info text-white text-center">
+                                    <div class="card-body">
+                                        <h4>{{ lojas|sum(attribute='colaboradores')|selectattr('apto')|list|length }}</h4>
+                                        <small>Total Colaboradores</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-warning text-dark text-center">
+                                    <div class="card-body">
+                                        <h4>{{ lojas|rejectattr('ativo')|list|length }}</h4>
+                                        <small>Lojas Inativas</small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     {% else %}
                         <div class="text-center py-5">
@@ -111,4 +201,19 @@
         </div>
     </div>
 </div>
+
+<style>
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+.btn-group-sm .btn {
+    font-size: 0.875rem;
+}
+.card-body h4 {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+</style>
 {% endblock %} 
