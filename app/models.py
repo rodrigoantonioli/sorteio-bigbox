@@ -57,6 +57,7 @@ class Premio(db.Model):
     descricao = db.Column(db.Text)
     data_evento = db.Column(db.Date, nullable=False)
     tipo = db.Column(db.Enum('show', 'day_use', name='tipo_premio'), nullable=False)
+    loja_id = db.Column(db.Integer, db.ForeignKey('lojas.id'), nullable=True)  # Vinculação com loja ganhadora
     ativo = db.Column(db.Boolean, default=True)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
     criado_por = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
@@ -87,6 +88,7 @@ class SorteioColaborador(db.Model):
 Usuario.loja = db.relationship('Loja', backref='usuarios')
 Colaborador.loja = db.relationship('Loja', backref='colaboradores')
 Premio.criador = db.relationship('Usuario', backref='premios_criados')
+Premio.loja = db.relationship('Loja', backref='premios_disponiveis')
 
 SorteioSemanal.loja_big = db.relationship('Loja', foreign_keys=[SorteioSemanal.loja_big_id])
 SorteioSemanal.loja_ultra = db.relationship('Loja', foreign_keys=[SorteioSemanal.loja_ultra_id])

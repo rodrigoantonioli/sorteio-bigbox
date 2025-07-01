@@ -149,55 +149,70 @@
         </div>
     </div>
 
-    <!-- Últimos sorteios -->
-    {% if sorteios_recentes %}
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-clock"></i> Últimos Sorteios
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Semana</th>
-                                    <th>Loja BIG</th>
-                                    <th>Loja ULTRA</th>
-                                    <th>Data</th>
-                                    <th>Colaboradores</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for sorteio in sorteios_recentes %}
-                                <tr>
-                                    <td>{{ sorteio.semana_inicio.strftime('%d/%m/%Y') }}</td>
-                                    <td>
-                                        <span class="badge bg-primary">{{ sorteio.loja_big.codigo }}</span>
-                                        {{ sorteio.loja_big.nome }}
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-success">{{ sorteio.loja_ultra.codigo }}</span>
-                                        {{ sorteio.loja_ultra.nome }}
-                                    </td>
-                                    <td>
-                                        <small>{{ sorteio.data_sorteio.strftime('%d/%m/%Y %H:%M') }}</small>
-                                    </td>
-                                    <td>
-                                        <small>{{ sorteios_colaboradores[sorteio.id] }} sorteados</small>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
+         <!-- Últimos sorteios -->
+     {% if sorteios_recentes %}
+     <div class="row">
+         <div class="col-12">
+             <div class="card">
+                 <div class="card-header bg-secondary text-white">
+                     <h5 class="card-title mb-0">
+                         <i class="fas fa-clock"></i> Últimos Sorteios Realizados
+                     </h5>
+                 </div>
+                 <div class="card-body">
+                     <div class="table-responsive">
+                         <table class="table table-sm">
+                             <thead>
+                                 <tr>
+                                     <th>Semana</th>
+                                     <th>Loja BIG</th>
+                                     <th>Loja ULTRA</th>
+                                     <th>Data</th>
+                                     <th>Colaboradores Sorteados</th>
+                                     <th>Ações</th>
+                                 </tr>
+                             </thead>
+                             <tbody>
+                                 {% for sorteio in sorteios_recentes %}
+                                 <tr>
+                                     <td>
+                                         <strong>{{ sorteio.semana_inicio.strftime('%d/%m/%Y') }}</strong>
+                                     </td>
+                                     <td>
+                                         <span class="badge bg-primary">{{ sorteio.loja_big.codigo }}</span>
+                                         <br>
+                                         <small>{{ sorteio.loja_big.nome }}</small>
+                                     </td>
+                                     <td>
+                                         <span class="badge bg-success">{{ sorteio.loja_ultra.codigo }}</span>
+                                         <br>
+                                         <small>{{ sorteio.loja_ultra.nome }}</small>
+                                     </td>
+                                     <td>
+                                         <small>{{ sorteio.data_sorteio.strftime('%d/%m/%Y %H:%M') }}</small>
+                                     </td>
+                                     <td class="text-center">
+                                         {% set count = sorteios_colaboradores_count.get(sorteio.id, 0) %}
+                                         {% if count > 0 %}
+                                             <span class="badge bg-success fs-6">{{ count }}</span>
+                                         {% else %}
+                                             <span class="badge bg-warning text-dark fs-6">0</span>
+                                         {% endif %}
+                                     </td>
+                                     <td>
+                                         <a href="{{ url_for('admin.sorteios') }}" class="btn btn-outline-info btn-sm">
+                                             <i class="fas fa-eye"></i> Ver Detalhes
+                                         </a>
+                                     </td>
+                                 </tr>
+                                 {% endfor %}
+                             </tbody>
+                         </table>
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
+     {% endif %}
 </div>
 {% endblock %} 

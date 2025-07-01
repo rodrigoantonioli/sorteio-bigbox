@@ -41,7 +41,7 @@
                                         <th>Nome</th>
                                         <th>Tipo</th>
                                         <th>Data do Evento</th>
-                                        <th>Descrição</th>
+                                        <th>Loja Ganhadora</th>
                                         <th>Status</th>
                                         <th>Criado por</th>
                                         <th width="150">Ações</th>
@@ -64,10 +64,14 @@
                                         </td>
                                         <td>{{ premio.data_evento.strftime('%d/%m/%Y') }}</td>
                                         <td>
-                                            {% if premio.descricao %}
-                                                <small class="text-muted">{{ premio.descricao[:50] }}{% if premio.descricao|length > 50 %}...{% endif %}</small>
+                                            {% if premio.loja %}
+                                                <span class="badge bg-{{ 'primary' if premio.loja.bandeira == 'BIG' else 'success' }}">
+                                                    {{ premio.loja.codigo }}
+                                                </span>
+                                                <br>
+                                                <small class="text-muted">{{ premio.loja.nome }}</small>
                                             {% else %}
-                                                <small class="text-muted">-</small>
+                                                <span class="badge bg-secondary">Todas as lojas</span>
                                             {% endif %}
                                         </td>
                                         <td>

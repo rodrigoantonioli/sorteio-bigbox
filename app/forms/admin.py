@@ -43,4 +43,5 @@ class PremioForm(FlaskForm):
         ('show', 'Show'),
         ('day_use', 'Day Use')
     ], validators=[DataRequired(message='Tipo é obrigatório')])
+    loja_id = SelectField('Loja Ganhadora', coerce=int, validators=[Optional()])
     submit = SubmitField('Salvar') 

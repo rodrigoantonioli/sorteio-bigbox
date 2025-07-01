@@ -41,13 +41,24 @@ def dashboard():
     # Prêmios ativos
     premios_ativos = Premio.query.filter_by(ativo=True).count()
     
+    # Sorteios recentes para o dashboard
+    sorteios_recentes = SorteioSemanal.query.order_by(SorteioSemanal.semana_inicio.desc()).limit(5).all()
+    
+    # Contadores de sorteios de colaboradores por sorteio semanal
+    sorteios_colaboradores_count = {}
+    for sorteio in sorteios_recentes:
+        count = SorteioColaborador.query.filter_by(sorteio_semanal_id=sorteio.id).count()
+        sorteios_colaboradores_count[sorteio.id] = count
+    
     return render_template('admin/dashboard.html',
                          total_lojas=total_lojas,
                          total_usuarios=total_usuarios,
                          total_colaboradores=total_colaboradores,
                          sorteio_atual=sorteio_atual,
                          colaboradores_sorteados=colaboradores_sorteados,
-                         premios_ativos=premios_ativos)
+                         premios_ativos=premios_ativos,
+                         sorteios_recentes=sorteios_recentes,
+                         sorteios_colaboradores_count=sorteios_colaboradores_count)
 
 @admin_bp.route('/sortear', methods=['GET', 'POST'])
 @admin_required
@@ -211,12 +222,24 @@ def novo_premio():
     """Criar novo prêmio"""
     form = PremioForm()
     
+    # Popula lojas ganhadoras (apenas lojas que foram sorteadas)
+    lojas_ganhadoras = []
+    sorteios_ativos = SorteioSemanal.query.order_by(SorteioSemanal.semana_inicio.desc()).all()
+    for sorteio in sorteios_ativos:
+        if sorteio.loja_big not in [l[1] for l in lojas_ganhadoras]:
+            lojas_ganhadoras.append((sorteio.loja_big.id, f"{sorteio.loja_big.codigo} - {sorteio.loja_big.nome} (BIG)"))
+        if sorteio.loja_ultra not in [l[1] for l in lojas_ganhadoras]:
+            lojas_ganhadoras.append((sorteio.loja_ultra.id, f"{sorteio.loja_ultra.codigo} - {sorteio.loja_ultra.nome} (ULTRA)"))
+    
+    form.loja_id.choices = [(0, 'Disponível para todas as lojas ganhadoras')] + lojas_ganhadoras
+    
     if form.validate_on_submit():
         premio = Premio(
             nome=form.nome.data,
             descricao=form.descricao.data,
             data_evento=form.data_evento.data,
             tipo=form.tipo.data,
+            loja_id=form.loja_id.data if form.loja_id.data > 0 else None,
             criado_por=current_user.id,
             ativo=True
         )
@@ -237,11 +260,23 @@ def editar_premio(id):
     
     form = PremioForm(obj=premio)
     
+    # Popula lojas ganhadoras (apenas lojas que foram sorteadas)
+    lojas_ganhadoras = []
+    sorteios_ativos = SorteioSemanal.query.order_by(SorteioSemanal.semana_inicio.desc()).all()
+    for sorteio in sorteios_ativos:
+        if sorteio.loja_big not in [l[1] for l in lojas_ganhadoras]:
+            lojas_ganhadoras.append((sorteio.loja_big.id, f"{sorteio.loja_big.codigo} - {sorteio.loja_big.nome} (BIG)"))
+        if sorteio.loja_ultra not in [l[1] for l in lojas_ganhadoras]:
+            lojas_ganhadoras.append((sorteio.loja_ultra.id, f"{sorteio.loja_ultra.codigo} - {sorteio.loja_ultra.nome} (ULTRA)"))
+    
+    form.loja_id.choices = [(0, 'Disponível para todas as lojas ganhadoras')] + lojas_ganhadoras
+    
     if form.validate_on_submit():
         premio.nome = form.nome.data
         premio.descricao = form.descricao.data
         premio.data_evento = form.data_evento.data
         premio.tipo = form.tipo.data
+        premio.loja_id = form.loja_id.data if form.loja_id.data > 0 else None
         
         db.session.commit()
         

@@ -40,22 +40,61 @@
             </div>
         </div>
     {% else %}
-        <!-- Status do Sorteio -->
+        <!-- Status do Sorteio - Card fixo no topo -->
         <div class="row mb-4">
             <div class="col-12">
                 {% if loja_sorteada %}
-                    <div class="alert alert-success">
-                        <h4 class="alert-heading">🎉 Parabéns! Sua loja foi sorteada!</h4>
-                        <p>A loja <strong>{{ loja.nome }}</strong> foi sorteada para a semana de {{ sorteio_atual.semana_inicio.strftime('%d/%m/%Y') }}.</p>
-                        <hr>
-                        <p class="mb-0">Você pode realizar sorteios de colaboradores para os prêmios disponíveis.</p>
+                    <div class="card border-success">
+                        <div class="card-header bg-success text-white">
+                            <h4 class="card-title mb-0">
+                                <i class="fas fa-trophy"></i> 🎉 LOJA GANHADORA!
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h5 class="text-success">Parabéns! Sua loja foi sorteada!</h5>
+                                    <p class="mb-2">
+                                        <strong>{{ loja.nome }}</strong> foi sorteada para a semana de 
+                                        <strong>{{ sorteio_atual.semana_inicio.strftime('%d/%m/%Y') }}</strong>
+                                    </p>
+                                    <p class="mb-0">
+                                        <i class="fas fa-dice"></i> Você pode realizar sorteios de colaboradores para os prêmios disponíveis.
+                                    </p>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <i class="fas fa-medal fa-4x text-warning mb-2"></i>
+                                    <br>
+                                    <span class="badge bg-warning text-dark fs-6">SEMANA PREMIADA</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 {% else %}
-                    <div class="alert alert-info">
-                        <h4 class="alert-heading">ℹ️ Sua loja não foi sorteada</h4>
-                        <p>A loja <strong>{{ loja.nome }}</strong> não foi sorteada esta semana.</p>
-                        <hr>
-                        <p class="mb-0">Continue gerenciando seus colaboradores para estar pronto para os próximos sorteios!</p>
+                    <div class="card border-info">
+                        <div class="card-header bg-info text-white">
+                            <h4 class="card-title mb-0">
+                                <i class="fas fa-info-circle"></i> Status da Semana
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h5 class="text-info">Sua loja não foi sorteada esta semana</h5>
+                                    <p class="mb-2">
+                                        <strong>{{ loja.nome }}</strong> não foi contemplada no sorteio desta semana.
+                                    </p>
+                                    <p class="mb-0">
+                                        <i class="fas fa-users"></i> Continue gerenciando seus colaboradores para estar pronto para os próximos sorteios!
+                                    </p>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <i class="fas fa-clock fa-4x text-muted mb-2"></i>
+                                    <br>
+                                    <span class="badge bg-secondary fs-6">AGUARDANDO</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 {% endif %}
             </div>

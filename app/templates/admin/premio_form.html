@@ -75,6 +75,22 @@
                         </div>
 
                         <div class="mb-3">
+                            {{ form.loja_id.label(class="form-label") }}
+                            {{ form.loja_id(class="form-select") }}
+                            {% if form.loja_id.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.loja_id.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-store"></i> 
+                                Selecione a loja específica ou deixe disponível para todas
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
                             {{ form.descricao.label(class="form-label") }}
                             {{ form.descricao(class="form-control", rows="3") }}
                             {% if form.descricao.errors %}

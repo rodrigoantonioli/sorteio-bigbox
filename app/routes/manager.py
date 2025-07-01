@@ -436,10 +436,11 @@ def sortear_colaboradores():
     
     form = SorteioColaboradorForm()
     
-    # Popula prêmios disponíveis (ativos e futuros)
+    # Popula prêmios disponíveis (ativos, futuros e específicos da loja ou gerais)
     premios_disponiveis = Premio.query.filter(
         Premio.ativo == True,
-        Premio.data_evento >= date.today()
+        Premio.data_evento >= date.today(),
+        db.or_(Premio.loja_id == current_user.loja_id, Premio.loja_id.is_(None))
     ).order_by(Premio.data_evento).all()
     
     form.premio_id.choices = [(p.id, f"{p.nome} - {p.data_evento.strftime('%d/%m/%Y')}") for p in premios_disponiveis]

@@ -45,7 +45,9 @@
                         </td>
                         <td>
                             <button class="btn btn-sm btn-info" data-bs-toggle="collapse" 
-                                    data-bs-target="#detalhes-{{ sorteio.id }}">
+                                    data-bs-target="#detalhes-{{ sorteio.id }}" 
+                                    aria-expanded="false" aria-controls="detalhes-{{ sorteio.id }}"
+                                    title="Ver detalhes do sorteio">
                                 <i class="bi bi-eye"></i> Detalhes
                             </button>
                         </td>

@@ -63,7 +63,7 @@
     </div>
 
     <!-- Ações em Lote -->
-    <div class="card mb-3" id="acoes-lote" style="display: none;">
+    <div class="card mb-3" id="acoes-lote" class="d-none">
         <div class="card-body">
             <form method="POST" action="{{ url_for('manager.acao_lote') }}" onsubmit="return confirmarAcaoLote()">
                 <div class="row align-items-center">
@@ -72,7 +72,9 @@
                             <span class="me-3">
                                 <strong><span id="count-selecionados">0</span></strong> colaboradores selecionados
                             </span>
-                            <select name="acao" class="form-select form-select-sm me-2" style="width: auto;" required>
+                            <select name="acao" class="form-select form-select-sm me-2 w-auto" required 
+                                    title="Selecione uma ação para aplicar aos colaboradores selecionados" 
+                                    aria-label="Ação para aplicar em lote">
                                 <option value="">Escolha uma ação...</option>
                                 <option value="ativar">✅ Habilitar para sorteios</option>
                                 <option value="desativar">❌ Desabilitar para sorteios</option>
@@ -202,7 +204,7 @@
     <!-- Estado Vazio -->
     <div class="card">
         <div class="card-body text-center py-5">
-            <i class="fas fa-users text-muted" style="font-size: 4rem;"></i>
+            <i class="fas fa-users text-muted fs-1"></i>
             <h4 class="mt-3 text-muted">Nenhum colaborador cadastrado</h4>
             <p class="text-muted">Comece adicionando colaboradores individualmente ou fazendo upload de uma planilha.</p>
             <div class="mt-4">
@@ -228,9 +230,11 @@ function atualizarSelecao() {
     countSpan.textContent = count;
     
     if (count > 0) {
-        acoesLote.style.display = 'block';
+        acoesLote.classList.remove('d-none');
+        acoesLote.classList.add('d-block');
     } else {
-        acoesLote.style.display = 'none';
+        acoesLote.classList.remove('d-block');
+        acoesLote.classList.add('d-none');
     }
     
     // Atualiza checkbox "selecionar todos"
