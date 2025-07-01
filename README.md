@@ -1,260 +1,144 @@
-# Sistema de Sorteios - Big Box & UltraBox 🎉
+# 🎯 Sistema de Sorteios - Big Box & UltraBox
 
-## 📋 Visão Geral
-
-Sistema web para gerenciamento de sorteios semanais de ingressos para o Festival Na Praia, destinado aos colaboradores das lojas Big Box e UltraBox. O sistema automatiza todo o processo desde o sorteio das lojas até a seleção dos colaboradores contemplados.
-
-## 🎯 Objetivos
-
-1. **Automatizar o processo de sorteio semanal** de uma loja de cada bandeira (BIG e ULTRA)
-2. **Permitir que gerentes façam upload** de planilhas com colaboradores aptos
-3. **Realizar sorteios internos** de colaboradores nas lojas sorteadas
-4. **Exibir publicamente** os resultados dos sorteios
-5. **Manter histórico** de todos os sorteios realizados
+Sistema web completo para gerenciar sorteios semanais de ingressos do **Festival Na Praia** para colaboradores das lojas Big Box e UltraBox.
 
 ## 🚀 Funcionalidades Principais
 
-### Para o Administrador
-- **Login seguro** com controle de acesso
-- **Sorteio semanal** de 1 loja BIG + 1 loja ULTRA
-- **Configuração da semana** (datas dos shows, quantidade de ingressos)
-- **Gerenciamento de usuários** (criar/editar gerentes)
-- **Visualização de histórico** completo de sorteios
-- **Dashboard** com estatísticas e resumos
+### 🎲 Sorteios Semanais
+- Sorteio automático de **1 loja BIG + 1 loja ULTRA** por semana
+- Histórico completo de todos os sorteios realizados
+- Interface intuitiva para visualização dos resultados
+- Admin pode excluir sorteios quando necessário
 
-### Para os Gerentes
-- **Login individual** por loja
-- **Upload de Excel** com colaboradores aptos (formato padrão)
-- **Validação automática** dos dados do Excel
-- **Sorteio interno** dos colaboradores
-- **Visualização** dos colaboradores sorteados
-- **Download de relatório** em PDF/Excel
+### 👥 Gerenciamento Completo de Colaboradores
+- **Upload de planilhas Excel** que **SUBSTITUI TODOS** os colaboradores da loja
+- **Proteção automática** para colaboradores com histórico de sorteios
+- **CRUD completo**: Criar, Editar, Ativar/Desativar, Excluir
+- Listagem com filtros e controles por loja
+- Relatórios detalhados de cada operação
 
-### Para o Público
-- **Página pública** sem necessidade de login
-- **Visualização dos resultados** da semana atual
-- **Histórico** das últimas semanas
-- **Busca** por loja ou colaborador
+### 🎁 Sistema de Prêmios
+- **Cadastro de prêmios** pelo admin baseado no comunicado oficial
+- Prêmios configuráveis: Shows e Day Use
+- Gerentes selecionam prêmios específicos para cada sorteio
+- Controle de prêmios ativos/inativos
 
-## 📊 Regras de Negócio
+### 🎯 Sorteios de Colaboradores
+- **Sistema de confirmação obrigatória** antes do sorteio
+- Seleção de prêmios cadastrados pelo admin
+- Snapshot da lista de colaboradores no momento do sorteio
+- Histórico individual de participações
+- Transparência total: quem sorteou, quando, quantos participaram
 
-### Critérios de Elegibilidade dos Colaboradores
-- ✅ Presentes na loja (sem faltas injustificadas)
-- ✅ Sem advertências
-- ✅ Devem estar de FOLGA no dia do ingresso sorteado
-- ❌ A escala de trabalho NÃO será alterada
+## 🛡️ Comportamento Especial: Upload de Colaboradores
 
-### Cronograma Semanal
-- **Terça-feira**: Sorteio das duas lojas (1 BIG + 1 ULTRA)
-- **Quarta-feira**: Gerentes realizam sorteios internos
-- **Quinta a Domingo**: Shows e eventos
+### ⚠️ IMPORTANTE: O upload SEMPRE substitui TODOS os colaboradores da loja específica
 
-### Distribuição de Ingressos
-- **Sexta**: Apenas shows (sem Day Use)
-- **Sábado e Domingo**: Shows + Day Use
-- Alternância semanal entre as bandeiras para equilíbrio
+**✅ Como funciona:**
+- Remove **TODOS** os colaboradores atuais da loja do gerente
+- **PROTEGE automaticamente** colaboradores que já participaram de sorteios
+- Adiciona os novos colaboradores da planilha
+- Gera relatório detalhado do que foi feito
+- Afeta **APENAS** a loja do gerente logado
 
-## 🛠 Arquitetura Técnica
-
-### Stack Tecnológica
-- **Backend**: Python 3.9+ com Flask
-- **Frontend**: HTML5, CSS3 (Bootstrap 5), JavaScript
-- **Banco de Dados**: PostgreSQL (Render)
-- **Hospedagem**: Render (Free Tier)
-- **Autenticação**: Flask-Login + JWT
-- **Upload de Arquivos**: pandas para Excel
-- **Notificações**: Email via SendGrid/SMTP
-
-### Estrutura do Banco de Dados
-
-```sql
--- Tabela de Lojas
-lojas (
-    id SERIAL PRIMARY KEY,
-    codigo VARCHAR(10) UNIQUE,
-    nome VARCHAR(100),
-    bandeira ENUM('BIG', 'ULTRA'),
-    ativo BOOLEAN DEFAULT true
-)
-
--- Tabela de Usuários
-usuarios (
-    id SERIAL PRIMARY KEY,
-    email VARCHAR(100) UNIQUE,
-    senha_hash VARCHAR(255),
-    nome VARCHAR(100),
-    tipo ENUM('admin', 'gerente'),
-    loja_id INTEGER REFERENCES lojas(id),
-    ativo BOOLEAN DEFAULT true
-)
-
--- Tabela de Colaboradores
-colaboradores (
-    id SERIAL PRIMARY KEY,
-    matricula VARCHAR(20),
-    nome VARCHAR(100),
-    setor VARCHAR(50),
-    loja_id INTEGER REFERENCES lojas(id),
-    apto BOOLEAN DEFAULT true,
-    ultima_atualizacao TIMESTAMP
-)
-
--- Tabela de Sorteios Semanais
-sorteios_semanais (
-    id SERIAL PRIMARY KEY,
-    semana_inicio DATE,
-    loja_big_id INTEGER REFERENCES lojas(id),
-    loja_ultra_id INTEGER REFERENCES lojas(id),
-    data_sorteio TIMESTAMP,
-    sorteado_por INTEGER REFERENCES usuarios(id)
-)
-
--- Tabela de Sorteios de Colaboradores
-sorteios_colaboradores (
-    id SERIAL PRIMARY KEY,
-    sorteio_semanal_id INTEGER REFERENCES sorteios_semanais(id),
-    colaborador_id INTEGER REFERENCES colaboradores(id),
-    tipo_ingresso VARCHAR(50),
-    dia_evento DATE,
-    data_sorteio TIMESTAMP,
-    sorteado_por INTEGER REFERENCES usuarios(id)
-)
+**📊 Exemplo:**
+```
+Antes: 50 colaboradores na loja
+Upload: 30 colaboradores novos
+Resultado: 32 colaboradores (30 novos + 2 protegidos com histórico)
 ```
 
-## 🔒 Segurança
+Veja detalhes completos no [📋 Guia de Upload](GUIA_UPLOAD_COLABORADORES.md).
 
-- **Senhas criptografadas** com bcrypt
-- **Sessões seguras** com tokens JWT
-- **Validação de uploads** (apenas .xlsx, tamanho máximo 5MB)
-- **Sanitização de dados** de entrada
-- **HTTPS obrigatório** em produção
-- **Rate limiting** para prevenir ataques
-- **Logs de auditoria** para todas as ações críticas
+## 🎯 Prêmios Disponíveis (Festival Na Praia 2025)
 
-## 📱 Interface do Usuário
+1. **Show Sexta - Alcione** (05/07/2025)
+2. **Show Sábado - Wesley Safadão** (06/07/2025)
+3. **Day Use Sábado** (06/07/2025)
+4. **Show Domingo - Vintage Culture** (07/07/2025)
+5. **Day Use Domingo** (07/07/2025)
 
-### Design Responsivo
-- Mobile-first approach
-- Interface intuitiva e moderna
-- Cores das marcas (Big Box e UltraBox)
-- Feedback visual para todas as ações
-- Loading states e mensagens de erro claras
+## 🛠️ Tecnologias
 
-### Páginas Principais
-1. **Home** - Resultados públicos
-2. **Login** - Acesso seguro
-3. **Dashboard Admin** - Painel de controle
-4. **Dashboard Gerente** - Gestão da loja
-5. **Histórico** - Consulta de sorteios anteriores
+- **Backend**: Python Flask 3.0+
+- **Banco de Dados**: SQLite com SQLAlchemy
+- **Frontend**: HTML5, CSS3, JavaScript (Bootstrap 5)
+- **Autenticação**: Flask-Login com sessões seguras
+- **Upload**: Pandas para processamento de planilhas Excel
 
-## 🚦 Fluxo de Trabalho
+## 🚀 Instalação e Execução
 
-1. **Admin acessa o sistema** → Realiza sorteio semanal
-2. **Sistema notifica** gerentes das lojas sorteadas
-3. **Gerente faz upload** do Excel com colaboradores aptos
-4. **Sistema valida** e importa os dados
-5. **Gerente realiza sorteio** interno
-6. **Sistema exibe** resultados publicamente
-7. **Colaboradores** consultam os contemplados
-
-## 📈 Melhorias Futuras
-
-1. **App Mobile** nativo para consultas
-2. **Notificações Push** para colaboradores
-3. **Integração com RH** para validação automática
-4. **QR Code** para validação de ingressos
-5. **Dashboard Analytics** avançado
-6. **API REST** para integrações
-7. **Sorteio automático** com regras pré-definidas
-
-## 🔧 Configuração do Ambiente
-
-### Variáveis de Ambiente
-```env
-DATABASE_URL=postgresql://user:pass@host/db
-SECRET_KEY=your-secret-key
-FLASK_ENV=production
-MAIL_SERVER=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME=your-email
-MAIL_PASSWORD=your-password
-```
-
-### Deploy no Render
-1. Criar conta no Render
-2. Conectar repositório GitHub
-3. Configurar build command: `pip install -r requirements.txt`
-4. Configurar start command: `gunicorn app:app`
-5. Adicionar PostgreSQL database
-6. Configurar variáveis de ambiente
-
-## 📝 Notas Importantes
-
-- O sistema mantém histórico completo para auditoria
-- Backup automático diário do banco de dados
-- Logs detalhados de todas as operações
-- Suporte para múltiplos formatos de Excel
-- Validação rigorosa de dados importados
-
-## 📦 Setup e Execução Local
-
-Siga os passos abaixo para configurar e rodar o projeto em sua máquina local.
-
-### 1. Pré-requisitos
-- Python 3.9+
-- Git
-
-### 2. Crie o arquivo de Ambiente
-
-Crie um arquivo chamado `.env` na raiz do projeto. Copie e cole o conteúdo abaixo nele. Este arquivo define as variáveis de ambiente para o desenvolvimento local, usando um banco de dados SQLite para simplicidade.
-
-```env
-FLASK_APP=run.py
-FLASK_ENV=development
-SECRET_KEY=uma-chave-secreta-bem-segura-aqui
-DATABASE_URL=sqlite:///instance/sorteio.db
-ADMIN_EMAIL=admin@bigbox.com
-ADMIN_PASSWORD=BigBox2025!
-```
-
-### 3. Crie o Ambiente Virtual e Instale as Dependências
-
-Abra o terminal na raiz do projeto e execute os seguintes comandos:
-
+### 1. Clone o repositório
 ```bash
-# Crie o ambiente virtual
+git clone https://github.com/rodrigoantonioli/sorteioBigbox.git
+cd sorteioBigbox
+```
+
+### 2. Ambiente virtual
+```bash
 python -m venv venv
 
-# Ative o ambiente virtual
-# No Windows (PowerShell):
-.\venv\Scripts\Activate.ps1
-# No macOS/Linux:
-source venv/bin/activate
+# Windows
+venv\Scripts\activate
 
-# Instale as dependências
+# Linux/Mac
+source venv/bin/activate
+```
+
+### 3. Instale dependências
+```bash
 pip install -r requirements.txt
 ```
 
-### 4. Popule o Banco de Dados
-
-Com o ambiente virtual ainda ativado, execute o script para carregar a lista de lojas do Excel para o banco de dados:
-
+### 4. Execute a aplicação
 ```bash
-python load_stores.py
+python run.py
 ```
 
-O script irá criar o banco de dados e inserir todas as lojas dos arquivos `inputs`.
+### 5. Acesse o sistema
+- **URL**: http://127.0.0.1:5000
+- **Admin**: admin@bigbox.com / BigBox2025!
+- **Gerente**: gerente@big106norte.com / gerente123
 
-### 5. Execute a Aplicação
+## 🎯 Fluxo de Trabalho
 
-Finalmente, execute a aplicação Flask:
+### 1. **Admin** (Configuração)
+- Gerencia usuários e lojas
+- Cadastra e edita prêmios
+- Realiza sorteios semanais de lojas
+- Controla todos os sorteios realizados
 
-```bash
-flask run
-```
+### 2. **Gerente** (Operação)
+- Faz upload de colaboradores (substitui todos)
+- Gerencia colaboradores (CRUD completo)
+- Realiza sorteios de colaboradores
+- Confirma listas antes dos sorteios
 
-Acesse <http://127.0.0.1:5000> em seu navegador.
+### 3. **Público** (Transparência)
+- Visualiza histórico completo
+- Acompanha resultados em tempo real
+- Acessa informações sobre prêmios
 
-**Credenciais de Admin:**
-- **Email:** `admin@bigbox.com`
-- **Senha:** `BigBox2025!` 
+## 📚 Documentação
+
+- [📋 Guia de Upload de Colaboradores](GUIA_UPLOAD_COLABORADORES.md)
+- [📖 Documentação Completa](DOCUMENTACAO_FINAL.md)
+- [🚀 Deploy no Render](DEPLOYMENT.md)
+
+## 👨‍💻 Autor
+
+**Rodrigo Antonioli**
+- 📧 Email: rodrigoantonioli@gmail.com
+- 🐙 GitHub: [@rodrigoantonioli](https://github.com/rodrigoantonioli)
+- 💼 LinkedIn: [Rodrigo Antonioli](https://linkedin.com/in/rodrigoantonioli)
+- 🌐 Especialista em: Python, Power BI, Solidity, Web3
+
+---
+
+<div align="center">
+
+**⭐ Se este projeto foi útil, deixe uma estrela!**
+
+**🎯 Sistema desenvolvido para automatizar e dar transparência aos sorteios do Festival Na Praia 2025**
+
+</div> 

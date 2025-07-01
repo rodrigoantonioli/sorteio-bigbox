@@ -41,9 +41,9 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <h4 class="card-title">{{ sorteio_atual.loja_big_sorteada.nome }}</h4>
+                        <h4 class="card-title">{{ sorteio_atual.loja_big.nome }}</h4>
                         <p class="card-text text-muted">
-                            Código: {{ sorteio_atual.loja_big_sorteada.codigo }}
+                            Código: {{ sorteio_atual.loja_big.codigo }}
                         </p>
                     </div>
                 </div>
@@ -57,9 +57,9 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <h4 class="card-title">{{ sorteio_atual.loja_ultra_sorteada.nome }}</h4>
+                        <h4 class="card-title">{{ sorteio_atual.loja_ultra.nome }}</h4>
                         <p class="card-text text-muted">
-                            Código: {{ sorteio_atual.loja_ultra_sorteada.codigo }}
+                            Código: {{ sorteio_atual.loja_ultra.codigo }}
                         </p>
                     </div>
                 </div>
@@ -101,13 +101,13 @@
                         </td>
                         <td>{{ sorteio.colaborador.setor }}</td>
                         <td>
-                            {% if sorteio.tipo_ingresso == 'show' %}
-                                <i class="bi bi-music-note-beamed"></i> Show
+                            {% if sorteio.premio.tipo == 'show' %}
+                                <i class="bi bi-music-note-beamed"></i> {{ sorteio.premio.nome }}
                             {% else %}
-                                <i class="bi bi-sun"></i> Day Use
+                                <i class="bi bi-sun"></i> {{ sorteio.premio.nome }}
                             {% endif %}
                         </td>
-                        <td>{{ sorteio.dia_evento.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ sorteio.premio.data_evento.strftime('%d/%m/%Y') }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -149,11 +149,11 @@
                     <div class="card-body">
                         <p class="mb-1">
                             <span class="badge bg-primary">BIG</span>
-                            <small>{{ sorteio.loja_big_sorteada.nome }}</small>
+                            <small>{{ sorteio.loja_big.nome }}</small>
                         </p>
                         <p class="mb-0">
                             <span class="badge bg-success">ULTRA</span>
-                            <small>{{ sorteio.loja_ultra_sorteada.nome }}</small>
+                            <small>{{ sorteio.loja_ultra.nome }}</small>
                         </p>
                     </div>
                 </div>

@@ -1,144 +1,203 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard Admin - Sistema de Sorteios{% endblock %}
+{% block title %}Dashboard Admin{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <h1 class="mb-4">
-            <i class="bi bi-speedometer2"></i> Dashboard Administrativo
-        </h1>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">📊 Dashboard Administrativo</h1>
+                    <small class="text-muted">Visão geral do sistema de sorteios</small>
+                </div>
+                <div>
+                    <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-home"></i> Página Inicial
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 
-<div class="row mb-4">
-    <div class="col-md-3 mb-3">
-        <div class="card stat-card bg-primary text-white">
-            <div class="card-body">
-                <h5 class="card-title">Total de Lojas</h5>
-                <p class="display-4">{{ total_lojas }}</p>
-                <small>Lojas ativas</small>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3 mb-3">
-        <div class="card stat-card bg-info text-white">
-            <div class="card-body">
-                <h5 class="card-title">Lojas BIG</h5>
-                <p class="display-4">{{ total_lojas_big }}</p>
-                <small>Rede Big Box</small>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3 mb-3">
-        <div class="card stat-card bg-success text-white">
-            <div class="card-body">
-                <h5 class="card-title">Lojas ULTRA</h5>
-                <p class="display-4">{{ total_lojas_ultra }}</p>
-                <small>Rede UltraBox</small>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3 mb-3">
-        <div class="card stat-card bg-warning text-white">
-            <div class="card-body">
-                <h5 class="card-title">Gerentes</h5>
-                <p class="display-4">{{ total_gerentes }}</p>
-                <small>Usuários ativos</small>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">
-                    <i class="bi bi-dice-6"></i> Próximo Sorteio
-                </h5>
-            </div>
-            <div class="card-body">
-                <p class="mb-2">
-                    <strong>Data prevista:</strong> {{ proxima_semana.strftime('%d/%m/%Y') }}
-                </p>
-                <p class="mb-3">
-                    <strong>Status:</strong> 
-                    {% if ultimo_sorteio and ultimo_sorteio.semana_inicio >= proxima_semana %}
-                        <span class="badge bg-success">Já realizado</span>
-                    {% else %}
-                        <span class="badge bg-warning">Pendente</span>
-                    {% endif %}
-                </p>
-                <a href="{{ url_for('admin.sortear') }}" class="btn btn-primary">
-                    <i class="bi bi-dice-6"></i> Realizar Sorteio
-                </a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header bg-info text-white">
-                <h5 class="mb-0">
-                    <i class="bi bi-trophy"></i> Último Sorteio
-                </h5>
-            </div>
-            <div class="card-body">
-                {% if ultimo_sorteio %}
-                <p class="mb-2">
-                    <strong>Semana:</strong> {{ ultimo_sorteio.semana_inicio.strftime('%d/%m/%Y') }}
-                </p>
-                <p class="mb-2">
-                    <strong>BIG:</strong> {{ ultimo_sorteio.loja_big_sorteada.nome }}
-                </p>
-                <p class="mb-2">
-                    <strong>ULTRA:</strong> {{ ultimo_sorteio.loja_ultra_sorteada.nome }}
-                </p>
-                <p class="mb-0">
-                    <small class="text-muted">
-                        Sorteado em {{ ultimo_sorteio.data_sorteio.strftime('%d/%m/%Y %H:%M') }}
-                    </small>
-                </p>
-                {% else %}
-                <p class="text-muted mb-0">Nenhum sorteio realizado ainda.</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="bi bi-lightning"></i> Ações Rápidas
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4 mb-2">
-                        <a href="{{ url_for('admin.sortear') }}" class="btn btn-primary w-100">
-                            <i class="bi bi-dice-6"></i> Realizar Sorteio Semanal
-                        </a>
+    <!-- Cards de estatísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                                                         <h5 class="card-title">Usuários</h5>
+                            <h2 class="display-6">{{ total_usuarios }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
                     </div>
-                    <div class="col-md-4 mb-2">
-                        <a href="{{ url_for('admin.usuarios') }}" class="btn btn-success w-100">
-                            <i class="bi bi-people"></i> Gerenciar Usuários
-                        </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Lojas</h5>
+                            <h2 class="display-6">{{ total_lojas }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-store fa-2x"></i>
+                        </div>
                     </div>
-                    <div class="col-md-4 mb-2">
-                        <a href="{{ url_for('main.historico') }}" class="btn btn-info w-100">
-                            <i class="bi bi-clock-history"></i> Ver Histórico
-                        </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Colaboradores</h5>
+                            <h2 class="display-6">{{ total_colaboradores }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-user-friends fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Prêmios Ativos</h5>
+                            <h2 class="display-6">{{ total_premios }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-trophy fa-2x"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Ações rápidas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt"></i> Ações Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{{ url_for('admin.sortear_lojas') }}" class="btn btn-outline-primary btn-lg">
+                                    <i class="fas fa-dice"></i><br>
+                                    <small>Sortear Lojas</small>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{{ url_for('admin.premios') }}" class="btn btn-outline-success btn-lg">
+                                    <i class="fas fa-trophy"></i><br>
+                                    <small>Prêmios</small>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{{ url_for('admin.usuarios') }}" class="btn btn-outline-info btn-lg">
+                                    <i class="fas fa-users"></i><br>
+                                                                         <small>Usuários</small>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{{ url_for('admin.sorteios') }}" class="btn btn-outline-warning btn-lg">
+                                    <i class="fas fa-history"></i><br>
+                                    <small>Histórico</small>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{{ url_for('main.historico') }}" class="btn btn-outline-secondary btn-lg">
+                                    <i class="fas fa-chart-line"></i><br>
+                                    <small>Relatórios</small>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{{ url_for('main.sobre') }}" class="btn btn-outline-dark btn-lg">
+                                    <i class="fas fa-info-circle"></i><br>
+                                    <small>Sobre</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Últimos sorteios -->
+    {% if sorteios_recentes %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clock"></i> Últimos Sorteios
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Semana</th>
+                                    <th>Loja BIG</th>
+                                    <th>Loja ULTRA</th>
+                                    <th>Data</th>
+                                    <th>Colaboradores</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sorteio in sorteios_recentes %}
+                                <tr>
+                                    <td>{{ sorteio.semana_inicio.strftime('%d/%m/%Y') }}</td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ sorteio.loja_big.codigo }}</span>
+                                        {{ sorteio.loja_big.nome }}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">{{ sorteio.loja_ultra.codigo }}</span>
+                                        {{ sorteio.loja_ultra.nome }}
+                                    </td>
+                                    <td>
+                                        <small>{{ sorteio.data_sorteio.strftime('%d/%m/%Y %H:%M') }}</small>
+                                    </td>
+                                    <td>
+                                        <small>{{ sorteios_colaboradores[sorteio.id] }} sorteados</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %} 

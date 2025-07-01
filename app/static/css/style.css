@@ -1,8 +1,8 @@
 /* Estilos customizados para o Sistema de Sorteios */
 
 :root {
-    --big-color: #0066cc;
-    --ultra-color: #00a651;
+    --big-color: #8e44ad;  /* Roxo para BIG Box */
+    --ultra-color: #00a651; /* Verde para UltraBox */
 }
 
 /* Ajustes gerais */

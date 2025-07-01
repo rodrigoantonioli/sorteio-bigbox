@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Assistente - {{ loja.nome if loja else 'Sem Loja' }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">🏪 Dashboard Assistente</h1>
+                    <small class="text-muted">
+                        {% if loja %}
+                            <span class="badge bg-{{ 'primary' if loja.bandeira == 'BIG' else 'success' }}">
+                                {{ loja.codigo }} - {{ loja.nome }}
+                            </span>
+                        {% else %}
+                            <span class="badge bg-warning">Sem loja associada</span>
+                        {% endif %}
+                    </small>
+                </div>
+                <div>
+                    <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-home"></i> Página Inicial
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if not loja %}
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-warning">
+                    <h4 class="alert-heading">⚠️ Loja não associada</h4>
+                    <p>Você não está associado a nenhuma loja. Entre em contato com o administrador para resolver esta situação.</p>
+                    <hr>
+                    <p class="mb-0">Sem uma loja associada, você não pode gerenciar colaboradores ou realizar sorteios.</p>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Status do Sorteio -->
+        <div class="row mb-4">
+            <div class="col-12">
+                {% if loja_sorteada %}
+                    <div class="alert alert-success">
+                        <h4 class="alert-heading">🎉 Parabéns! Sua loja foi sorteada!</h4>
+                        <p>A loja <strong>{{ loja.nome }}</strong> foi sorteada para a semana de {{ sorteio_atual.semana_inicio.strftime('%d/%m/%Y') }}.</p>
+                        <hr>
+                        <p class="mb-0">Você pode realizar sorteios de colaboradores para os prêmios disponíveis.</p>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <h4 class="alert-heading">ℹ️ Sua loja não foi sorteada</h4>
+                        <p>A loja <strong>{{ loja.nome }}</strong> não foi sorteada esta semana.</p>
+                        <hr>
+                        <p class="mb-0">Continue gerenciando seus colaboradores para estar pronto para os próximos sorteios!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Cards de Ações -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Colaboradores</h5>
+                        <p class="card-text">Gerencie a lista de colaboradores da sua loja</p>
+                        <p class="text-muted">
+                            <strong>{{ total_colaboradores }}</strong> colaboradores aptos
+                        </p>
+                        <a href="{{ url_for('manager.colaboradores') }}" class="btn btn-primary">
+                            <i class="fas fa-users"></i> Gerenciar
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-upload fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Upload de Planilha</h5>
+                        <p class="card-text">Faça upload da lista de colaboradores via Excel</p>
+                        <p class="text-muted">
+                            <small>Substitui todos os colaboradores atuais</small>
+                        </p>
+                        <a href="{{ url_for('manager.upload_colaboradores') }}" class="btn btn-success">
+                            <i class="fas fa-upload"></i> Upload
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        {% if loja_sorteada %}
+                            <i class="fas fa-dice fa-3x text-warning mb-3"></i>
+                            <h5 class="card-title">Sorteio de Colaboradores</h5>
+                            <p class="card-text">Realize o sorteio dos colaboradores contemplados</p>
+                            <p class="text-muted">
+                                <small>{{ colaboradores_sorteados|length }} já sorteados</small>
+                            </p>
+                            <a href="{{ url_for('manager.sortear_colaboradores') }}" class="btn btn-warning">
+                                <i class="fas fa-dice"></i> Sortear
+                            </a>
+                        {% else %}
+                            <i class="fas fa-dice fa-3x text-muted mb-3"></i>
+                            <h5 class="card-title text-muted">Sorteio de Colaboradores</h5>
+                            <p class="card-text text-muted">Disponível apenas quando sua loja for sorteada</p>
+                            <button class="btn btn-secondary" disabled>
+                                <i class="fas fa-lock"></i> Bloqueado
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colaboradores Sorteados -->
+        {% if colaboradores_sorteados %}
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-trophy"></i> Colaboradores Sorteados Esta Semana
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Colaborador</th>
+                                        <th>Prêmio</th>
+                                        <th>Data do Sorteio</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for sorteio in colaboradores_sorteados %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ sorteio.colaborador.nome }}</strong><br>
+                                            <small class="text-muted">{{ sorteio.colaborador.matricula }} - {{ sorteio.colaborador.setor }}</small>
+                                        </td>
+                                        <td>
+                                            <strong>{{ sorteio.premio.nome }}</strong><br>
+                                            <small class="text-muted">{{ sorteio.premio.data_evento.strftime('%d/%m/%Y') }}</small>
+                                        </td>
+                                        <td>
+                                            <small>{{ sorteio.data_sorteio.strftime('%d/%m/%Y %H:%M') }}</small>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %} 

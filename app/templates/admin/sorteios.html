@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Sorteios - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">🎲 Gerenciar Sorteios</h1>
+                    <small class="text-muted">Controle total dos sorteios realizados</small>
+                </div>
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sorteios Semanais -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-calendar-week"></i> Sorteios Semanais (Lojas)
+                        <span class="badge bg-light text-dark ms-2">{{ sorteios_semanais|length }}</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if sorteios_semanais %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Semana</th>
+                                        <th>Loja BIG</th>
+                                        <th>Loja ULTRA</th>
+                                        <th>Sorteado por</th>
+                                        <th>Data</th>
+                                        <th width="100">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for sorteio in sorteios_semanais %}
+                                    <tr>
+                                        <td><strong>{{ sorteio.semana_inicio.strftime('%d/%m/%Y') }}</strong></td>
+                                        <td>
+                                            <span class="badge bg-primary">BIG</span>
+                                            {{ sorteio.loja_big.nome }}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success">ULTRA</span>
+                                            {{ sorteio.loja_ultra.nome }}
+                                        </td>
+                                        <td>{{ sorteio.sorteador.nome }}</td>
+                                        <td>
+                                            <small class="text-muted">
+                                                {{ sorteio.data_sorteio.strftime('%d/%m/%Y %H:%M') }}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('admin.excluir_sorteio_semanal', id=sorteio.id) }}" 
+                                               class="btn btn-sm btn-outline-danger" title="Excluir"
+                                               onclick="return confirm('ATENÇÃO: Isso irá excluir o sorteio semanal e TODOS os sorteios de colaboradores associados! Tem certeza?')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-calendar-times fa-2x text-muted mb-2"></i>
+                            <p class="text-muted">Nenhum sorteio semanal realizado ainda.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sorteios de Colaboradores -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-users"></i> Sorteios de Colaboradores
+                        <span class="badge bg-light text-dark ms-2">{{ sorteios_colaboradores|length }}</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if sorteios_colaboradores %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Colaborador</th>
+                                        <th>Loja</th>
+                                        <th>Prêmio</th>
+                                        <th>Data do Evento</th>
+                                        <th>Sorteado por</th>
+                                        <th>Data do Sorteio</th>
+                                        <th width="100">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for sorteio in sorteios_colaboradores %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ sorteio.colaborador.nome }}</strong><br>
+                                            <small class="text-muted">{{ sorteio.colaborador.setor }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ 'primary' if sorteio.colaborador.loja.bandeira == 'BIG' else 'success' }}">
+                                                {{ sorteio.colaborador.loja.bandeira }}
+                                            </span>
+                                            {{ sorteio.colaborador.loja.nome }}
+                                        </td>
+                                        <td>
+                                            <strong>{{ sorteio.premio.nome }}</strong><br>
+                                            <small class="text-muted">
+                                                {% if sorteio.premio.tipo == 'show' %}
+                                                    <i class="fas fa-music"></i> Show
+                                                {% else %}
+                                                    <i class="fas fa-sun"></i> Day Use
+                                                {% endif %}
+                                            </small>
+                                        </td>
+                                        <td>{{ sorteio.premio.data_evento.strftime('%d/%m/%Y') }}</td>
+                                        <td>{{ sorteio.sorteador.nome }}</td>
+                                        <td>
+                                            <small class="text-muted">
+                                                {{ sorteio.data_sorteio.strftime('%d/%m/%Y %H:%M') }}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('admin.excluir_sorteio_colaborador', id=sorteio.id) }}" 
+                                               class="btn btn-sm btn-outline-danger" title="Excluir"
+                                               onclick="return confirm('Tem certeza que deseja excluir este sorteio de colaborador?')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Estatísticas -->
+                        <div class="row mt-3">
+                            <div class="col-md-3">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <h5>{{ sorteios_colaboradores|selectattr('premio.tipo', 'equalto', 'show')|list|length }}</h5>
+                                        <small>Shows Sorteados</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body text-center">
+                                        <h5>{{ sorteios_colaboradores|selectattr('premio.tipo', 'equalto', 'day_use')|list|length }}</h5>
+                                        <small>Day Use Sorteados</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body text-center">
+                                        <h5>{{ sorteios_colaboradores|map(attribute='colaborador.loja.bandeira')|select('equalto', 'BIG')|list|length }}</h5>
+                                        <small>Colaboradores BIG</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-warning text-dark">
+                                    <div class="card-body text-center">
+                                        <h5>{{ sorteios_colaboradores|map(attribute='colaborador.loja.bandeira')|select('equalto', 'ULTRA')|list|length }}</h5>
+                                        <small>Colaboradores ULTRA</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-user-times fa-2x text-muted mb-2"></i>
+                            <p class="text-muted">Nenhum colaborador sorteado ainda.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Sortear Colaboradores - {{ current_user.loja.nome }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">🎲 Sortear Colaboradores</h1>
+                    <small class="text-muted">
+                        <span class="badge bg-{{ 'success' if current_user.loja.bandeira == 'BIG' else 'info' }}">
+                            {{ current_user.loja.codigo }}
+                        </span>
+                    </small>
+                </div>
+                <a href="{{ url_for('manager.dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-dice"></i> Realizar Sorteio de Colaboradores
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.premio_id.label(class="form-label") }}
+                            {{ form.premio_id(class="form-select") }}
+                            {% if form.premio_id.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.premio_id.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-gift"></i> 
+                                Prêmio cadastrado pelo administrador
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.quantidade_ingressos.label(class="form-label") }}
+                            {{ form.quantidade_ingressos(class="form-control") }}
+                            {% if form.quantidade_ingressos.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.quantidade_ingressos.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i> 
+                                Quantos colaboradores serão sorteados ({{ colaboradores_count }} disponíveis)
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ form.confirmar_lista(class="form-check-input") }}
+                                {{ form.confirmar_lista.label(class="form-check-label") }}
+                            </div>
+                            {% if form.confirmar_lista.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.confirmar_lista.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-shield-alt text-warning"></i>
+                                Esta confirmação garante a transparência do processo
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Como funciona o sorteio:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>Apenas colaboradores <strong>aptos</strong> participam</li>
+                                <li>O sorteio é <strong>aleatório</strong> e transparente</li>
+                                <li>Todos os sorteios ficam registrados no histórico</li>
+                                <li>Não é possível sortear duas vezes na mesma semana</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="fas fa-dice"></i> Realizar Sorteio
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -4,6 +4,15 @@ from dotenv import load_dotenv
 
 # Carrega variáveis de ambiente
 load_dotenv()
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+# Define o caminho do banco dentro da pasta instance
+instance_folder = os.path.join(basedir, 'instance')
+db_path = os.path.join(instance_folder, 'sorteio.db')
+
+# Cria a pasta 'instance' na raiz do projeto se ela não existir
+if not os.path.exists(instance_folder):
+    os.makedirs(instance_folder)
 
 class Config:
     """Configurações base da aplicação"""
@@ -11,10 +20,10 @@ class Config:
     # Flask
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     
-    # SQLAlchemy
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///sorteio.db'
+    # SQLAlchemy - Usa caminho absoluto para o DB dentro da pasta instance
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or f'sqlite:///{db_path}'
     # Corrige URL do PostgreSQL para SQLAlchemy (Render usa postgres://)
-    if SQLALCHEMY_DATABASE_URI.startswith("postgres://"):
+    if 'postgres' in SQLALCHEMY_DATABASE_URI:
         SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace("postgres://", "postgresql://", 1)
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -54,10 +63,17 @@ class ProductionConfig(Config):
     DEBUG = False
     SESSION_COOKIE_SECURE = True  # HTTPS apenas
 
+class TestingConfig(Config):
+    """Configurações de teste"""
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:' # Usa banco de dados em memória
+    WTF_CSRF_ENABLED = False # Desabilita CSRF para testes de formulário
+
 # Seleção de configuração baseada no ambiente
 config = {
     'development': DevelopmentConfig,
     'production': ProductionConfig,
+    'testing': TestingConfig,
     'default': DevelopmentConfig
 }
 

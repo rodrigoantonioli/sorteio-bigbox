@@ -19,7 +19,7 @@ def index():
     if sorteio_atual:
         colaboradores_sorteados = SorteioColaborador.query.filter_by(
             sorteio_semanal_id=sorteio_atual.id
-        ).order_by(SorteioColaborador.dia_evento).all()
+        ).order_by(SorteioColaborador.data_sorteio.desc()).all()
     
     return render_template('index.html', 
                          sorteio_atual=sorteio_atual,

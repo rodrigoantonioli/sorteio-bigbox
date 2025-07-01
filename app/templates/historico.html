@@ -31,17 +31,17 @@
                         </td>
                         <td>
                             <span class="badge bg-primary">BIG</span>
-                            {{ sorteio.loja_big_sorteada.nome }}
+                            {{ sorteio.loja_big.nome }}
                         </td>
                         <td>
                             <span class="badge bg-success">ULTRA</span>
-                            {{ sorteio.loja_ultra_sorteada.nome }}
+                            {{ sorteio.loja_ultra.nome }}
                         </td>
                         <td>
                             {{ sorteio.data_sorteio.strftime('%d/%m/%Y %H:%M') }}
                         </td>
                         <td>
-                            {{ sorteio.sorteado_por_usuario.nome }}
+                            {{ sorteio.sorteador.nome }}
                         </td>
                         <td>
                             <button class="btn btn-sm btn-info" data-bs-toggle="collapse" 
@@ -54,30 +54,30 @@
                         <td colspan="6">
                             <div class="p-3 bg-light">
                                 <h6>Colaboradores Sorteados:</h6>
-                                {% set colaboradores = sorteio.sorteios_colaboradores.all() %}
+                                {% set colaboradores = sorteio.colaboradores_sorteados %}
                                 {% if colaboradores %}
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <h6><span class="badge bg-primary">BIG</span> {{ sorteio.loja_big_sorteada.nome }}</h6>
+                                        <h6><span class="badge bg-primary">BIG</span> {{ sorteio.loja_big.nome }}</h6>
                                         <ul class="list-unstyled">
                                             {% for colab in colaboradores %}
                                                 {% if colab.colaborador.loja_id == sorteio.loja_big_id %}
                                                 <li>
                                                     <i class="bi bi-person"></i> {{ colab.colaborador.nome }} - 
-                                                    {{ colab.tipo_ingresso|title }} ({{ colab.dia_evento.strftime('%d/%m') }})
+                                                    {{ colab.premio.nome }} ({{ colab.premio.data_evento.strftime('%d/%m') }})
                                                 </li>
                                                 {% endif %}
                                             {% endfor %}
                                         </ul>
                                     </div>
                                     <div class="col-md-6">
-                                        <h6><span class="badge bg-success">ULTRA</span> {{ sorteio.loja_ultra_sorteada.nome }}</h6>
+                                        <h6><span class="badge bg-success">ULTRA</span> {{ sorteio.loja_ultra.nome }}</h6>
                                         <ul class="list-unstyled">
                                             {% for colab in colaboradores %}
                                                 {% if colab.colaborador.loja_id == sorteio.loja_ultra_id %}
                                                 <li>
                                                     <i class="bi bi-person"></i> {{ colab.colaborador.nome }} - 
-                                                    {{ colab.tipo_ingresso|title }} ({{ colab.dia_evento.strftime('%d/%m') }})
+                                                    {{ colab.premio.nome }} ({{ colab.premio.data_evento.strftime('%d/%m') }})
                                                 </li>
                                                 {% endif %}
                                             {% endfor %}

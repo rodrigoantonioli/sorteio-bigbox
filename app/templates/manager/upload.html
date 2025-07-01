@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Colaboradores - {{ loja.nome }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">📤 Upload de Colaboradores</h1>
+                    <small class="text-muted">
+                        <span class="badge bg-{{ 'success' if loja.bandeira == 'BIG' else 'info' }}">
+                            {{ loja.codigo }}
+                        </span>
+                    </small>
+                </div>
+                <a href="{{ url_for('manager.colaboradores') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-file-excel"></i> Upload de Planilha Excel
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-4">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>Formato da Planilha:</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li><strong>Coluna C (3):</strong> Matrícula do colaborador</li>
+                                    <li><strong>Coluna D (4):</strong> Nome completo</li>
+                                    <li><strong>Coluna E (5):</strong> Setor de trabalho</li>
+                                    <li><strong>Primeira linha:</strong> Cabeçalho (será ignorada)</li>
+                                    <li><strong>Formato:</strong> .xlsx ou .xls</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.arquivo.label(class="form-label") }}
+                            {{ form.arquivo(class="form-control", accept=".xlsx,.xls") }}
+                            {% if form.arquivo.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.arquivo.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i> 
+                                Selecione um arquivo Excel (.xlsx ou .xls) com a lista de colaboradores
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>ATENÇÃO:</strong> O upload irá <strong>SUBSTITUIR TODOS</strong> os colaboradores da sua loja!
+                                <ul class="mb-0 mt-2">
+                                    <li>Colaboradores não listados na planilha serão <strong>removidos</strong></li>
+                                    <li>Colaboradores com histórico de sorteios serão mantidos</li>
+                                    <li>Esta ação não pode ser desfeita</li>
+                                </ul>
+                            </div>
+                            <div class="form-check">
+                                {{ form.substituir_todos(class="form-check-input", checked="checked", disabled="disabled") }}
+                                {{ form.substituir_todos.label(class="form-check-label") }}
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-upload"></i> Fazer Upload
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Exemplo de planilha -->
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-table"></i> Exemplo de Formato da Planilha
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>A</th>
+                                    <th>B</th>
+                                    <th class="table-success">C (Matrícula)</th>
+                                    <th class="table-success">D (Nome)</th>
+                                    <th class="table-success">E (Setor)</th>
+                                    <th>F</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>BIG01 - 106 NORTE</td>
+                                    <td>BIG</td>
+                                    <td class="table-success"><strong>327</strong></td>
+                                    <td class="table-success"><strong>JOSE XIMENES DE ARAGAO</strong></td>
+                                    <td class="table-success"><strong>ADMINISTRACAO</strong></td>
+                                    <td>...</td>
+                                </tr>
+                                <tr>
+                                    <td>BIG01 - 106 NORTE</td>
+                                    <td>BIG</td>
+                                    <td class="table-success"><strong>1688</strong></td>
+                                    <td class="table-success"><strong>VALDEMIR SALVADOR NAZARIO</strong></td>
+                                    <td class="table-success"><strong>DOCAS/DEPOSITO</strong></td>
+                                    <td>...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <small class="text-muted">
+                        <i class="fas fa-lightbulb"></i>
+                        <strong>Dica:</strong> As colunas destacadas em verde são obrigatórias. 
+                        As demais colunas podem existir mas serão ignoradas.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

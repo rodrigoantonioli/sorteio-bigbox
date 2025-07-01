@@ -1,60 +1,41 @@
-from datetime import datetime
+from app.extensions import db, login_manager
 from flask_login import UserMixin
-from app.extensions import db
-import bcrypt
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Usuario.query.get(int(user_id))
 
 class Usuario(UserMixin, db.Model):
-    """Modelo de Usuário (Admin e Gerentes)"""
     __tablename__ = 'usuarios'
     
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True, nullable=False)
     senha_hash = db.Column(db.String(255), nullable=False)
     nome = db.Column(db.String(100), nullable=False)
-    tipo = db.Column(db.Enum('admin', 'gerente', name='tipo_usuario'), nullable=False)
+    tipo = db.Column(db.Enum('admin', 'assistente', name='tipo_usuario'), nullable=False)
     loja_id = db.Column(db.Integer, db.ForeignKey('lojas.id'), nullable=True)
     ativo = db.Column(db.Boolean, default=True)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # Relacionamentos
-    loja = db.relationship('Loja', backref='gerente', foreign_keys=[loja_id])
-    sorteios_realizados = db.relationship('SorteioSemanal', backref='sorteado_por_usuario', 
-                                        foreign_keys='SorteioSemanal.sorteado_por')
-    
     def set_password(self, password):
-        """Criptografa e armazena a senha"""
-        self.senha_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        self.senha_hash = generate_password_hash(password)
     
     def check_password(self, password):
-        """Verifica se a senha está correta"""
-        return bcrypt.checkpw(password.encode('utf-8'), self.senha_hash.encode('utf-8'))
-    
-    def __repr__(self):
-        return f'<Usuario {self.email}>'
+        return check_password_hash(self.senha_hash, password)
 
 class Loja(db.Model):
-    """Modelo de Loja"""
     __tablename__ = 'lojas'
     
     id = db.Column(db.Integer, primary_key=True)
-    codigo = db.Column(db.String(10), unique=True, nullable=False)
+    codigo = db.Column(db.String(50), unique=True, nullable=False)
     nome = db.Column(db.String(100), nullable=False)
     bandeira = db.Column(db.Enum('BIG', 'ULTRA', name='bandeira_loja'), nullable=False)
     ativo = db.Column(db.Boolean, default=True)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    # Relacionamentos
-    colaboradores = db.relationship('Colaborador', backref='loja', lazy='dynamic')
-    sorteios_big = db.relationship('SorteioSemanal', foreign_keys='SorteioSemanal.loja_big_id',
-                                 backref='loja_big_sorteada')
-    sorteios_ultra = db.relationship('SorteioSemanal', foreign_keys='SorteioSemanal.loja_ultra_id',
-                                    backref='loja_ultra_sorteada')
-    
-    def __repr__(self):
-        return f'<Loja {self.codigo} - {self.nome}>'
 
 class Colaborador(db.Model):
-    """Modelo de Colaborador"""
     __tablename__ = 'colaboradores'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -65,48 +46,53 @@ class Colaborador(db.Model):
     apto = db.Column(db.Boolean, default=True)
     ultima_atualizacao = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # Relacionamentos
-    sorteios = db.relationship('SorteioColaborador', backref='colaborador', lazy='dynamic')
-    
-    # Índice único para matrícula + loja
+    # Constraint para evitar matrícula duplicada na mesma loja
     __table_args__ = (db.UniqueConstraint('matricula', 'loja_id', name='_matricula_loja_uc'),)
+
+class Premio(db.Model):
+    __tablename__ = 'premios'
     
-    def __repr__(self):
-        return f'<Colaborador {self.matricula} - {self.nome}>'
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False)
+    descricao = db.Column(db.Text)
+    data_evento = db.Column(db.Date, nullable=False)
+    tipo = db.Column(db.Enum('show', 'day_use', name='tipo_premio'), nullable=False)
+    ativo = db.Column(db.Boolean, default=True)
+    criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+    criado_por = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
 
 class SorteioSemanal(db.Model):
-    """Modelo de Sorteio Semanal (lojas sorteadas)"""
     __tablename__ = 'sorteios_semanais'
     
     id = db.Column(db.Integer, primary_key=True)
-    semana_inicio = db.Column(db.Date, nullable=False, unique=True)
+    semana_inicio = db.Column(db.Date, unique=True, nullable=False)
     loja_big_id = db.Column(db.Integer, db.ForeignKey('lojas.id'), nullable=False)
     loja_ultra_id = db.Column(db.Integer, db.ForeignKey('lojas.id'), nullable=False)
     data_sorteio = db.Column(db.DateTime, default=datetime.utcnow)
     sorteado_por = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
-    
-    # Relacionamentos
-    sorteios_colaboradores = db.relationship('SorteioColaborador', backref='sorteio_semanal', 
-                                           lazy='dynamic', cascade='all, delete-orphan')
-    
-    def __repr__(self):
-        return f'<SorteioSemanal {self.semana_inicio}>'
 
 class SorteioColaborador(db.Model):
-    """Modelo de Sorteio de Colaboradores"""
     __tablename__ = 'sorteios_colaboradores'
     
     id = db.Column(db.Integer, primary_key=True)
     sorteio_semanal_id = db.Column(db.Integer, db.ForeignKey('sorteios_semanais.id'), nullable=False)
+    premio_id = db.Column(db.Integer, db.ForeignKey('premios.id'), nullable=False)
     colaborador_id = db.Column(db.Integer, db.ForeignKey('colaboradores.id'), nullable=False)
-    tipo_ingresso = db.Column(db.String(50), nullable=False)  # 'show' ou 'day_use'
-    dia_evento = db.Column(db.Date, nullable=False)
     data_sorteio = db.Column(db.DateTime, default=datetime.utcnow)
     sorteado_por = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
-    
-    # Relacionamentos
-    usuario_sorteador = db.relationship('Usuario', backref='colaboradores_sorteados', 
-                                      foreign_keys=[sorteado_por])
-    
-    def __repr__(self):
-        return f'<SorteioColaborador {self.colaborador_id} - {self.tipo_ingresso}>' 
+    lista_confirmada = db.Column(db.Boolean, default=False)
+    colaboradores_snapshot = db.Column(db.Text)
+
+# Relacionamentos usando db.relationship
+Usuario.loja = db.relationship('Loja', backref='usuarios')
+Colaborador.loja = db.relationship('Loja', backref='colaboradores')
+Premio.criador = db.relationship('Usuario', backref='premios_criados')
+
+SorteioSemanal.loja_big = db.relationship('Loja', foreign_keys=[SorteioSemanal.loja_big_id])
+SorteioSemanal.loja_ultra = db.relationship('Loja', foreign_keys=[SorteioSemanal.loja_ultra_id])
+SorteioSemanal.sorteador = db.relationship('Usuario', foreign_keys=[SorteioSemanal.sorteado_por])
+
+SorteioColaborador.sorteio_semanal = db.relationship('SorteioSemanal')
+SorteioColaborador.premio = db.relationship('Premio')
+SorteioColaborador.colaborador = db.relationship('Colaborador')
+SorteioColaborador.sorteador = db.relationship('Usuario', foreign_keys=[SorteioColaborador.sorteado_por]) 

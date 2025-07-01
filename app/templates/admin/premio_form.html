@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo }} - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">🎁 {{ titulo }}</h1>
+                    <small class="text-muted">Cadastro de prêmios para sorteios</small>
+                </div>
+                <a href="{{ url_for('admin.premios') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-gift"></i> {{ titulo }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.nome.label(class="form-label") }}
+                            {{ form.nome(class="form-control") }}
+                            {% if form.nome.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.nome.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i> 
+                                Ex: "Show Sexta - Alcione", "Day Use Sábado"
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.tipo.label(class="form-label") }}
+                            {{ form.tipo(class="form-select") }}
+                            {% if form.tipo.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.tipo.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.data_evento.label(class="form-label") }}
+                            {{ form.data_evento(class="form-control") }}
+                            {% if form.data_evento.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.data_evento.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-calendar"></i> 
+                                Data em que o evento acontece
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.descricao.label(class="form-label") }}
+                            {{ form.descricao(class="form-control", rows="3") }}
+                            {% if form.descricao.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.descricao.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i> 
+                                Ex: "Alcione, Diogo Nogueira e Leci Brandão" (opcional)
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> 
+                                {{ 'Atualizar' if 'Editar' in titulo else 'Criar' }} Prêmio
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo }} - {{ current_user.loja.nome }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">👤 {{ titulo }}</h1>
+                    <small class="text-muted">
+                        <span class="badge bg-{{ 'success' if current_user.loja.bandeira == 'BIG' else 'info' }}">
+                            {{ current_user.loja.codigo }}
+                        </span>
+                    </small>
+                </div>
+                <a href="{{ url_for('manager.colaboradores') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user-plus"></i> {{ titulo }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.matricula.label(class="form-label") }}
+                            {{ form.matricula(class="form-control") }}
+                            {% if form.matricula.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.matricula.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i> 
+                                Número único de identificação do colaborador
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.nome.label(class="form-label") }}
+                            {{ form.nome(class="form-control") }}
+                            {% if form.nome.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.nome.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.setor.label(class="form-label") }}
+                            {{ form.setor(class="form-control") }}
+                            {% if form.setor.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.setor.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i> 
+                                Ex: ADMINISTRAÇÃO, AÇOUGUE, CAIXA, etc.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ form.apto(class="form-check-input") }}
+                                {{ form.apto.label(class="form-check-label") }}
+                            </div>
+                            {% if form.apto.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.apto.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i> 
+                                Colaboradores inaptos não participam dos sorteios
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> 
+                                {{ 'Atualizar' if 'Editar' in titulo else 'Criar' }} Colaborador
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
