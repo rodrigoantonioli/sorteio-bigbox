@@ -287,10 +287,8 @@ class SorteioAnimado {
             document.getElementById('fecharModal').classList.remove('d-none');
             document.getElementById('novoSorteio').classList.remove('d-none');
             
-            // Submete o formulário automaticamente após 3 segundos
-            setTimeout(() => {
-                this.submitarFormulario(resultados);
-            }, 3000);
+            // RESULTADO PERMANECE NA TELA - Não submete automaticamente
+            // Usuário decide quando fechar ou fazer novo sorteio
             
         }, 2000);
     }
@@ -321,10 +319,8 @@ class SorteioAnimado {
             document.getElementById('fecharModal').classList.remove('d-none');
             document.getElementById('novoSorteio').classList.remove('d-none');
             
-            // Submete o formulário automaticamente após 3 segundos
-            setTimeout(() => {
-                this.submitarFormularioColaboradores(resultados);
-            }, 3000);
+            // RESULTADO PERMANECE NA TELA - Não submete automaticamente
+            // Usuário decide quando fechar ou fazer novo sorteio
             
         }, 2000);
     }
