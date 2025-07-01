@@ -272,7 +272,7 @@ class SorteioAnimado {
                 second: '2-digit'
             });
             
-            this.atualizarStatus('🎉 Sorteio concluído com sucesso!');
+            this.atualizarStatus('💾 Salvando sorteio no banco de dados...');
             
             const display = document.getElementById('sorteioDisplay');
             display.innerHTML = `
@@ -280,6 +280,9 @@ class SorteioAnimado {
                     <div class="mb-4 text-center">
                         <div class="data-sorteio mb-3">
                             <i class="bi bi-calendar-check"></i> <strong>${dataHora}</strong>
+                        </div>
+                        <div class="alert alert-info mb-3" id="statusAlert">
+                            <i class="bi bi-gear-fill"></i> Salvando resultados...
                         </div>
                     </div>
                     ${resultados.map(r => `
@@ -290,14 +293,18 @@ class SorteioAnimado {
                             </div>
                         </div>
                     `).join('')}
+                    <div class="text-center mt-4" id="botoesAcao" style="display: none;">
+                        <a href="/admin/dashboard" class="btn btn-primary btn-lg">
+                            <i class="bi bi-arrow-left"></i> Ir para Dashboard
+                        </a>
+                    </div>
                 </div>
             `;
 
-            // Mostra botão X para fechar
-            document.getElementById('fecharModalX').classList.remove('d-none');
-            
-            // RESULTADO PERMANECE NA TELA - Não submete automaticamente
-            // Usuário decide quando fechar
+            // SALVA AUTOMATICAMENTE NO BANCO VIA AJAX
+            setTimeout(() => {
+                this.submitarFormularioAjax(resultados);
+            }, 1500);
             
         }, 2000);
     }
@@ -316,7 +323,7 @@ class SorteioAnimado {
                 second: '2-digit'
             });
             
-            this.atualizarStatus('🎉 Sorteio de colaboradores concluído!');
+            this.atualizarStatus('💾 Salvando sorteio no banco de dados...');
             
             const display = document.getElementById('sorteioDisplay');
             display.innerHTML = `
@@ -324,6 +331,9 @@ class SorteioAnimado {
                     <div class="mb-4 text-center">
                         <div class="data-sorteio mb-3">
                             <i class="bi bi-calendar-check"></i> <strong>${dataHora}</strong>
+                        </div>
+                        <div class="alert alert-info mb-3" id="statusAlert">
+                            <i class="bi bi-gear-fill"></i> Salvando resultados...
                         </div>
                     </div>
                     <h5 class="text-primary mb-3">
@@ -337,31 +347,84 @@ class SorteioAnimado {
                             <small class="text-muted">${colaborador.setor}</small>
                         </div>
                     `).join('')}
+                    <div class="text-center mt-4" id="botoesAcao" style="display: none;">
+                        <a href="/manager/dashboard" class="btn btn-warning btn-lg">
+                            <i class="bi bi-arrow-left"></i> Ir para Dashboard
+                        </a>
+                    </div>
                 </div>
             `;
 
-            // Mostra botão X para fechar
-            document.getElementById('fecharModalX').classList.remove('d-none');
-            
-            // RESULTADO PERMANECE NA TELA - Não submete automaticamente
-            // Usuário decide quando fechar
+            // SALVA AUTOMATICAMENTE NO BANCO VIA AJAX
+            setTimeout(() => {
+                this.submitarFormularioColaboradoresAjax(resultados);
+            }, 1500);
             
         }, 2000);
     }
 
-    // Submete formulário de lojas
-    submitarFormulario(resultados) {
-        // Aqui você implementaria a submissão real do formulário
-        // Por enquanto, apenas fecha o modal
+    // Submete formulário de lojas via AJAX
+    submitarFormularioAjax(resultados) {
+        // Esta função será sobrescrita pelo template que a utiliza
+        // Implementação padrão para fallback
         console.log('Resultados do sorteio:', resultados);
-        // this.modal.hide();
+        this.exibirErro('Função de salvamento não configurada');
     }
 
-    // Submete formulário de colaboradores
-    submitarFormularioColaboradores(resultados) {
-        // Aqui você implementaria a submissão real do formulário
+    // Submete formulário de colaboradores via AJAX
+    submitarFormularioColaboradoresAjax(resultados) {
+        // Esta função será sobrescrita pelo template que a utiliza
+        // Implementação padrão para fallback
         console.log('Colaboradores sorteados:', resultados);
-        // this.modal.hide();
+        this.exibirErro('Função de salvamento não configurada');
+    }
+
+    // Submete formulário de lojas (legado - será removido)
+    submitarFormulario(resultados) {
+        // Redireciona para função AJAX
+        this.submitarFormularioAjax(resultados);
+    }
+
+    // Submete formulário de colaboradores (legado - será removido)
+    submitarFormularioColaboradores(resultados) {
+        // Redireciona para função AJAX
+        this.submitarFormularioColaboradoresAjax(resultados);
+    }
+
+    // Exibe sucesso no sorteio
+    exibirSucesso(mensagem) {
+        const status = document.getElementById('sorteioStatus');
+        const alertDiv = document.getElementById('statusAlert');
+        const botoesDiv = document.getElementById('botoesAcao');
+        
+        if (status) status.textContent = '✅ Sorteio concluído com sucesso!';
+        
+        if (alertDiv) {
+            alertDiv.className = 'alert alert-success mb-3';
+            alertDiv.innerHTML = '<i class="bi bi-check-circle-fill"></i> ' + mensagem;
+        }
+        
+        if (botoesDiv) {
+            botoesDiv.style.display = 'block';
+        }
+    }
+
+    // Exibe erro no sorteio
+    exibirErro(mensagem) {
+        const status = document.getElementById('sorteioStatus');
+        const alertDiv = document.getElementById('statusAlert');
+        const botoesDiv = document.getElementById('botoesAcao');
+        
+        if (status) status.textContent = '❌ Erro ao salvar sorteio';
+        
+        if (alertDiv) {
+            alertDiv.className = 'alert alert-danger mb-3';
+            alertDiv.innerHTML = '<i class="bi bi-x-circle-fill"></i> ' + mensagem;
+        }
+        
+        if (botoesDiv) {
+            botoesDiv.style.display = 'block';
+        }
     }
 
     // Função utilitária para delay

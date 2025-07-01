@@ -98,29 +98,51 @@ document.addEventListener('DOMContentLoaded', function() {
         iniciarSorteioLojas(lojasBig, lojasUltra);
     });
     
-    // Sobrescreve a função de submissão para incluir os resultados
-    window.sorteioAnimado.submitarFormulario = function(resultados) {
-        // Cria campos hidden com os resultados
+    // Sobrescreve a função de submissão AJAX para incluir os resultados
+    window.sorteioAnimado.submitarFormularioAjax = function(resultados) {
+        // Prepara dados para enviar via AJAX
         const lojaBig = resultados.find(r => r.tipo === 'Loja BIG');
         const lojaUltra = resultados.find(r => r.tipo === 'Loja ULTRA');
         
-        if (lojaBig && lojaUltra) {
-            // Adiciona campos hidden ao formulário
-            const inputBig = document.createElement('input');
-            inputBig.type = 'hidden';
-            inputBig.name = 'loja_big_id';
-            inputBig.value = lojaBig.vencedor.id;
-            form.appendChild(inputBig);
-            
-            const inputUltra = document.createElement('input');
-            inputUltra.type = 'hidden';
-            inputUltra.name = 'loja_ultra_id';
-            inputUltra.value = lojaUltra.vencedor.id;
-            form.appendChild(inputUltra);
-            
-            // Submete o formulário
-            form.submit();
+        if (!lojaBig || !lojaUltra) {
+            window.sorteioAnimado.exibirErro('Erro nos resultados do sorteio');
+            return;
         }
+        
+        const semanaInicio = document.querySelector('input[name="semana_inicio"]').value;
+        
+        if (!semanaInicio) {
+            window.sorteioAnimado.exibirErro('Data da semana não informada');
+            return;
+        }
+        
+        const dados = {
+            semana_inicio: semanaInicio,
+            loja_big_id: lojaBig.vencedor.id,
+            loja_ultra_id: lojaUltra.vencedor.id
+        };
+        
+        // Faz chamada AJAX
+        fetch('/admin/sortear/ajax', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': form.querySelector('input[name="csrf_token"]').value
+            },
+            body: JSON.stringify(dados)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.sorteioAnimado.exibirSucesso(data.message);
+            } else {
+                window.sorteioAnimado.exibirErro(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Erro AJAX:', error);
+            window.sorteioAnimado.exibirErro('Erro de comunicação com o servidor');
+        });
     };
 });
 </script>

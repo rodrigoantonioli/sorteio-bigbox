@@ -136,25 +136,43 @@ document.addEventListener('DOMContentLoaded', function() {
         iniciarSorteioColaboradores(colaboradores, 1);
     });
     
-    // Sobrescreve a função de submissão para incluir os resultados
-    window.sorteioAnimado.submitarFormularioColaboradores = function(resultados) {
-        // Cria campos hidden com os resultados (sempre 1 colaborador)
+    // Sobrescreve a função de submissão AJAX para incluir os resultados
+    window.sorteioAnimado.submitarFormularioColaboradoresAjax = function(resultados) {
+        // Prepara dados para enviar via AJAX (sempre 1 colaborador)
         const colaborador = resultados[0];
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'colaborador_sorteado_id';
-        input.value = colaborador.id;
-        form.appendChild(input);
+        const premioId = document.querySelector('select[name="premio_id"]').value;
         
-        // Adiciona flag indicando que foi sorteio animado
-        const flagAnimado = document.createElement('input');
-        flagAnimado.type = 'hidden';
-        flagAnimado.name = 'sorteio_animado';
-        flagAnimado.value = 'true';
-        form.appendChild(flagAnimado);
+        if (!colaborador || !premioId) {
+            window.sorteioAnimado.exibirErro('Erro nos dados do sorteio');
+            return;
+        }
         
-        // Submete o formulário
-        form.submit();
+        const dados = {
+            premio_id: parseInt(premioId),
+            colaborador_id: colaborador.id
+        };
+        
+        // Faz chamada AJAX
+        fetch('/manager/sortear/ajax', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': form.querySelector('input[name="csrf_token"]').value
+            },
+            body: JSON.stringify(dados)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.sorteioAnimado.exibirSucesso(data.message);
+            } else {
+                window.sorteioAnimado.exibirErro(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Erro AJAX:', error);
+            window.sorteioAnimado.exibirErro('Erro de comunicação com o servidor');
+        });
     };
 });
 </script>

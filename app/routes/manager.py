@@ -566,4 +566,114 @@ def sortear_colaboradores():
     return render_template('manager/sortear.html', 
                          form=form, 
                          colaboradores_count=len(colaboradores_aptos),
-                         colaboradores=colaboradores_json) 
+                         colaboradores=colaboradores_json)
+
+@manager_bp.route('/sortear/ajax', methods=['POST'])
+@manager_required
+def sortear_colaboradores_ajax():
+    """Sorteia colaborador via AJAX sem redirecionamento"""
+    if not current_user.loja:
+        return jsonify({'success': False, 'message': 'Você não está associado a nenhuma loja.'}), 400
+    
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({'success': False, 'message': 'Dados não fornecidos'}), 400
+        
+        premio_id = data.get('premio_id')
+        colaborador_id = data.get('colaborador_id')
+        
+        if not all([premio_id, colaborador_id]):
+            return jsonify({'success': False, 'message': 'Dados incompletos'}), 400
+        
+        # Verifica se a loja foi sorteada
+        sorteio_atual = SorteioSemanal.query.order_by(SorteioSemanal.semana_inicio.desc()).first()
+        
+        if not sorteio_atual or (current_user.loja_id != sorteio_atual.loja_big_id and 
+                               current_user.loja_id != sorteio_atual.loja_ultra_id):
+            return jsonify({'success': False, 'message': 'Sua loja não foi sorteada esta semana.'}), 400
+        
+        # Busca prêmio
+        premio = Premio.query.get(premio_id)
+        if not premio:
+            return jsonify({'success': False, 'message': 'Prêmio não encontrado'}), 400
+        
+        # Busca colaborador
+        colaborador = Colaborador.query.filter_by(
+            id=colaborador_id,
+            loja_id=current_user.loja_id,
+            apto=True
+        ).first()
+        
+        if not colaborador:
+            return jsonify({'success': False, 'message': 'Colaborador não encontrado ou não apto'}), 400
+        
+        # Verifica se já foi sorteado nesta semana
+        ja_sorteado = SorteioColaborador.query.join(Colaborador).filter(
+            SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+            SorteioColaborador.colaborador_id == colaborador.id,
+            Colaborador.loja_id == current_user.loja_id
+        ).first()
+        
+        if ja_sorteado:
+            return jsonify({'success': False, 'message': 'Este colaborador já foi sorteado esta semana'}), 400
+        
+        # Verifica se já houve sorteio para este prêmio
+        premio_ja_sorteado = SorteioColaborador.query.join(Colaborador).filter(
+            SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+            SorteioColaborador.premio_id == premio.id,
+            Colaborador.loja_id == current_user.loja_id
+        ).first()
+        
+        if premio_ja_sorteado:
+            return jsonify({'success': False, 'message': f'Já foi realizado sorteio para o prêmio "{premio.nome}" esta semana'}), 400
+        
+        # Busca todos os colaboradores aptos para snapshot
+        colaboradores_ja_sorteados = db.session.query(SorteioColaborador.colaborador_id).join(Colaborador).filter(
+            SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+            Colaborador.loja_id == current_user.loja_id
+        ).subquery()
+        
+        colaboradores_aptos = Colaborador.query.filter_by(
+            loja_id=current_user.loja_id,
+            apto=True
+        ).filter(
+            ~Colaborador.id.in_(colaboradores_ja_sorteados)
+        ).all()
+        
+        # Cria snapshot da lista
+        colaboradores_snapshot = [
+            {
+                'id': c.id,
+                'matricula': c.matricula,
+                'nome': c.nome,
+                'setor': c.setor
+            } for c in colaboradores_aptos
+        ]
+        
+        # Registra o sorteio
+        sorteio = SorteioColaborador(
+            sorteio_semanal_id=sorteio_atual.id,
+            premio_id=premio.id,
+            colaborador_id=colaborador.id,
+            sorteado_por=current_user.id,
+            lista_confirmada=True,
+            colaboradores_snapshot=json.dumps(colaboradores_snapshot)
+        )
+        
+        db.session.add(sorteio)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'🎉 Colaborador {colaborador.nome} foi sorteado para "{premio.nome}"!',
+            'data': {
+                'colaborador': {'nome': colaborador.nome, 'setor': colaborador.setor},
+                'premio': {'nome': premio.nome, 'data_evento': premio.data_evento.strftime('%d/%m/%Y')}
+            }
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': f'Erro interno: {str(e)}'}), 500 

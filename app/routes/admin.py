@@ -254,6 +254,66 @@ def sortear_lojas():
     
     return render_template('admin/sortear.html', form=form, lojas_big=lojas_big_json, lojas_ultra=lojas_ultra_json)
 
+@admin_bp.route('/sortear/ajax', methods=['POST'])
+@admin_required
+def sortear_lojas_ajax():
+    """Sorteia lojas via AJAX sem redirecionamento"""
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({'success': False, 'message': 'Dados não fornecidos'}), 400
+        
+        semana_inicio_str = data.get('semana_inicio')
+        loja_big_id = data.get('loja_big_id')
+        loja_ultra_id = data.get('loja_ultra_id')
+        
+        if not all([semana_inicio_str, loja_big_id, loja_ultra_id]):
+            return jsonify({'success': False, 'message': 'Dados incompletos'}), 400
+        
+        # Converte data
+        semana_inicio = datetime.strptime(semana_inicio_str, '%Y-%m-%d').date()
+        
+        # Verifica se já existe sorteio para esta semana
+        sorteio_existente = SorteioSemanal.query.filter_by(semana_inicio=semana_inicio).first()
+        if sorteio_existente:
+            return jsonify({
+                'success': False, 
+                'message': f'Já existe sorteio para a semana de {semana_inicio.strftime("%d/%m/%Y")}!'
+            }), 400
+        
+        # Busca as lojas
+        loja_big = Loja.query.get(loja_big_id)
+        loja_ultra = Loja.query.get(loja_ultra_id)
+        
+        if not loja_big or not loja_ultra:
+            return jsonify({'success': False, 'message': 'Lojas não encontradas'}), 400
+        
+        # Cria o sorteio
+        sorteio = SorteioSemanal(
+            semana_inicio=semana_inicio,
+            loja_big_id=loja_big.id,
+            loja_ultra_id=loja_ultra.id,
+            sorteado_por=current_user.id
+        )
+        
+        db.session.add(sorteio)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'Sorteio realizado! Lojas sorteadas: {loja_big.nome} (BIG) e {loja_ultra.nome} (ULTRA)',
+            'data': {
+                'semana': semana_inicio.strftime('%d/%m/%Y'),
+                'loja_big': {'nome': loja_big.nome, 'codigo': loja_big.codigo},
+                'loja_ultra': {'nome': loja_ultra.nome, 'codigo': loja_ultra.codigo}
+            }
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': f'Erro interno: {str(e)}'}), 500
+
 @admin_bp.route('/usuarios')
 @admin_required
 def usuarios():
