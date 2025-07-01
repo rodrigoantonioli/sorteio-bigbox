@@ -12,7 +12,7 @@ body {
 }
 
 .sortear-container {
-    padding: 20px 0;
+    padding: 15px 0;
     min-height: 100vh;
 }
 
@@ -20,20 +20,20 @@ body {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .pote-container {
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
-    border-radius: 20px;
-    padding: 20px;
-    margin-bottom: 20px;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 12px;
     box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.1),
+        0 8px 16px rgba(0, 0, 0, 0.08),
         inset 0 1px 0 rgba(255, 255, 255, 0.6);
-    border: 3px solid transparent;
+    border: 2px solid transparent;
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -45,7 +45,7 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
+    height: 3px;
     background: linear-gradient(90deg, transparent, currentColor, transparent);
     opacity: 0.6;
 }
@@ -69,56 +69,57 @@ body {
 }
 
 .pote-title {
-    font-size: 1.4rem;
-    font-weight: 800;
+    font-size: 1rem;
+    font-weight: 700;
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 8px;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .contador-lojas {
     background: rgba(255, 255, 255, 0.8);
-    border-radius: 25px;
-    padding: 8px 16px;
-    margin: 10px auto;
+    border-radius: 15px;
+    padding: 4px 10px;
+    margin: 5px auto;
     display: inline-block;
-    font-size: 0.9rem;
+    font-size: 0.7rem;
     font-weight: 600;
     color: #495057;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .secao-lojas {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .secao-titulo {
-    font-size: 0.9rem;
-    font-weight: 700;
-    margin-bottom: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-bottom: 6px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
 }
 
 .loja-item {
     display: inline-block;
     background: linear-gradient(145deg, #ffffff, #f8f9fa);
-    border: 2px solid #e9ecef;
-    border-radius: 12px;
-    padding: 8px 14px;
-    margin: 4px;
-    font-size: 0.8rem;
-    font-weight: 600;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 3px 8px;
+    margin: 2px;
+    font-size: 0.65rem;
+    font-weight: 500;
     transition: all 0.3s ease;
     cursor: default;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    letter-spacing: 0.3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    line-height: 1.2;
 }
 
 .loja-disponivel {
@@ -128,8 +129,8 @@ body {
 }
 
 .loja-disponivel:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
 }
 
 .loja-sorteada {
@@ -143,30 +144,30 @@ body {
 .loja-sorteada::after {
     content: '🏆';
     position: absolute;
-    top: -5px;
-    right: -5px;
-    font-size: 0.7rem;
+    top: -3px;
+    right: -3px;
+    font-size: 0.6rem;
 }
 
 .btn-chacoalhar {
     background: linear-gradient(45deg, #ff6b6b, #ee5a24);
     color: white;
     border: none;
-    border-radius: 50px;
-    padding: 15px 30px;
-    font-size: 1.1rem;
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-size: 0.9rem;
     font-weight: bold;
-    box-shadow: 0 8px 16px rgba(238, 90, 36, 0.3);
+    box-shadow: 0 4px 8px rgba(238, 90, 36, 0.3);
     transition: all 0.3s ease;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     width: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .btn-chacoalhar:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 24px rgba(238, 90, 36, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(238, 90, 36, 0.4);
     background: linear-gradient(45deg, #ee5a24, #ff6b6b);
 }
 
@@ -174,20 +175,20 @@ body {
     background: linear-gradient(45deg, #667eea, #764ba2);
     color: white;
     border: none;
-    border-radius: 50px;
-    padding: 15px 30px;
-    font-size: 1.2rem;
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-size: 1rem;
     font-weight: bold;
-    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
     transition: all 0.3s ease;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     width: 100%;
 }
 
 .btn-sortear-final:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 24px rgba(102, 126, 234, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
 }
 
 .btn-sortear-final:disabled, .btn-chacoalhar:disabled {
@@ -195,7 +196,7 @@ body {
     cursor: not-allowed;
     opacity: 0.6;
     transform: none !important;
-    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.2);
+    box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
 }
 
 .tremor {
@@ -220,16 +221,16 @@ body {
 .resultado-existente {
     background: linear-gradient(45deg, #ffeaa7, #fdcb6e);
     border-radius: 15px;
-    padding: 30px;
+    padding: 20px;
     text-align: center;
-    box-shadow: 0 10px 20px rgba(253, 203, 110, 0.3);
+    box-shadow: 0 8px 16px rgba(253, 203, 110, 0.3);
 }
 
 .ganhador-nome {
-    font-size: 2.5rem;
+    font-size: 1.8rem;
     font-weight: bold;
-    margin: 15px 0;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    margin: 10px 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 .ganhador-big {
@@ -247,9 +248,9 @@ body {
     background: rgba(108, 117, 125, 0.8);
     color: white;
     border: none;
-    border-radius: 50px;
-    padding: 10px 20px;
-    font-size: 0.9rem;
+    border-radius: 25px;
+    padding: 8px 16px;
+    font-size: 0.8rem;
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     transition: all 0.3s ease;
@@ -264,18 +265,18 @@ body {
 .festival-header {
     text-align: center;
     color: white;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .festival-header h1 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: bold;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .festival-header .subtitle {
-    font-size: 1.1rem;
+    font-size: 1rem;
     opacity: 0.9;
 }
 
@@ -291,37 +292,47 @@ body {
 
 .botoes-container {
     text-align: center;
-    margin-top: 15px;
+    margin-top: 10px;
 }
 
 .compacto {
-    max-height: 450px;
+    max-height: 300px;
     overflow-y: auto;
-    padding-right: 10px;
+    padding-right: 8px;
 }
 
 .compacto::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
 }
 
 .compacto::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
+    border-radius: 2px;
 }
 
 .compacto::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
+    border-radius: 2px;
 }
 
 .status-icon {
-    font-size: 1.2rem;
-    margin-right: 5px;
+    font-size: 1rem;
+    margin-right: 3px;
+}
+
+.alert {
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+.alert small {
+    font-size: 0.8rem;
 }
 </style>
 
 <div class="sortear-container">
-    <div class="container">
+    <div class="container-fluid">
         <!-- Header do Festival -->
         <div class="festival-header">
             <h1>🎲 SORTEIO SEMANAL</h1>
@@ -331,18 +342,18 @@ body {
         <!-- Layout Compacto: Data + Potes + Botões na mesma tela -->
         <div class="row">
             <!-- Coluna da Esquerda: Data e Botões -->
-            <div class="col-lg-4">
-                <div class="sortear-card mb-3">
+            <div class="col-lg-3">
+                <div class="sortear-card mb-2">
                     <div class="card-body p-3">
                         <form id="sorteioForm">
                             {{ form.hidden_tag() }}
-                            <div class="text-center mb-3">
-                                <h5>📅 Semana do Sorteio</h5>
+                            <div class="text-center mb-2">
+                                <h6>📅 Semana do Sorteio</h6>
                             </div>
                             
-                            <div class="mb-3">
-                                {{ form.semana_inicio(class="form-control text-center", id="semanaInicio") }}
-                                <div class="form-text text-center">
+                            <div class="mb-2">
+                                {{ form.semana_inicio(class="form-control form-control-sm text-center", id="semanaInicio") }}
+                                <div class="form-text text-center small">
                                     Terça-feira da semana
                                 </div>
                             </div>
@@ -368,7 +379,7 @@ body {
             </div>
 
             <!-- Coluna da Direita: Potes das Lojas -->
-            <div class="col-lg-8">
+            <div class="col-lg-9">
                 <!-- Resultado de Sorteio Existente será inserido aqui via JS -->
                 <div id="resultadoExistente" style="display: none;"></div>
 
@@ -461,7 +472,17 @@ body {
 </a>
 
 <script>
+// Aguarda carregamento completo do DOM e do script.js
 document.addEventListener('DOMContentLoaded', function() {
+    // Aguarda mais um pouco para garantir que script.js carregou
+    setTimeout(function() {
+        initializeSorteioPaget();
+    }, 1000);
+});
+
+function initializeSorteioPaget() {
+    console.log('🚀 Inicializando página de sorteio...');
+    
     const form = document.getElementById('sorteioForm');
     const btnChacoalhar = document.getElementById('btnChacoalhar');
     const btnSortearFinal = document.getElementById('btnSortearFinal');
@@ -471,9 +492,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const statusSorteio = document.getElementById('statusSorteio');
     const statusTexto = document.getElementById('statusTexto');
     
+    // Verifica se elementos existem
+    if (!form || !btnChacoalhar || !btnSortearFinal) {
+        console.error('❌ Elementos não encontrados!');
+        return;
+    }
+    
+    // Verifica se sorteioAnimado existe
+    if (!window.sorteioAnimado) {
+        console.error('❌ SorteioAnimado não encontrado!');
+        statusTexto.textContent = 'Erro: Sistema não carregado. Recarregue a página.';
+        statusSorteio.className = 'alert alert-danger text-center';
+        return;
+    }
+    
+    console.log('✅ Sistema carregado com sucesso!');
+    
     // Dados das lojas (do backend)
     const lojasBig = JSON.parse('{{ lojas_big | tojson | safe }}');
     const lojasUltra = JSON.parse('{{ lojas_ultra | tojson | safe }}');
+    
+    console.log('📊 Lojas carregadas:', { big: lojasBig.length, ultra: lojasUltra.length });
     
     let poteChacoalhado = false;
     let seedRandom = Date.now();
@@ -590,6 +629,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Função chacoalhar
     btnChacoalhar.addEventListener('click', function() {
+        console.log('🎲 Botão chacoalhar clicado!');
+        
         if (sorteioJaRealizado) {
             alert('⚠️ Sorteio já foi realizado para esta semana!');
             return;
@@ -635,15 +676,19 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Embaralha BIG
         const containerBig = document.getElementById('lojasBigDisponiveis');
-        intervalos.push(setInterval(() => {
-            embaralharElementos(containerBig);
-        }, 100));
+        if (containerBig) {
+            intervalos.push(setInterval(() => {
+                embaralharElementos(containerBig);
+            }, 100));
+        }
         
         // Embaralha ULTRA  
         const containerUltra = document.getElementById('lojasUltraDisponiveis');
-        intervalos.push(setInterval(() => {
-            embaralharElementos(containerUltra);
-        }, 100));
+        if (containerUltra) {
+            intervalos.push(setInterval(() => {
+                embaralharElementos(containerUltra);
+            }, 100));
+        }
         
         // Para o embaralhamento após 1.5s
         setTimeout(() => {
@@ -667,9 +712,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 300);
     }
     
-    // Sortear final - CORREÇÃO DO BUG!
+    // Sortear final - CORRIGIDO!
     btnSortearFinal.addEventListener('click', function() {
-        console.log('Botão clicado!'); // DEBUG
+        console.log('🎯 Botão realizar sorteio clicado!');
         
         if (sorteioJaRealizado) {
             alert('⚠️ Sorteio já foi realizado para esta semana!');
@@ -683,7 +728,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Verifica se o objeto sorteioAnimado existe
         if (!window.sorteioAnimado) {
-            console.error('SorteioAnimado não encontrado!');
+            console.error('❌ SorteioAnimado não encontrado!');
             alert('❌ Erro: Sistema de sorteio não carregado. Recarregue a página.');
             return;
         }
@@ -696,11 +741,13 @@ document.addEventListener('DOMContentLoaded', function() {
         statusTexto.textContent = 'Iniciando sorteio...';
         statusSorteio.className = 'alert alert-warning text-center';
         
+        console.log('🚀 Iniciando sorteio com dados:', { big: lojasBig, ultra: lojasUltra });
+        
         // Chama a função corretamente
         try {
             window.sorteioAnimado.iniciarSorteioLojas(lojasBig, lojasUltra);
         } catch (error) {
-            console.error('Erro ao iniciar sorteio:', error);
+            console.error('❌ Erro ao iniciar sorteio:', error);
             alert('❌ Erro ao iniciar sorteio: ' + error.message);
         }
     });
@@ -722,7 +769,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Sobrescreve função AJAX do sorteio
     window.sorteioAnimado.submitarFormularioAjax = function(resultados) {
-        console.log('Salvando resultados:', resultados); // DEBUG
+        console.log('💾 Salvando resultados:', resultados);
         
         const lojaBig = resultados.find(r => r.tipo === 'Loja BIG');
         const lojaUltra = resultados.find(r => r.tipo === 'Loja ULTRA');
@@ -761,11 +808,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(error => {
-            console.error('Erro AJAX:', error);
+            console.error('❌ Erro AJAX:', error);
             window.sorteioAnimado.exibirErro('Erro de comunicação com o servidor');
         });
     };
-});
+    
+    console.log('✅ Inicialização completa!');
+}
 
 // Adiciona biblioteca para seed random
 !function(a,b){function c(c,d,e){var f=[];d=1==d?{entropy:!0}:d||{};var g=h(i(d.entropy?[c,j(a)]:null==c?k():c,3),f),l=new m(f),n=function(){for(var a=l.g(o),b=p,c=0;q>a;)a=(a+c)*r,b*=r,c=l.g(1);for(;a>=s;)a/=2,b/=2,c>>>=1;return(a+c)/b};return n.int32=function(){return 0|l.g(4)},n.quick=function(){return l.g(4)/4294967296},n.double=n,h(j(l.S),a),(d.pass||e||function(a,c,d,e){return e&&(e.S&&n(e,l),a.state=function(){return n(l,{})}),d?(b[t]=a,c):a})(n,g,"global"in d?d.global:this==b,d.state)}function d(a){return typeof a==="string"?a:String(a)}function e(a,b){return typeof a==="number"?a:parseInt(b,10)}function f(a,b){return a>b?a:b}function g(a,b){return a<b?a:b}function h(a,b){var c,d=a.length,e=0,f=0;for(c=0;d>c;c++)e=19*e+a.charCodeAt(c),f=e&((1<<6)-1);return(b[f]=(b[f]||0)+1,String.fromCharCode(f))}function i(a,b){var c=a+"",d,e=0;for(b=0;b<c.length;)d=.02519603282416938*c.charCodeAt(b++),d-=~~d,e+=d*d*d*7*5e6;return e}function j(a){for(var b,c=a.length,d=this,e=0,f=d.i=d.j=0,g=d.S=[];c>e;)g[e]=e++;for(e=0;c>e;e++)g[e]=g[f=w&f+g[e]+g[(d.i=w&d.i+1)]],g[f]=g[d.i];(d.i=d.j=0)}function k(){try{var b;return u&&(b=u.randomBytes)?b=b(r):(b=new Uint8Array(r),(v.crypto||v.msCrypto).getRandomValues(b)),j(b)}catch(c){var d=v.navigator,e=d&&d.plugins;return j([+new Date,v,e,v.screen,j(a)])}}function l(a){try{return u.createHash("sha256").update(a).digest()}catch(b){return[a]}}function m(a){j(this,a)}function n(a,b){return b.i=a.i,b.j=a.j,b.S=a.S.slice(),b}var o=6,p=52,q=1,r=4,s=Math.pow(2,53),t="random",u=c.crypto,v=c;if("object"==typeof module&&module.exports){module.exports=c;try{u=require("crypto")}catch(w){}}else"function"==typeof define&&define.amd?define(function(){return c}):v["seed"+t]=c;var x=Math.pow(r,o),y=Math.pow(2,p),z=2*y,A=r-1,w=4294967295;if(l(b[t])!=b[t]&&l(Math.random())!=Math.random()){b[t]=c}Math.seedrandom=c}([],"",Math);
