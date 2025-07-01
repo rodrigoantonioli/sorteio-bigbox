@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Sortear Colaboradores - {{ current_user.loja.nome }}{% endblock %}
+{% block title %}Sortear Colaborador - {{ current_user.loja.nome }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -8,11 +8,12 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h1 class="h3 mb-0">🎲 Sortear Colaboradores</h1>
+                    <h1 class="h3 mb-0">🎲 Sortear Colaborador</h1>
                     <small class="text-muted">
                         <span class="badge bg-{{ 'success' if current_user.loja.bandeira == 'BIG' else 'info' }}">
                             {{ current_user.loja.codigo }}
                         </span>
+                        • 1 colaborador por prêmio
                     </small>
                 </div>
                 <a href="{{ url_for('manager.dashboard') }}" class="btn btn-outline-secondary">
@@ -27,7 +28,7 @@
             <div class="card shadow">
                 <div class="card-header bg-warning text-dark">
                     <h5 class="card-title mb-0">
-                        <i class="fas fa-dice"></i> Realizar Sorteio de Colaboradores
+                        <i class="fas fa-dice"></i> Realizar Sorteio de Colaborador
                     </h5>
                 </div>
                 <div class="card-body">
@@ -50,20 +51,11 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            {{ form.quantidade_ingressos.label(class="form-label") }}
-                            {{ form.quantidade_ingressos(class="form-control") }}
-                            {% if form.quantidade_ingressos.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {% for error in form.quantidade_ingressos.errors %}
-                                        <div>{{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            <div class="form-text">
-                                <i class="fas fa-info-circle"></i> 
-                                Quantos colaboradores serão sorteados ({{ colaboradores_count }} disponíveis)
-                            </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-user"></i>
+                            <strong>Sorteio Único:</strong>
+                            <p class="mb-2">Será sorteado <strong>1 colaborador</strong> para este prêmio.</p>
+                            <small class="text-muted">{{ colaboradores_count }} colaboradores disponíveis</small>
                         </div>
 
                         <div class="mb-3">
@@ -84,14 +76,15 @@
                             </div>
                         </div>
 
-                        <div class="alert alert-info">
+                        <div class="alert alert-success">
                             <i class="fas fa-info-circle"></i>
                             <strong>Como funciona o sorteio:</strong>
                             <ul class="mb-0 mt-2">
                                 <li>Apenas colaboradores <strong>aptos</strong> participam</li>
+                                <li>Colaboradores já sorteados <strong>não podem</strong> ser sorteados novamente</li>
                                 <li>O sorteio é <strong>aleatório</strong> e transparente</li>
+                                <li>Apenas <strong>1 sorteio por prêmio</strong> é permitido</li>
                                 <li>Todos os sorteios ficam registrados no histórico</li>
-                                <li>Não é possível sortear duas vezes na mesma semana</li>
                             </ul>
                         </div>
 
@@ -121,16 +114,10 @@ document.addEventListener('DOMContentLoaded', function() {
     btnSortearAnimado.addEventListener('click', function() {
         // Valida o formulário
         const premioId = document.querySelector('select[name="premio_id"]').value;
-        const quantidade = document.querySelector('input[name="quantidade_ingressos"]').value;
         const confirmado = document.querySelector('input[name="confirmar_lista"]').checked;
         
         if (!premioId || premioId === '0') {
             alert('Por favor, selecione um prêmio antes de realizar o sorteio.');
-            return;
-        }
-        
-        if (!quantidade || quantidade < 1) {
-            alert('Por favor, informe a quantidade de colaboradores a serem sorteados.');
             return;
         }
         
@@ -139,33 +126,25 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        const quantidadeNum = parseInt(quantidade);
-        
         // Verifica se há colaboradores suficientes
         if (colaboradores.length === 0) {
             alert('Não há colaboradores aptos para sortear.');
             return;
         }
         
-        if (quantidadeNum > colaboradores.length) {
-            alert(`Não há colaboradores suficientes. Disponíveis: ${colaboradores.length}`);
-            return;
-        }
-        
-        // Inicia o sorteio animado
-        iniciarSorteioColaboradores(colaboradores, quantidadeNum);
+        // Inicia o sorteio animado (sempre 1 colaborador)
+        iniciarSorteioColaboradores(colaboradores, 1);
     });
     
     // Sobrescreve a função de submissão para incluir os resultados
     window.sorteioAnimado.submitarFormularioColaboradores = function(resultados) {
-        // Cria campos hidden com os resultados
-        resultados.forEach((colaborador, index) => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = `colaborador_sorteado_${index}`;
-            input.value = colaborador.id;
-            form.appendChild(input);
-        });
+        // Cria campos hidden com os resultados (sempre 1 colaborador)
+        const colaborador = resultados[0];
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'colaborador_sorteado_id';
+        input.value = colaborador.id;
+        form.appendChild(input);
         
         // Adiciona flag indicando que foi sorteio animado
         const flagAnimado = document.createElement('input');

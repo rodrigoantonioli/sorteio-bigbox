@@ -2,6 +2,7 @@ from app.extensions import db, login_manager
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+import os
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -57,10 +58,22 @@ class Premio(db.Model):
     descricao = db.Column(db.Text)
     data_evento = db.Column(db.Date, nullable=False)
     tipo = db.Column(db.String(20), nullable=False)  # 'show' ou 'day_use'
+    imagem = db.Column(db.String(255), nullable=True)  # Nome do arquivo de imagem
     loja_id = db.Column(db.Integer, db.ForeignKey('lojas.id'), nullable=True)  # Vinculação com loja ganhadora
     ativo = db.Column(db.Boolean, default=True)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
     criado_por = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
+    
+    def get_imagem_url(self):
+        """Retorna a URL da imagem do prêmio ou imagem padrão"""
+        if self.imagem and os.path.exists(f'app/static/images/premios/{self.imagem}'):
+            return f'/static/images/premios/{self.imagem}'
+        else:
+            # Retorna imagem padrão baseada no tipo
+            if self.tipo == 'show':
+                return '/static/images/premios/default_show.jpg'
+            else:  # day_use
+                return '/static/images/premios/default_day_use.jpg'
 
 class SorteioSemanal(db.Model):
     __tablename__ = 'sorteios_semanais'

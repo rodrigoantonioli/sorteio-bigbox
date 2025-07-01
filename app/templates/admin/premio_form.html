@@ -7,81 +7,148 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header bg-success text-white">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-gift"></i> {{ titulo }}
-                        </h5>
-                        <a href="{{ url_for('admin.premios') }}" class="btn btn-light btn-sm">
-                            <i class="fas fa-arrow-left"></i> Voltar
-                        </a>
-                    </div>
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="bi bi-gift"></i> {{ titulo }}
+                    </h4>
                 </div>
                 <div class="card-body">
-                    {% if titulo == 'Novo Prêmio' %}
-                    <div class="alert alert-info" role="alert">
-                        <h6><i class="fas fa-info-circle"></i> <strong>Como funciona:</strong></h6>
-                        <ul class="mb-0">
-                            <li>Prêmios são criados no <strong>pool geral</strong> (sem loja específica)</li>
-                            <li>Após criar, você pode <strong>atribuir</strong> o prêmio a uma loja ganhadora</li>
-                            <li>Apenas lojas que foram <strong>sorteadas semanalmente</strong> podem receber prêmios</li>
-                            <li>Assistentes só podem sortear prêmios <strong>atribuídos à sua loja</strong></li>
-                        </ul>
-                    </div>
-                    {% endif %}
-
-                    <form method="POST">
+                    <form method="POST" enctype="multipart/form-data">
                         {{ form.hidden_tag() }}
                         
-                        <div class="mb-3">
-                            {{ form.nome.label(class="form-label") }}
-                            {{ form.nome(class="form-control", placeholder="Ex: Show Wesley Safadão") }}
-                            <div class="form-text">
-                                Nome do prêmio que aparecerá nos sorteios
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form.descricao.label(class="form-label") }}
-                            {{ form.descricao(class="form-control", rows="3", placeholder="Descrição adicional do prêmio (opcional)") }}
-                            <div class="form-text">
-                                Informações extras sobre o prêmio
-                            </div>
-                        </div>
-
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-8">
+                                <!-- Nome do Prêmio -->
                                 <div class="mb-3">
-                                    {{ form.data_evento.label(class="form-label") }}
-                                    {{ form.data_evento(class="form-control") }}
-                                    <div class="form-text">
-                                        Data em que o evento acontecerá
+                                    {{ form.nome.label(class="form-label") }}
+                                    {{ form.nome(class="form-control" + (" is-invalid" if form.nome.errors else "")) }}
+                                    {% if form.nome.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.nome.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Descrição -->
+                                <div class="mb-3">
+                                    {{ form.descricao.label(class="form-label") }}
+                                    {{ form.descricao(class="form-control", rows="3", placeholder="Descrição detalhada do prêmio...") }}
+                                    {% if form.descricao.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.descricao.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Tipo e Data -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.tipo.label(class="form-label") }}
+                                            {{ form.tipo(class="form-select" + (" is-invalid" if form.tipo.errors else "")) }}
+                                            {% if form.tipo.errors %}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.tipo.errors %}
+                                                        {{ error }}
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.data_evento.label(class="form-label") }}
+                                            {{ form.data_evento(class="form-control" + (" is-invalid" if form.data_evento.errors else "")) }}
+                                            {% if form.data_evento.errors %}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.data_evento.errors %}
+                                                        {{ error }}
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
+                                
+                                <!-- Upload de Imagem -->
                                 <div class="mb-3">
-                                    {{ form.tipo.label(class="form-label") }}
-                                    {{ form.tipo(class="form-select") }}
+                                    {{ form.imagem.label(class="form-label") }}
+                                    {{ form.imagem(class="form-control" + (" is-invalid" if form.imagem.errors else ""), accept="image/*") }}
                                     <div class="form-text">
-                                        Tipo do prêmio oferecido
+                                        <i class="bi bi-info-circle"></i> 
+                                        Arquivos aceitos: JPG, JPEG, PNG. Se não enviar uma imagem, será usada uma imagem padrão.
+                                    </div>
+                                    {% if form.imagem.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.imagem.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Preview da Imagem -->
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Preview da Imagem</label>
+                                    <div class="text-center">
+                                        {% if premio and premio.imagem %}
+                                            <img id="imagePreview" src="{{ premio.get_imagem_url() }}" 
+                                                 alt="Imagem do prêmio" class="img-fluid rounded shadow" 
+                                                 style="max-height: 200px; border: 2px solid #dee2e6;">
+                                            <div class="mt-2">
+                                                <small class="text-muted">Imagem atual</small>
+                                            </div>
+                                        {% else %}
+                                            <div id="imagePreview" class="border rounded d-flex align-items-center justify-content-center" 
+                                                 style="height: 200px; background-color: #f8f9fa;">
+                                                <div class="text-center text-muted">
+                                                    <i class="bi bi-image" style="font-size: 3rem;"></i>
+                                                    <div class="mt-2">
+                                                        <small>Preview da imagem aparecerá aqui</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Imagens padrão -->
+                                    <div class="mt-3">
+                                        <small class="text-muted d-block mb-2">Imagens padrão por tipo:</small>
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <div class="text-center">
+                                                    <img src="/static/images/premios/default_show.jpg" 
+                                                         alt="Show padrão" class="img-fluid rounded" 
+                                                         style="max-height: 60px; opacity: 0.7;">
+                                                    <small class="d-block text-muted">Show</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="text-center">
+                                                    <img src="/static/images/premios/default_day_use.jpg" 
+                                                         alt="Day Use padrão" class="img-fluid rounded" 
+                                                         style="max-height: 60px; opacity: 0.7;">
+                                                    <small class="d-block text-muted">Day Use</small>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        {% if titulo == 'Novo Prêmio' %}
-                        <div class="alert alert-warning" role="alert">
-                            <h6><i class="fas fa-lightbulb"></i> <strong>Próximo passo:</strong></h6>
-                            <p class="mb-0">Após criar o prêmio, você poderá atribuí-lo a uma loja ganhadora na página de gerenciamento de prêmios.</p>
-                        </div>
-                        {% endif %}
-
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        
+                        <!-- Botões -->
+                        <div class="d-flex justify-content-between">
                             <a href="{{ url_for('admin.premios') }}" class="btn btn-secondary">
-                                <i class="fas fa-times"></i> Cancelar
+                                <i class="bi bi-arrow-left"></i> Cancelar
                             </a>
-                            {{ form.submit(class="btn btn-success") }}
+                            {{ form.submit(class="btn btn-primary") }}
                         </div>
                     </form>
                 </div>
@@ -90,14 +157,57 @@
     </div>
 </div>
 
-<style>
-.alert h6 {
-    color: inherit;
-    margin-bottom: 0.5rem;
-}
-.form-text {
-    color: #6c757d;
-    font-size: 0.875em;
-}
-</style>
+<script>
+// Preview da imagem selecionada
+document.getElementById('imagem').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const preview = document.getElementById('imagePreview');
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = `
+                <img src="${e.target.result}" alt="Preview" 
+                     class="img-fluid rounded shadow" 
+                     style="max-height: 200px; border: 2px solid #0d6efd;">
+                <div class="mt-2">
+                    <small class="text-success">Nova imagem selecionada</small>
+                </div>
+            `;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Validação do tipo de arquivo
+document.getElementById('imagem').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('Apenas arquivos JPG, JPEG e PNG são permitidos!');
+            e.target.value = '';
+            // Restaura preview anterior ou mostra placeholder
+            const preview = document.getElementById('imagePreview');
+            {% if premio and premio.imagem %}
+                preview.innerHTML = `
+                    <img src="{{ premio.get_imagem_url() }}" alt="Imagem do prêmio" 
+                         class="img-fluid rounded shadow" style="max-height: 200px; border: 2px solid #dee2e6;">
+                    <div class="mt-2"><small class="text-muted">Imagem atual</small></div>
+                `;
+            {% else %}
+                preview.innerHTML = `
+                    <div class="border rounded d-flex align-items-center justify-content-center" 
+                         style="height: 200px; background-color: #f8f9fa;">
+                        <div class="text-center text-muted">
+                            <i class="bi bi-image" style="font-size: 3rem;"></i>
+                            <div class="mt-2"><small>Preview da imagem aparecerá aqui</small></div>
+                        </div>
+                    </div>
+                `;
+            {% endif %}
+        }
+    }
+});
+</script>
 {% endblock %} 

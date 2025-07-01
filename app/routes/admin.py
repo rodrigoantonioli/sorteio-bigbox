@@ -4,9 +4,11 @@ from app.models import db, Usuario, Loja, SorteioSemanal, SorteioColaborador, Co
 from app.forms.admin import SorteioSemanalForm, UsuarioForm, PremioForm, LojaForm, AtribuirPremioForm
 from datetime import datetime, date, timedelta
 from functools import wraps
+from werkzeug.utils import secure_filename
 import random
 import os
 import glob
+import uuid
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -66,6 +68,29 @@ def safe_remove_file(filepath):
         return False
     except Exception:
         return False
+
+def allowed_image_file(filename):
+    """Verifica se o arquivo de imagem é permitido"""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ['jpg', 'jpeg', 'png']
+
+def save_premio_image(image_file):
+    """Salva a imagem do prêmio e retorna o nome do arquivo"""
+    if image_file and allowed_image_file(image_file.filename):
+        # Gera nome único para o arquivo
+        filename = secure_filename(image_file.filename)
+        unique_filename = f"{uuid.uuid4().hex}_{filename}"
+        
+        # Cria diretório se não existir
+        upload_dir = 'app/static/images/premios'
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # Salva arquivo
+        filepath = os.path.join(upload_dir, unique_filename)
+        image_file.save(filepath)
+        
+        return unique_filename
+    return None
 
 @admin_bp.route('/dashboard')
 @admin_required
@@ -373,11 +398,17 @@ def novo_premio():
     form = PremioForm()
     
     if form.validate_on_submit():
+        # Processa upload de imagem
+        imagem_filename = None
+        if form.imagem.data:
+            imagem_filename = save_premio_image(form.imagem.data)
+        
         premio = Premio(
             nome=form.nome.data,
             descricao=form.descricao.data,
             data_evento=form.data_evento.data,
             tipo=form.tipo.data,
+            imagem=imagem_filename,
             loja_id=None,  # Sempre sem loja por padrão
             criado_por=current_user.id,
             ativo=True
@@ -406,6 +437,16 @@ def editar_premio(id):
     form = PremioForm(obj=premio)
     
     if form.validate_on_submit():
+        # Processa upload de imagem
+        if form.imagem.data:
+            # Remove imagem anterior se existir
+            if premio.imagem:
+                old_image_path = os.path.join('app/static/images/premios', premio.imagem)
+                safe_remove_file(old_image_path)
+            
+            # Salva nova imagem
+            premio.imagem = save_premio_image(form.imagem.data)
+        
         premio.nome = form.nome.data
         premio.descricao = form.descricao.data
         premio.data_evento = form.data_evento.data
@@ -417,7 +458,7 @@ def editar_premio(id):
         flash(f'✅ Prêmio "{premio.nome}" atualizado com sucesso!', 'success')
         return redirect(url_for('admin.premios'))
     
-    return render_template('admin/premio_form.html', form=form, titulo='Editar Prêmio')
+    return render_template('admin/premio_form.html', form=form, titulo='Editar Prêmio', premio=premio)
 
 @admin_bp.route('/premios/<int:id>/atribuir', methods=['GET', 'POST'])
 @admin_required

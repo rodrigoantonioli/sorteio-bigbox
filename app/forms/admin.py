@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, PasswordField, DateField, SelectField, SubmitField, IntegerField, TextAreaField, BooleanField, HiddenField
 from wtforms.validators import DataRequired, Email, Length, Optional, NumberRange
 from datetime import date
@@ -43,6 +44,9 @@ class PremioForm(FlaskForm):
         ('show', 'Show'),
         ('day_use', 'Day Use')
     ], validators=[DataRequired(message='Tipo é obrigatório')])
+    imagem = FileField('Imagem do Prêmio', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png'], 'Apenas arquivos JPG, JPEG e PNG são permitidos!')
+    ])
     submit = SubmitField('Salvar')
 
 class AtribuirPremioForm(FlaskForm):

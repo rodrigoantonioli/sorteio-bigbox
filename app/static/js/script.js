@@ -19,13 +19,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Auto-hide alerts após 5 segundos
+    // Auto-hide alerts após 10 segundos (aumentado de 5 para 10 segundos)
     const alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
     alerts.forEach(alert => {
         setTimeout(() => {
             const bsAlert = new bootstrap.Alert(alert);
             bsAlert.close();
-        }, 5000);
+        }, 10000); // Aumentado para 10 segundos
     });
     
     // Tooltips do Bootstrap
@@ -43,6 +43,7 @@ class SorteioAnimado {
         this.modal = null;
         this.intervalId = null;
         this.timeoutIds = [];
+        this.ultimoVencedor = null; // Para armazenar o último item mostrado
     }
 
     // Inicializa o sorteio de lojas
@@ -174,6 +175,7 @@ class SorteioAnimado {
             let speed = 100; // Velocidade inicial (ms)
             let iterations = 0;
             const maxIterations = Math.random() * 30 + 50; // Entre 50-80 iterações
+            this.ultimoVencedor = null; // Reset do último vencedor
             
             // Remove classes anteriores
             display.className = 'nome-sorteio';
@@ -188,6 +190,7 @@ class SorteioAnimado {
 
                 // Mostra item atual
                 const item = items[currentIndex];
+                this.ultimoVencedor = item; // Armazena o item atual
                 display.textContent = item.nome || item.codigo || item;
                 display.classList.add('animando');
                 
@@ -202,8 +205,8 @@ class SorteioAnimado {
                 if (iterations >= maxIterations) {
                     clearInterval(interval);
                     
-                    // Seleciona vencedor aleatório
-                    const vencedor = items[Math.floor(Math.random() * items.length)];
+                    // USA O ÚLTIMO ITEM MOSTRADO NA TELA (correção do bug!)
+                    const vencedor = this.ultimoVencedor;
                     
                     // Animação final
                     setTimeout(() => {

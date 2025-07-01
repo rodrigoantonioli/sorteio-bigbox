@@ -66,51 +66,43 @@
                 </div>
                 <div class="card-body">
                     <p class="text-muted mb-3">Estes prêmios estão no pool geral e podem ser atribuídos a lojas ganhadoras.</p>
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Prêmio</th>
-                                    <th>Tipo</th>
-                                    <th>Data do Evento</th>
-                                    <th>Criado</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for premio in premios_sem_loja %}
-                                <tr>
-                                    <td>
-                                        <strong>{{ premio.nome }}</strong>
-                                        {% if premio.descricao %}
-                                            <br><small class="text-muted">{{ premio.descricao }}</small>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-{{ 'info' if premio.tipo == 'show' else 'warning' }}">
-                                            {{ 'Show' if premio.tipo == 'show' else 'Day Use' }}
-                                        </span>
-                                    </td>
-                                    <td>{{ premio.data_evento.strftime('%d/%m/%Y') }}</td>
-                                    <td>
-                                        <small>{{ premio.criado_em.strftime('%d/%m/%Y') }}</small>
-                                    </td>
-                                    <td>
-                                        <div class="btn-group btn-group-sm" role="group">
+                    <div class="row">
+                        {% for premio in premios_sem_loja %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <div class="position-relative">
+                                    <img src="{{ premio.get_imagem_url() }}" 
+                                         alt="{{ premio.nome }}" 
+                                         class="card-img-top" 
+                                         style="height: 200px; object-fit: cover;">
+                                    <span class="badge bg-{{ 'info' if premio.tipo == 'show' else 'warning' }} position-absolute top-0 end-0 m-2">
+                                        {{ 'Show' if premio.tipo == 'show' else 'Day Use' }}
+                                    </span>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">{{ premio.nome }}</h5>
+                                    {% if premio.descricao %}
+                                        <p class="card-text text-muted flex-grow-1">{{ premio.descricao[:100] }}{% if premio.descricao|length > 100 %}...{% endif %}</p>
+                                    {% endif %}
+                                    <div class="mt-auto">
+                                        <small class="text-muted d-block mb-2">
+                                            <i class="bi bi-calendar"></i> {{ premio.data_evento.strftime('%d/%m/%Y') }}
+                                        </small>
+                                        <div class="btn-group w-100" role="group">
                                             <a href="{{ url_for('admin.atribuir_premio', id=premio.id) }}" 
-                                               class="btn btn-primary" title="Atribuir à Loja">
+                                               class="btn btn-primary btn-sm">
                                                 <i class="fas fa-arrow-right"></i> Atribuir
                                             </a>
                                             <a href="{{ url_for('admin.editar_premio', id=premio.id) }}" 
-                                               class="btn btn-outline-secondary" title="Editar">
-                                                <i class="fas fa-edit"></i>
+                                               class="btn btn-outline-secondary btn-sm">
+                                                <i class="fas fa-edit"></i> Editar
                                             </a>
                                         </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -130,61 +122,50 @@
                 </div>
                 <div class="card-body">
                     <p class="text-muted mb-3">Estes prêmios foram atribuídos a lojas específicas e estão prontos para sorteio pelos assistentes.</p>
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Prêmio</th>
-                                    <th>Tipo</th>
-                                    <th>Loja Atribuída</th>
-                                    <th>Data do Evento</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for premio in premios_com_loja %}
-                                <tr>
-                                    <td>
-                                        <strong>{{ premio.nome }}</strong>
-                                        {% if premio.descricao %}
-                                            <br><small class="text-muted">{{ premio.descricao }}</small>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-{{ 'info' if premio.tipo == 'show' else 'warning' }}">
-                                            {{ 'Show' if premio.tipo == 'show' else 'Day Use' }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-{{ 'primary' if premio.loja.bandeira == 'BIG' else 'success' }}">
-                                            {{ premio.loja.codigo }}
-                                        </span>
-                                        <br>
-                                        <small class="text-muted">{{ premio.loja.nome }}</small>
-                                    </td>
-                                    <td>{{ premio.data_evento.strftime('%d/%m/%Y') }}</td>
-                                    <td>
-                                        <span class="badge bg-info">
-                                            <i class="fas fa-clock"></i> Aguardando Sorteio
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="btn-group btn-group-sm" role="group">
-                                            <form method="POST" action="{{ url_for('admin.desatribuir_premio', id=premio.id) }}" 
-                                                  style="display: inline;">
-                                                <button type="submit" class="btn btn-outline-warning" 
-                                                        title="Remover da Loja"
-                                                        onclick="return confirm('Tem certeza que deseja remover este prêmio da loja?')">
-                                                    <i class="fas fa-arrow-left"></i> Remover
-                                                </button>
-                                            </form>
+                    <div class="row">
+                        {% for premio in premios_com_loja %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 shadow-sm border-primary">
+                                <div class="position-relative">
+                                    <img src="{{ premio.get_imagem_url() }}" 
+                                         alt="{{ premio.nome }}" 
+                                         class="card-img-top" 
+                                         style="height: 200px; object-fit: cover;">
+                                    <span class="badge bg-{{ 'info' if premio.tipo == 'show' else 'warning' }} position-absolute top-0 start-0 m-2">
+                                        {{ 'Show' if premio.tipo == 'show' else 'Day Use' }}
+                                    </span>
+                                    <span class="badge bg-{{ 'primary' if premio.loja.bandeira == 'BIG' else 'success' }} position-absolute top-0 end-0 m-2">
+                                        {{ premio.loja.codigo }}
+                                    </span>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">{{ premio.nome }}</h5>
+                                    {% if premio.descricao %}
+                                        <p class="card-text text-muted flex-grow-1">{{ premio.descricao[:100] }}{% if premio.descricao|length > 100 %}...{% endif %}</p>
+                                    {% endif %}
+                                    <div class="mt-auto">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <small class="text-muted">
+                                                <i class="bi bi-calendar"></i> {{ premio.data_evento.strftime('%d/%m/%Y') }}
+                                            </small>
+                                            <span class="badge bg-info">
+                                                <i class="fas fa-clock"></i> Aguardando Sorteio
+                                            </span>
                                         </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                        <small class="text-muted d-block mb-2">
+                                            <i class="bi bi-shop"></i> {{ premio.loja.nome }}
+                                        </small>
+                                        <form method="POST" action="{{ url_for('admin.desatribuir_premio', id=premio.id) }}">
+                                            <button type="submit" class="btn btn-outline-warning btn-sm w-100" 
+                                                    onclick="return confirm('Tem certeza que deseja remover este prêmio da loja?')">
+                                                <i class="fas fa-arrow-left"></i> Remover da Loja
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -204,52 +185,47 @@
                 </div>
                 <div class="card-body">
                     <p class="text-muted mb-3">Estes prêmios já foram sorteados e têm colaboradores ganhadores definidos.</p>
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Prêmio</th>
-                                    <th>Colaborador Ganhador</th>
-                                    <th>Loja</th>
-                                    <th>Data do Sorteio</th>
-                                    <th>Sorteado por</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in premios_sorteados %}
-                                <tr>
-                                    <td>
-                                        <strong>{{ item.premio.nome }}</strong>
+                    <div class="row">
+                        {% for item in premios_sorteados %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 shadow-sm border-success">
+                                <div class="position-relative">
+                                    <img src="{{ item.premio.get_imagem_url() }}" 
+                                         alt="{{ item.premio.nome }}" 
+                                         class="card-img-top" 
+                                         style="height: 200px; object-fit: cover; filter: brightness(0.8);">
+                                    <div class="position-absolute top-0 start-0 end-0 bottom-0 d-flex align-items-center justify-content-center">
+                                        <div class="bg-success text-white px-3 py-2 rounded shadow">
+                                            <i class="fas fa-trophy"></i> SORTEADO
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-{{ 'info' if item.premio.tipo == 'show' else 'warning' }} position-absolute bottom-0 start-0 m-2">
+                                        {{ 'Show' if item.premio.tipo == 'show' else 'Day Use' }}
+                                    </span>
+                                    <span class="badge bg-{{ 'primary' if item.colaborador.loja.bandeira == 'BIG' else 'success' }} position-absolute bottom-0 end-0 m-2">
+                                        {{ item.colaborador.loja.codigo }}
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ item.premio.nome }}</h5>
+                                    <div class="alert alert-success p-2 mb-2">
+                                        <strong class="text-success">🏆 {{ item.colaborador.nome }}</strong>
                                         <br>
-                                        <span class="badge bg-{{ 'info' if item.premio.tipo == 'show' else 'warning' }}">
-                                            {{ 'Show' if item.premio.tipo == 'show' else 'Day Use' }}
-                                        </span>
-                                        <small class="text-muted">{{ item.premio.data_evento.strftime('%d/%m/%Y') }}</small>
-                                    </td>
-                                    <td>
-                                        <strong class="text-success">{{ item.colaborador.nome }}</strong>
-                                        <br>
-                                        <small class="text-muted">Mat: {{ item.colaborador.matricula }}</small>
-                                        <br>
-                                        <small class="text-muted">{{ item.colaborador.setor }}</small>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-{{ 'primary' if item.colaborador.loja.bandeira == 'BIG' else 'success' }}">
-                                            {{ item.colaborador.loja.codigo }}
-                                        </span>
+                                        <small class="text-muted">Mat: {{ item.colaborador.matricula }} | {{ item.colaborador.setor }}</small>
                                         <br>
                                         <small class="text-muted">{{ item.colaborador.loja.nome }}</small>
-                                    </td>
-                                    <td>
-                                        {{ item.sorteio.data_sorteio.strftime('%d/%m/%Y %H:%M') }}
-                                    </td>
-                                    <td>
-                                        <small>{{ item.sorteio.sorteador.nome }}</small>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                    </div>
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar"></i> Evento: {{ item.premio.data_evento.strftime('%d/%m/%Y') }}
+                                        <br>
+                                        <i class="bi bi-clock"></i> Sorteado: {{ item.sorteio.data_sorteio.strftime('%d/%m/%Y %H:%M') }}
+                                        <br>
+                                        <i class="bi bi-person"></i> Por: {{ item.sorteio.sorteador.nome }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -290,6 +266,12 @@
 }
 .btn-group-sm .btn {
     font-size: 0.875rem;
+}
+.card-img-top {
+    transition: transform 0.2s;
+}
+.card:hover .card-img-top {
+    transform: scale(1.02);
 }
 </style>
 {% endblock %} 
