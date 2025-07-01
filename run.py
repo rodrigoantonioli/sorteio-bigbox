@@ -47,69 +47,86 @@ def create_app(config_name='default'):
     @app.cli.command()
     def init_db():
         """Inicializa o banco de dados"""
-        db.create_all()
-        print("✓ Tabelas do banco de dados criadas.")
-        
-        # Cria admin se não existir
-        admin_email = app.config.get('ADMIN_EMAIL')
-        admin_password = app.config.get('ADMIN_PASSWORD')
-        
-        if not admin_email or not admin_password:
-            print("❌ ADMIN_EMAIL e ADMIN_PASSWORD devem estar definidos no .env")
-            return
-            
-        if not Usuario.query.filter_by(email=admin_email).first():
-            admin = Usuario(
-                email=admin_email,
-                nome='Administrador',
-                tipo='admin'
-            )
-            admin.set_password(admin_password)
-            db.session.add(admin)
-            print(f"✓ Usuário admin criado: {admin_email}")
-        else:
-            print(f"✓ Usuário admin já existe: {admin_email}")
-
-        # Popula lojas do Excel
-        excel_path = os.path.join(os.path.dirname(__file__), 'inputs', 'TABELA LOJAS.xlsx')
-        if not os.path.exists(excel_path):
-            print(f"❌ Arquivo não encontrado: {excel_path}")
-            return
-            
         try:
-            workbook = openpyxl.load_workbook(excel_path)
-            sheet = workbook.active
-            lojas_criadas = 0
-            lojas_existentes = 0
+            # Cria todas as tabelas
+            db.create_all()
+            print("✓ Tabelas do banco de dados criadas.")
             
-            for row in sheet.iter_rows(min_row=2, values_only=True):
-                if not row or len(row) < 4 or row[3] is None:
-                    break
-                    
-                codigo = str(row[2]).strip()
-                bandeira = str(row[3]).strip().upper()
+            # Cria admin se não existir
+            admin_email = app.config.get('ADMIN_EMAIL')
+            admin_password = app.config.get('ADMIN_PASSWORD')
+            
+            if not admin_email:
+                print("❌ ADMIN_EMAIL não definido")
+                return
                 
-                if bandeira not in ['BIG', 'ULTRA']:
-                    break
+            if not admin_password:
+                print("❌ ADMIN_PASSWORD não definido")
+                return
+                
+            # Verifica se admin já existe
+            admin_existente = Usuario.query.filter_by(email=admin_email).first()
+            if not admin_existente:
+                admin = Usuario(
+                    email=admin_email,
+                    nome='Administrador',
+                    tipo='admin'
+                )
+                admin.set_password(admin_password)
+                db.session.add(admin)
+                db.session.commit()
+                print(f"✓ Usuário admin criado: {admin_email}")
+            else:
+                print(f"✓ Usuário admin já existe: {admin_email}")
 
-                if not Loja.query.filter_by(codigo=codigo).first():
-                    nome = codigo.split(' - ', 1)[1] if ' - ' in codigo else codigo
-                    loja = Loja(codigo=codigo, nome=nome, bandeira=bandeira)
-                    db.session.add(loja)
-                    lojas_criadas += 1
-                else:
-                    lojas_existentes += 1
+            # Popula lojas do Excel
+            excel_path = os.path.join(os.path.dirname(__file__), 'inputs', 'TABELA LOJAS.xlsx')
+            if not os.path.exists(excel_path):
+                print(f"⚠️ Arquivo de lojas não encontrado: {excel_path}")
+                print("✅ Inicialização básica concluída (sem lojas)")
+                return
+                
+            try:
+                workbook = openpyxl.load_workbook(excel_path)
+                sheet = workbook.active
+                lojas_criadas = 0
+                lojas_existentes = 0
+                
+                for row in sheet.iter_rows(min_row=2, values_only=True):
+                    if not row or len(row) < 4 or row[3] is None:
+                        break
+                        
+                    codigo = str(row[2]).strip()
+                    bandeira = str(row[3]).strip().upper()
                     
-            db.session.commit()
-            print(f"✓ Lojas criadas: {lojas_criadas}")
-            print(f"✓ Lojas já existentes: {lojas_existentes}")
+                    if bandeira not in ['BIG', 'ULTRA']:
+                        break
+
+                    if not Loja.query.filter_by(codigo=codigo).first():
+                        nome = codigo.split(' - ', 1)[1] if ' - ' in codigo else codigo
+                        loja = Loja(codigo=codigo, nome=nome, bandeira=bandeira)
+                        db.session.add(loja)
+                        lojas_criadas += 1
+                    else:
+                        lojas_existentes += 1
+                        
+                workbook.close()
+                db.session.commit()
+                print(f"✓ Lojas criadas: {lojas_criadas}")
+                print(f"✓ Lojas já existentes: {lojas_existentes}")
+                
+            except Exception as e:
+                print(f"❌ Erro ao carregar lojas: {e}")
+                db.session.rollback()
+                print("✅ Inicialização básica concluída (erro nas lojas)")
+                return
+
+            print("✅ Inicialização do banco de dados concluída com sucesso!")
             
         except Exception as e:
-            print(f"❌ Erro ao carregar lojas: {e}")
+            print(f"❌ Erro crítico na inicialização: {e}")
             db.session.rollback()
-            return
-
-        print("✅ Inicialização do banco de dados concluída com sucesso!")
+            raise
 
     return app
 
