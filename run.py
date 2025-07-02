@@ -41,14 +41,20 @@ def create_app(config_name='default'):
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(admin_bp, url_prefix='/admin')
-    app.register_blueprint(manager_bp, url_prefix='/gerente')
+    app.register_blueprint(manager_bp, url_prefix='/assistente')
     
-    # Rota de compatibilidade para redirecionamento /manager -> /gerente
+    # Rotas de compatibilidade para redirecionamento
     @app.route('/manager/<path:path>')
     def redirect_manager_routes(path):
-        """Redireciona rotas antigas /manager/* para /gerente/*"""
-        from flask import redirect, url_for
-        return redirect(f'/gerente/{path}', code=301)
+        """Redireciona rotas antigas /manager/* para /assistente/*"""
+        from flask import redirect
+        return redirect(f'/assistente/{path}', code=301)
+    
+    @app.route('/gerente/<path:path>')
+    def redirect_gerente_routes(path):
+        """Redireciona rotas antigas /gerente/* para /assistente/*"""
+        from flask import redirect
+        return redirect(f'/assistente/{path}', code=301)
     
     # Comando CLI para inicializar o banco
     @app.cli.command()

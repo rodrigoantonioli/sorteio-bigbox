@@ -1607,149 +1607,155 @@ main {
     text-decoration: none;
 }
 
-/* Resultado Colaborador Elegante */
+/* Resultado Colaborador COMPACTO para Filmagem */
 .resultado-colaborador-elegante {
     text-align: center;
-    padding: 2rem;
-    position: relative;
-}
-
-/* Loja em Destaque no Resultado */
-.loja-destaque-colaborador {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 20px;
     padding: 1.5rem;
-    color: white;
-    margin: 0 auto;
-    max-width: 400px;
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-    animation: pulseLoja 2s infinite;
-}
-
-@keyframes pulseLoja {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-}
-
-.loja-header-colaborador {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    justify-content: center;
-}
-
-.loja-icone-colaborador {
-    font-size: 3rem;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-}
-
-.loja-info-colaborador {
-    text-align: left;
-}
-
-.loja-bandeira-colaborador {
-    font-size: 1.2rem;
-    font-weight: 900;
-    letter-spacing: 1px;
-    opacity: 0.9;
-}
-
-.loja-nome-colaborador {
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin: 0.2rem 0;
-}
-
-.loja-codigo-colaborador {
-    font-size: 0.9rem;
-    opacity: 0.8;
-}
-
-/* Colaborador Ganhador */
-.colaborador-ganhador {
-    background: white;
-    border-radius: 20px;
-    padding: 2rem;
-    margin: 0 auto;
-    max-width: 350px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-    border: 3px solid #28a745;
     position: relative;
-    animation: celebracaoColaborador 3s ease-in-out infinite;
+    max-width: 650px;
+    margin: 0 auto;
 }
 
-@keyframes celebracaoColaborador {
-    0%, 100% { 
-        transform: scale(1);
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+/* Mensagem de Sucesso Discreta (Canto Superior Direito) */
+.mensagem-sucesso-discreta {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+    z-index: 9999;
+    animation: sucessoSlideIn 0.5s ease-out;
+}
+
+@keyframes sucessoSlideIn {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
     }
-    50% { 
-        transform: scale(1.02);
-        box-shadow: 0 20px 50px rgba(40, 167, 69, 0.2);
+    100% {
+        transform: translateX(0);
+        opacity: 1;
     }
 }
 
-.colaborador-ganhador::before {
-    content: '🌟';
-    position: absolute;
-    top: -15px;
-    right: -15px;
-    font-size: 2rem;
-    animation: estrelaGirando 2s linear infinite;
-}
-
-.colaborador-ganhador::after {
-    content: '🌟';
-    position: absolute;
-    bottom: -15px;
-    left: -15px;
-    font-size: 2rem;
-    animation: estrelaGirando 2s linear infinite reverse;
-}
-
-@keyframes estrelaGirando {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.colaborador-avatar-grande {
-    font-size: 4rem;
-    color: #28a745;
-    margin-bottom: 1rem;
-    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.colaborador-nome-grande {
-    font-size: 2rem;
+/* Parabéns Compacto (Uma Linha) */
+.parabens-compacto {
+    font-size: 1.8rem;
     font-weight: 900;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    margin-bottom: 1.5rem;
     letter-spacing: 0.5px;
 }
 
-.colaborador-setor-grande {
+/* Container Compacto - Loja + Ganhador + Prêmio */
+.resultado-compacto-container {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+    border: 3px solid #28a745;
+    position: relative;
+    animation: celebracaoCompacta 2s ease-in-out infinite;
+}
+
+@keyframes celebracaoCompacta {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+    }
+    50% { 
+        transform: scale(1.02);
+        box-shadow: 0 20px 60px rgba(40, 167, 69, 0.2);
+    }
+}
+
+/* Layout Flexível - Tudo em Uma Linha */
+.resultado-detalhes-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+/* Loja Compacta */
+.loja-compacta {
+    flex: 1;
+    min-width: 160px;
+    text-align: center;
+}
+
+.loja-compacta .loja-bandeira {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+}
+
+.loja-compacta .loja-nome {
     font-size: 1.1rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.2rem;
+}
+
+.loja-compacta .loja-codigo {
+    font-size: 0.8rem;
+    color: #6c757d;
+    opacity: 0.8;
+}
+
+/* Ganhador Compacto */
+.ganhador-compacto {
+    flex: 2;
+    text-align: center;
+}
+
+.ganhador-compacto .colaborador-avatar {
+    font-size: 3rem;
+    color: #28a745;
+    margin-bottom: 0.5rem;
+}
+
+.ganhador-compacto .colaborador-nome {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #2c3e50;
+    margin-bottom: 0.3rem;
+}
+
+.ganhador-compacto .colaborador-setor {
+    font-size: 1rem;
     color: #6c757d;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 
-/* Prêmio Ganho */
-.premio-ganho {
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    border-radius: 15px;
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    max-width: 400px;
-    margin: 0 auto;
-    border: 2px solid #dee2e6;
+/* Prêmio Compacto */
+.premio-compacto {
+    flex: 1;
+    min-width: 160px;
+    text-align: center;
 }
 
-.premio-icone {
-    font-size: 3rem;
+.premio-compacto .premio-icone {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
     animation: premioFloat 2s ease-in-out infinite;
 }
 
@@ -1758,22 +1764,40 @@ main {
     50% { transform: translateY(-5px); }
 }
 
-.premio-detalhes {
-    text-align: left;
-    flex: 1;
-}
-
-.premio-nome {
-    font-size: 1.3rem;
+.premio-compacto .premio-nome {
+    font-size: 1.1rem;
     font-weight: 700;
     color: #2c3e50;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.2rem;
 }
 
-.premio-data {
-    font-size: 1rem;
+.premio-compacto .premio-data {
+    font-size: 0.9rem;
     color: #6c757d;
     font-weight: 500;
+}
+
+/* Responsividade para Resultado Compacto */
+@media (max-width: 768px) {
+    .resultado-detalhes-flex {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .loja-compacta,
+    .ganhador-compacto,
+    .premio-compacto {
+        flex: none;
+        width: 100%;
+    }
+    
+    .parabens-compacto {
+        font-size: 1.5rem;
+    }
+    
+    .resultado-compacto-container {
+        padding: 1.5rem;
+    }
 }
 
 /* Confetti Celebration Melhorado */
@@ -1840,7 +1864,7 @@ main {
     background: #138496;
 }
 
-/* Resultado Final Compacto das Lojas */
+/* Resultado Lojas COMPACTO para Filmagem */
 .resultado-final-compacto {
     display: flex;
     align-items: center;
@@ -1851,12 +1875,12 @@ main {
 
 .resultado-lojas-elegante {
     text-align: center;
-    max-width: 500px;
+    max-width: 650px;
     margin: 0 auto;
     position: relative;
     background: rgba(255, 255, 255, 0.95);
     border-radius: 20px;
-    padding: 2rem 1.5rem;
+    padding: 2rem;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
@@ -1879,18 +1903,19 @@ main {
     margin-bottom: 1.5rem;
 }
 
+/* Layout Flexível para Lojas Ganhadoras */
 .lojas-ganhadoras-compacto {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-top: 1rem;
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .loja-ganhadora-compacta {
     background: white;
     border-radius: 15px;
-    padding: 1.5rem 1rem;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -1899,8 +1924,9 @@ main {
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
-    min-height: 140px;
-    justify-content: center;
+    min-width: 180px;
+    max-width: 220px;
+    flex: 1;
 }
 
 .loja-ganhadora-compacta::before {
@@ -1924,7 +1950,7 @@ main {
 .loja-big-elegante:hover {
     border-color: #667eea;
     transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.25);
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.25);
 }
 
 .loja-ultra-elegante {
@@ -1938,7 +1964,7 @@ main {
 .loja-ultra-elegante:hover {
     border-color: #20c997;
     transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(32, 201, 151, 0.25);
+    box-shadow: 0 12px 40px rgba(32, 201, 151, 0.25);
 }
 
 .loja-badge-compacto {
@@ -1968,11 +1994,6 @@ main {
     animation: iconeFloat 3s ease-in-out infinite;
 }
 
-@keyframes iconeFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
-}
-
 .loja-nome-compacto {
     font-size: 1rem;
     font-weight: 700;
@@ -1980,9 +2001,6 @@ main {
     text-align: center;
     line-height: 1.2;
     margin-bottom: 0.2rem;
-    word-wrap: break-word;
-    -webkit-hyphens: auto;
-    hyphens: auto;
 }
 
 .loja-codigo-compacto {
@@ -2000,18 +2018,18 @@ main {
 /* Responsividade do Resultado Compacto */
 @media (max-width: 768px) {
     .resultado-lojas-elegante {
-        padding: 1.5rem 1rem;
+        padding: 1.5rem;
         max-width: 90%;
     }
     
     .lojas-ganhadoras-compacto {
-        grid-template-columns: 1fr;
-        gap: 0.8rem;
+        flex-direction: column;
+        align-items: center;
     }
     
     .loja-ganhadora-compacta {
-        min-height: 120px;
-        padding: 1.2rem 0.8rem;
+        min-width: 200px;
+        max-width: 250px;
     }
     
     .titulo-resultado-compacto {

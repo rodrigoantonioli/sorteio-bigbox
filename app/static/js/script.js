@@ -477,12 +477,15 @@ class SorteioAnimado {
         const botoesDiv = document.getElementById('botoesAcao');
         const colaboradorContainer = document.getElementById('resultadoColaboradorContainer');
         
-        // Para sorteio de lojas: marca sucesso para reload automático SILENCIOSO
+                // Para sorteio de lojas: marca sucesso para reload automático SILENCIOSO 
         if (status && !colaboradorContainer) {
             this.sorteioLojasComSucesso = true; // Marca para reload quando fechar modal
             status.style.display = 'none'; // Mantém silencioso como antes (melhor para filmagem)
             console.log('✅ Sorteio de lojas salvo com sucesso - página será recarregada ao fechar (silencioso)');
-            
+
+            // Mostra mensagem de sucesso discreta no canto superior direito
+            this.mostrarMensagemSucessoDiscreta();
+
             // Mostra o X para fechar após sucesso (mas sem mensagem)
             const fecharBtn = document.getElementById('fecharModalX');
             if (fecharBtn) {
@@ -532,6 +535,27 @@ class SorteioAnimado {
     // Função utilitária para delay
     delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Mostra mensagem de sucesso discreta no canto superior direito
+    mostrarMensagemSucessoDiscreta() {
+        // Cria elemento se não existir
+        let mensagemSucesso = document.getElementById('mensagem-sucesso-global');
+        if (!mensagemSucesso) {
+            mensagemSucesso = document.createElement('div');
+            mensagemSucesso.id = 'mensagem-sucesso-global';
+            mensagemSucesso.className = 'mensagem-sucesso-discreta';
+            mensagemSucesso.innerHTML = '<i class="fas fa-check-circle me-2"></i>Resultado salvo!';
+            document.body.appendChild(mensagemSucesso);
+        }
+
+        // Mostra a mensagem
+        mensagemSucesso.style.display = 'block';
+        
+        // Remove a mensagem após 4 segundos
+        setTimeout(() => {
+            mensagemSucesso.style.display = 'none';
+        }, 4000);
     }
 }
 

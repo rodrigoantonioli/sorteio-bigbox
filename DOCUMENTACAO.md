@@ -233,7 +233,7 @@ flask init-db
 ### **🏪 Para Assistentes de Loja**
 
 #### **🏠 Dashboard Assistente**
-- **Acesso**: `/auth/login` → `/gerente/dashboard`
+- **Acesso**: `/auth/login` → `/assistente/dashboard`
 - **Visão**: Status da loja, colaboradores, sorteios disponíveis
 
 #### **👥 Gestão de Colaboradores**

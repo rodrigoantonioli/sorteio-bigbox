@@ -346,7 +346,7 @@ function initializeSorteioColaboradores() {
             colaborador_id: colaboradorSorteado.id
         };
         
-        fetch('/gerente/sortear/ajax', {
+        fetch('/assistente/sortear/ajax', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -359,49 +359,62 @@ function initializeSorteioColaboradores() {
             if (data.success) {
                 // VERSÃO MELHORADA COM LOJA EM DESTAQUE E SEM BOTÃO DASHBOARD
                 const mensagemParabens = `
-                    <div class="resultado-colaborador-elegante">
+                                        <div class="resultado-colaborador-elegante">
                         <!-- Confetes dinâmicos -->
                         <div class="confetti-celebration" id="confettiCelebration"></div>
-                        
-                        <!-- Parabéns em destaque -->
-                        <div class="parabenss-destaque text-center mb-4">
-                            <div class="parabenss-texto-animado">
-                                🎉 PARABÉNS AO GANHADOR! 🎉
-                            </div>
+
+                        <!-- Mensagem de Sucesso Discreta (Canto Superior Direito) -->
+                        <div class="mensagem-sucesso-discreta" id="status-sorteio-colaborador" style="display: none;">
+                            <i class="fas fa-check-circle me-2"></i>Resultado salvo!
                         </div>
-                        
-                        <!-- Informações da Loja em Destaque -->
-                        <div class="loja-destaque-colaborador mb-4">
-                            <div class="loja-header-colaborador">
-                                <span class="loja-icone-colaborador">${loja.bandeira === 'BIG' ? '🏢' : '🏬'}</span>
-                                <div class="loja-info-colaborador">
-                                    <div class="loja-bandeira-colaborador">${loja.bandeira} BOX</div>
-                                    <div class="loja-nome-colaborador">${loja.nome}</div>
-                                    <div class="loja-codigo-colaborador">${loja.codigo}</div>
+
+                        <!-- Parabéns Compacto -->
+                        <div class="parabens-compacto mb-4">
+                            🎉 PARABÉNS AO GANHADOR! 🎉
+                        </div>
+
+                        <!-- Container Compacto -->
+                        <div class="resultado-compacto-container">
+                            <div class="resultado-detalhes-flex">
+                                <!-- Loja Compacta -->
+                                <div class="loja-compacta">
+                                    <div class="loja-bandeira">${loja.bandeira} BOX</div>
+                                    <div class="loja-nome">${loja.nome}</div>
+                                    <div class="loja-codigo">${loja.codigo}</div>
                                 </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Colaborador Ganhador -->
-                        <div class="colaborador-ganhador mb-4">
-                            <div class="colaborador-avatar-grande">
-                                <i class="bi bi-person-circle"></i>
-                            </div>
-                            <div class="colaborador-nome-grande">${colaboradorSorteado.nome}</div>
-                            <div class="colaborador-setor-grande">${colaboradorSorteado.setor}</div>
-                        </div>
-                        
-                        <!-- Prêmio Ganho -->
-                        <div class="premio-ganho">
-                            <div class="premio-icone">🎁</div>
-                            <div class="premio-detalhes">
-                                <div class="premio-nome">${data.data.premio.nome}</div>
-                                <div class="premio-data">Data do evento: ${data.data.premio.data_evento}</div>
+                                
+                                <!-- Colaborador Ganhador Compacto -->
+                                <div class="ganhador-compacto">
+                                    <div class="colaborador-avatar">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div class="colaborador-nome">${colaboradorSorteado.nome}</div>
+                                    <div class="colaborador-setor">${colaboradorSorteado.setor}</div>
+                                </div>
+                                
+                                <!-- Prêmio Compacto -->
+                                <div class="premio-compacto">
+                                    <div class="premio-icone">🎁</div>
+                                    <div class="premio-nome">${data.data.premio.nome}</div>
+                                    <div class="premio-data">${data.data.premio.data_evento}</div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 `;
                 window.sorteioAnimado.exibirSucesso(mensagemParabens);
+                
+                // Exibe mensagem de sucesso discreta no canto superior direito
+                setTimeout(() => {
+                    const mensagemSucesso = document.getElementById('status-sorteio-colaborador');
+                    if (mensagemSucesso) {
+                        mensagemSucesso.style.display = 'block';
+                        // Remove a mensagem após 4 segundos
+                        setTimeout(() => {
+                            mensagemSucesso.style.display = 'none';
+                        }, 4000);
+                    }
+                }, 1000);
                 
                 // Ativa confetes dinâmicos
                 setTimeout(() => {
