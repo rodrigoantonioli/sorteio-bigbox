@@ -118,6 +118,9 @@ def novo_colaborador():
     
     form = ColaboradorForm()
     
+    # Configura choices para campo loja_id (mesmo que não seja usado no template)
+    form.loja_id.choices = [(current_user.loja_id, current_user.loja.nome)]
+    
     if form.validate_on_submit():
         # Verifica se matrícula já existe na loja
         existente = Colaborador.query.filter_by(
@@ -153,6 +156,9 @@ def editar_colaborador(id):
     colaborador = Colaborador.query.filter_by(id=id, loja_id=current_user.loja_id).first_or_404()
     
     form = ColaboradorForm(obj=colaborador)
+    
+    # Configura choices para campo loja_id (mesmo que não seja usado no template)
+    form.loja_id.choices = [(current_user.loja_id, current_user.loja.nome)]
     
     if form.validate_on_submit():
         # Verifica se matrícula já existe (exceto o próprio)
