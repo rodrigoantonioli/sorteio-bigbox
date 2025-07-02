@@ -388,7 +388,7 @@ def novo_usuario():
     
     # Popula lojas disponíveis
     lojas = Loja.query.filter_by(ativo=True).order_by(Loja.nome).all()
-    form.loja_id.choices = [(0, 'Selecione uma loja')] + [(l.id, f"{l.nome} ({l.codigo})") for l in lojas]
+    form.loja_id.choices = [(l.id, f"{l.nome} ({l.codigo})") for l in lojas]
     
     # Se loja_id foi passada como parâmetro, pré-seleciona
     loja_id_param = request.args.get('loja_id', type=int)
@@ -396,21 +396,22 @@ def novo_usuario():
         form.loja_id.data = loja_id_param
     
     if form.validate_on_submit():
+        # Na criação, senha é obrigatória
+        if not form.password.data:
+            flash('Senha é obrigatória para novo assistente!', 'danger')
+            return render_template('admin/usuario_form.html', form=form, titulo='Novo Assistente')
+        
         # Verifica se email já existe
         usuario_existente = Usuario.query.filter_by(email=form.email.data).first()
         if usuario_existente:
             flash('Este email já está cadastrado!', 'danger')
             return render_template('admin/usuario_form.html', form=form, titulo='Novo Assistente')
         
-        if not form.password.data:
-            flash('Senha é obrigatória para novo assistente!', 'danger')
-            return render_template('admin/usuario_form.html', form=form, titulo='Novo Assistente')
-        
         usuario = Usuario(
             nome=form.nome.data,
             email=form.email.data,
             tipo='assistente',
-            loja_id=form.loja_id.data if form.loja_id.data > 0 else None,
+            loja_id=form.loja_id.data,
             ativo=True
         )
         usuario.set_password(form.password.data)
@@ -433,7 +434,7 @@ def editar_usuario(id):
     
     # Popula lojas disponíveis
     lojas = Loja.query.filter_by(ativo=True).order_by(Loja.nome).all()
-    form.loja_id.choices = [(0, 'Selecione uma loja')] + [(l.id, f"{l.nome} ({l.codigo})") for l in lojas]
+    form.loja_id.choices = [(l.id, f"{l.nome} ({l.codigo})") for l in lojas]
     
     if form.validate_on_submit():
         # Verifica se email já existe (exceto o próprio)
@@ -444,7 +445,7 @@ def editar_usuario(id):
         
         usuario.nome = form.nome.data
         usuario.email = form.email.data
-        usuario.loja_id = form.loja_id.data if form.loja_id.data > 0 else None
+        usuario.loja_id = form.loja_id.data
         
         # Atualiza senha apenas se fornecida
         if form.password.data:

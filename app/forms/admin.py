@@ -22,8 +22,11 @@ class UsuarioForm(FlaskForm):
         Email(message='Email inválido'),
         Length(max=100, message='Email muito longo')
     ])
-    loja_id = SelectField('Loja Associada', coerce=int, validators=[Optional()])
+    loja_id = SelectField('Loja Associada', coerce=int, validators=[
+        DataRequired(message='Selecione uma loja para o assistente')
+    ])
     password = StringField('Senha', validators=[
+        Optional(),
         Length(min=6, max=50, message='Senha deve ter entre 6 e 50 caracteres')
     ])
     submit = SubmitField('Salvar')
