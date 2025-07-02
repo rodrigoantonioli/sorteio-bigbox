@@ -19,9 +19,6 @@
                         {{ current_user.loja.nome }} • {{ current_user.loja.codigo }}
                     </div>
                 </div>
-                <a href="{{ url_for('manager.dashboard') }}" class="btn btn-discreto">
-                    ← Dashboard
-                </a>
             </div>
         </div>
     </div>
@@ -61,8 +58,26 @@
                                     <div class="status-info">
                                         <div class="status-item">
                                             <span class="status-number">{{ colaboradores_count }}</span>
-                                            <span class="status-label">Colaboradores Aptos</span>
+                                            <span class="status-label">
+                                                {% if colaboradores_count == 1 %}
+                                                    Colaborador Apto
+                                                {% else %}
+                                                    Colaboradores Aptos
+                                                {% endif %}
+                                            </span>
                                         </div>
+                                        {% if total_premios is defined and premios_sorteados is defined %}
+                                        <div class="status-item mt-2">
+                                            <span class="status-number text-warning">{{ premios_sorteados }}/{{ total_premios }}</span>
+                                            <span class="status-label">
+                                                {% if premios_sorteados == 1 %}
+                                                    já sorteado
+                                                {% else %}
+                                                    já sorteados
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -109,7 +124,12 @@
                         <div class="pote-header">
                             <h4>🏺 Pote de Colaboradores</h4>
                             <div class="contador-colaboradores">
-                                <span id="contadorColaboradores">{{ colaboradores_count }}</span> colaboradores
+                                <span id="contadorColaboradores">{{ colaboradores_count }}</span> 
+                                {% if colaboradores_count == 1 %}
+                                    colaborador
+                                {% else %}
+                                    colaboradores
+                                {% endif %}
                             </div>
                         </div>
                         
@@ -145,7 +165,7 @@
 <script>
 // ==========================================
 //      SISTEMA DE SORTEIO COLABORADORES
-//      VERSÃO CINEMATOGRÁFICA V2.1
+//      VERSÃO v1.1 FINAL
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -420,6 +440,12 @@ function initializeSorteioColaboradores() {
                 setTimeout(() => {
                     window.sorteioAnimado.criarConfettiCelebracao();
                 }, 500);
+
+                // Recarrega a página após 5 segundos para atualizar estados
+                setTimeout(() => {
+                    console.log('🔄 Recarregando página para atualizar estado dos prêmios...');
+                    window.location.reload();
+                }, 5000);
             } else {
                 window.sorteioAnimado.exibirErro(data.message);
             }

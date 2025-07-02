@@ -55,18 +55,36 @@ def dashboard():
                 Colaborador.loja_id == current_user.loja_id
             ).all()
     
-    # Estatísticas da loja
+        # Estatísticas da loja
     total_colaboradores = Colaborador.query.filter_by(
         loja_id=current_user.loja_id,
         apto=True
     ).count()
-    
+
+    # Verifica prêmios disponíveis para sorteio
+    premios_disponiveis_count = 0
+    if sorteio_atual and loja_sorteada:
+        # Prêmios já sorteados
+        premios_ja_sorteados = db.session.query(SorteioColaborador.premio_id).join(Colaborador).filter(
+            SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+            Colaborador.loja_id == current_user.loja_id
+        ).subquery()
+
+        # Conta prêmios disponíveis
+        premios_disponiveis_count = Premio.query.filter(
+            Premio.ativo == True,
+            Premio.data_evento >= date.today(),
+            db.or_(Premio.loja_id == current_user.loja_id, Premio.loja_id.is_(None)),
+            ~Premio.id.in_(premios_ja_sorteados)
+        ).count()
+
     return render_template('manager/dashboard.html',
                          loja=current_user.loja,
                          loja_sorteada=loja_sorteada,
                          sorteio_atual=sorteio_atual,
                          colaboradores_sorteados=colaboradores_sorteados,
-                         total_colaboradores=total_colaboradores)
+                         total_colaboradores=total_colaboradores,
+                         premios_disponiveis=premios_disponiveis_count)
 
 @manager_bp.route('/colaboradores')
 @manager_required
@@ -492,8 +510,24 @@ def sortear_colaboradores():
         
         if len(colaboradores_aptos) < 1:
             flash('Não há colaboradores disponíveis para sorteio (todos já foram sorteados).', 'warning')
-            return render_template('manager/sortear.html', form=form, 
-                                 colaboradores_count=len(colaboradores_aptos))
+            
+            # Calcula informações de prêmios para a loja
+            total_premios_loja = Premio.query.filter(
+                Premio.ativo == True,
+                Premio.data_evento >= date.today(),
+                db.or_(Premio.loja_id == current_user.loja_id, Premio.loja_id.is_(None))
+            ).count()
+            
+            premios_sorteados_count = db.session.query(SorteioColaborador).join(Colaborador).filter(
+                SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+                Colaborador.loja_id == current_user.loja_id
+            ).count()
+            
+            return render_template('manager/sortear.html', form=form,
+                                 colaboradores_count=len(colaboradores_aptos),
+                                 colaboradores=[],
+                                 total_premios=total_premios_loja,
+                                 premios_sorteados=premios_sorteados_count)
         
         # Cria snapshot da lista de colaboradores
         colaboradores_snapshot = [
@@ -569,11 +603,25 @@ def sortear_colaboradores():
             'setor': c.setor
         } for c in colaboradores_aptos
     ]
+
+    # Calcula informações de prêmios para a loja
+    total_premios_loja = Premio.query.filter(
+        Premio.ativo == True,
+        Premio.data_evento >= date.today(),
+        db.or_(Premio.loja_id == current_user.loja_id, Premio.loja_id.is_(None))
+    ).count()
     
-    return render_template('manager/sortear.html', 
-                         form=form, 
+    premios_sorteados_count = db.session.query(SorteioColaborador).join(Colaborador).filter(
+        SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+        Colaborador.loja_id == current_user.loja_id
+    ).count()
+
+    return render_template('manager/sortear.html',
+                         form=form,
                          colaboradores_count=len(colaboradores_aptos),
-                         colaboradores=colaboradores_json)
+                         colaboradores=colaboradores_json,
+                         total_premios=total_premios_loja,
+                         premios_sorteados=premios_sorteados_count)
 
 @manager_bp.route('/sortear/ajax', methods=['POST'])
 @manager_required

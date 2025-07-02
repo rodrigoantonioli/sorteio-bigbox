@@ -1429,669 +1429,387 @@ main {
 
 /* Pote de Colaboradores */
 .pote-colaboradores {
-    background: white;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-    border: 3px solid #17a2b8;
-    margin-bottom: 2rem;
-    animation: poteEntrada 0.8s ease-out;
-}
-
-@keyframes poteEntrada {
-    0% {
-        opacity: 0;
-        transform: translateY(30px) scale(0.95);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 2px solid #dee2e6;
+    animation: poteEntrada 0.6s ease-out;
+    max-height: 400px;
+    overflow: hidden;
 }
 
 .pote-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #dee2e6;
 }
 
 .pote-header h4 {
-    color: #17a2b8;
-    font-weight: 800;
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
+    margin: 0;
+    color: #2c3e50;
+    font-weight: 700;
+    font-size: 1.2rem;
 }
 
 .contador-colaboradores {
     background: linear-gradient(135deg, #17a2b8, #20c997);
     color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-weight: 700;
-    display: inline-block;
-}
-
-/* Lista de Colaboradores */
-.colaboradores-lista {
-    max-height: 400px;
-    overflow-y: auto;
-    padding: 1rem;
-    background: #f8f9fa;
+    padding: 0.4rem 0.8rem;
     border-radius: 15px;
-    border: 2px solid #e9ecef;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
 }
 
-/* Design Elegante dos Colaboradores no Pote */
+.colaboradores-lista {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
+    max-height: 280px;
+    overflow-y: auto;
+    padding: 0.5rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.5);
+}
+
 .colaborador-item-elegante {
     background: white;
-    margin-bottom: 0.8rem;
-    padding: 1.2rem;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    transition: all 0.4s ease;
-    border: 2px solid transparent;
-    cursor: pointer;
+    border-radius: 12px;
+    padding: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.5rem;
+    cursor: pointer;
     position: relative;
     overflow: hidden;
+    min-height: 60px;
 }
 
 .colaborador-item-elegante::before {
     content: '';
     position: absolute;
     top: 0;
-    left: -100%;
-    width: 100%;
+    left: 0;
+    width: 3px;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    transition: left 0.6s ease;
+    background: linear-gradient(135deg, #17a2b8, #20c997);
+    transition: width 0.3s ease;
 }
 
 .colaborador-item-elegante:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 8px 30px rgba(23, 162, 184, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
     border-color: #17a2b8;
-    background: linear-gradient(135deg, #ffffff, #f8f9fa);
 }
 
 .colaborador-item-elegante:hover::before {
-    left: 100%;
+    width: 5px;
 }
 
 .colaborador-avatar {
-    font-size: 2.5rem;
+    font-size: 1.5rem;
     color: #17a2b8;
-    flex-shrink: 0;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-right: 0.3rem;
 }
 
 .colaborador-detalhes {
     flex: 1;
-    text-align: left;
+    min-width: 0;
 }
 
 .colaborador-nome-elegante {
+    font-size: 0.85rem;
     font-weight: 700;
     color: #2c3e50;
-    font-size: 1.1rem;
-    margin-bottom: 0.3rem;
-    letter-spacing: 0.3px;
+    line-height: 1.2;
+    margin-bottom: 0.2rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .colaborador-setor-elegante {
+    font-size: 0.75rem;
     color: #6c757d;
-    font-size: 0.9rem;
     font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .colaborador-icone {
-    font-size: 1.2rem;
+    font-size: 0.8rem;
     color: #ffc107;
-    flex-shrink: 0;
     opacity: 0.7;
     transition: all 0.3s ease;
 }
 
 .colaborador-item-elegante:hover .colaborador-icone {
     opacity: 1;
-    transform: rotate(18deg) scale(1.2);
-    color: #ff9500;
+    transform: scale(1.2);
 }
 
-/* Animações de Embaralhamento Elegante */
 .colaborador-item-elegante.embaralhar-elegante {
-    animation: embaralharColaboradorElegante 0.4s ease-in-out;
+    animation: embaralharColaboradorCompacto 0.3s ease-in-out;
 }
 
-@keyframes embaralharColaboradorElegante {
-    0% { 
-        transform: translateX(0) scale(1);
-        background: white;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    }
-    25% {
-        transform: translateX(-8px) scale(1.03);
-        background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-        box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3);
-    }
-    75% { 
-        transform: translateX(8px) scale(1.03);
-        background: linear-gradient(135deg, #d1ecf1, #bee5eb);
-        box-shadow: 0 6px 20px rgba(23, 162, 184, 0.3);
-    }
-    100% { 
-        transform: translateX(0) scale(1);
-        background: white;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    }
-}
-
-/* Link para Lista de Colaboradores */
-.link-colaboradores {
-    color: #17a2b8;
-    text-decoration: none;
-    font-weight: 600;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s ease;
-    padding-bottom: 2px;
-}
-
-.link-colaboradores:hover {
-    color: #138496;
-    border-bottom-color: #138496;
-    text-decoration: none;
-}
-
-/* Resultado Colaborador COMPACTO para Filmagem */
-.resultado-colaborador-elegante {
-    text-align: center;
-    padding: 1.5rem;
-    position: relative;
-    max-width: 650px;
-    margin: 0 auto;
-}
-
-/* Mensagem de Sucesso Discreta (Canto Superior Direito) */
-.mensagem-sucesso-discreta {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 15px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
-    z-index: 9999;
-    animation: sucessoSlideIn 0.5s ease-out;
-}
-
-@keyframes sucessoSlideIn {
-    0% {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    100% {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-/* Parabéns Compacto (Uma Linha) */
-.parabens-compacto {
-    font-size: 1.8rem;
-    font-weight: 900;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-align: center;
-    margin-bottom: 1.5rem;
-    letter-spacing: 0.5px;
-}
-
-/* Container Compacto - Loja + Ganhador + Prêmio */
-.resultado-compacto-container {
-    background: white;
-    border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
-    border: 3px solid #28a745;
-    position: relative;
-    animation: celebracaoCompacta 2s ease-in-out infinite;
-}
-
-@keyframes celebracaoCompacta {
+@keyframes embaralharColaboradorCompacto {
     0%, 100% { 
-        transform: scale(1);
-        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        transform: translateX(0) scale(1); 
+        opacity: 1; 
+    }
+    25% { 
+        transform: translateX(-3px) scale(0.98); 
+        opacity: 0.8; 
     }
     50% { 
-        transform: scale(1.02);
-        box-shadow: 0 20px 60px rgba(40, 167, 69, 0.2);
+        transform: translateX(3px) scale(1.02); 
+        opacity: 0.9; 
+    }
+    75% { 
+        transform: translateX(-2px) scale(0.99); 
+        opacity: 0.85; 
     }
 }
 
-/* Layout Flexível - Tudo em Uma Linha */
-.resultado-detalhes-flex {
+/* Responsividade do Pote Compacto */
+@media (max-width: 768px) {
+    .colaboradores-lista {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 0.5rem;
+        max-height: 240px;
+    }
+    
+    .colaborador-item-elegante {
+        padding: 0.6rem;
+        min-height: 55px;
+    }
+    
+    .colaborador-nome-elegante {
+        font-size: 0.8rem;
+    }
+    
+    .colaborador-setor-elegante {
+        font-size: 0.7rem;
+    }
+    
+    .pote-colaboradores {
+        padding: 1rem;
+        max-height: 320px;
+    }
+}
+
+/* ========================================
+   MELHORIAS DASHBOARD NAVEGAÇÃO v1.1
+======================================== */
+
+/* Dashboard melhorado na navegação */
+.navbar-nav .nav-link {
+    padding: 0.75rem 1rem !important;
+    border-radius: 8px !important;
+    margin: 0 0.2rem !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    position: relative !important;
+}
+
+.navbar-nav .nav-link:hover {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.1), rgba(13, 110, 253, 0.2)) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15) !important;
+}
+
+.navbar-nav .nav-link i {
+    margin-right: 0.5rem !important;
+    font-size: 1.1em !important;
+}
+
+/* ========================================
+   POTE COLABORADORES COMPACTO v1.1
+======================================== */
+
+.pote-colaboradores {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 2px solid #dee2e6;
+    animation: poteEntrada 0.6s ease-out;
+    max-height: 400px;
+    overflow: hidden;
+}
+
+.pote-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    gap: 2rem;
-    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #dee2e6;
 }
 
-/* Loja Compacta */
-.loja-compacta {
-    flex: 1;
-    min-width: 160px;
-    text-align: center;
+.pote-header h4 {
+    margin: 0;
+    color: #2c3e50;
+    font-weight: 700;
+    font-size: 1.2rem;
 }
 
-.loja-compacta .loja-bandeira {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+.contador-colaboradores {
+    background: linear-gradient(135deg, #17a2b8, #20c997);
     color: white;
     padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 800;
-    letter-spacing: 1px;
-    margin-bottom: 0.5rem;
-    display: inline-block;
-}
-
-.loja-compacta .loja-nome {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 0.2rem;
-}
-
-.loja-compacta .loja-codigo {
-    font-size: 0.8rem;
-    color: #6c757d;
-    opacity: 0.8;
-}
-
-/* Ganhador Compacto */
-.ganhador-compacto {
-    flex: 2;
-    text-align: center;
-}
-
-.ganhador-compacto .colaborador-avatar {
-    font-size: 3rem;
-    color: #28a745;
-    margin-bottom: 0.5rem;
-}
-
-.ganhador-compacto .colaborador-nome {
-    font-size: 1.6rem;
-    font-weight: 900;
-    color: #2c3e50;
-    margin-bottom: 0.3rem;
-}
-
-.ganhador-compacto .colaborador-setor {
-    font-size: 1rem;
-    color: #6c757d;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Prêmio Compacto */
-.premio-compacto {
-    flex: 1;
-    min-width: 160px;
-    text-align: center;
-}
-
-.premio-compacto .premio-icone {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-    animation: premioFloat 2s ease-in-out infinite;
-}
-
-@keyframes premioFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
-}
-
-.premio-compacto .premio-nome {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 0.2rem;
-}
-
-.premio-compacto .premio-data {
-    font-size: 0.9rem;
-    color: #6c757d;
-    font-weight: 500;
-}
-
-/* Responsividade para Resultado Compacto */
-@media (max-width: 768px) {
-    .resultado-detalhes-flex {
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-    
-    .loja-compacta,
-    .ganhador-compacto,
-    .premio-compacto {
-        flex: none;
-        width: 100%;
-    }
-    
-    .parabens-compacto {
-        font-size: 1.5rem;
-    }
-    
-    .resultado-compacto-container {
-        padding: 1.5rem;
-    }
-}
-
-/* Confetti Celebration Melhorado */
-.confetti-celebration {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    overflow: hidden;
-    z-index: 1000;
-}
-
-.confetti-celebration-piece {
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    background: #ff6b6b;
-    animation: confettiCelebrationFall 3s linear infinite;
-    border-radius: 2px;
-}
-
-@keyframes confettiCelebrationFall {
-    0% {
-        opacity: 1;
-        transform: translateY(-100vh) rotate(0deg);
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(100vh) rotate(1260deg);
-    }
-}
-
-/* Tremor do Pote */
-.tremor {
-    animation: tremorPote 0.1s infinite;
-}
-
-@keyframes tremorPote {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-2px); }
-    50% { transform: translateX(2px); }
-    75% { transform: translateX(-1px); }
-    100% { transform: translateX(0); }
-}
-
-/* Scroll Customizado */
-.colaboradores-lista::-webkit-scrollbar {
-    width: 6px;
-}
-
-.colaboradores-lista::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
-.colaboradores-lista::-webkit-scrollbar-thumb {
-    background: #17a2b8;
-    border-radius: 10px;
-}
-
-.colaboradores-lista::-webkit-scrollbar-thumb:hover {
-    background: #138496;
-}
-
-/* Resultado Lojas COMPACTO para Filmagem */
-.resultado-final-compacto {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 280px;
-    padding: 1rem;
-}
-
-.resultado-lojas-elegante {
-    text-align: center;
-    max-width: 650px;
-    margin: 0 auto;
-    position: relative;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.titulo-resultado-compacto {
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.data-discreta {
-    font-size: 0.9rem;
-    color: #6c757d;
-    font-weight: 500;
-    opacity: 0.8;
-    margin-bottom: 1.5rem;
-}
-
-/* Layout Flexível para Lojas Ganhadoras */
-.lojas-ganhadoras-compacto {
-    display: flex;
-    gap: 1.5rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.loja-ganhadora-compacta {
-    background: white;
     border-radius: 15px;
-    padding: 1.5rem;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
+}
+
+.colaboradores-lista {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
+    max-height: 280px;
+    overflow-y: auto;
+    padding: 0.5rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.colaborador-item-elegante {
+    background: white;
+    border-radius: 12px;
+    padding: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    border: 2px solid transparent;
+    border: 1px solid #e9ecef;
     display: flex;
-    flex-direction: column;
     align-items: center;
     gap: 0.5rem;
-    min-width: 180px;
-    max-width: 220px;
-    flex: 1;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    min-height: 60px;
 }
 
-.loja-ganhadora-compacta::before {
+.colaborador-item-elegante::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    height: 4px;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(135deg, #17a2b8, #20c997);
+    transition: width 0.3s ease;
+}
+
+.colaborador-item-elegante:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    border-color: #17a2b8;
+}
+
+.colaborador-item-elegante:hover::before {
+    width: 5px;
+}
+
+.colaborador-avatar {
+    font-size: 1.5rem;
+    color: #17a2b8;
+    margin-right: 0.3rem;
+}
+
+.colaborador-detalhes {
+    flex: 1;
+    min-width: 0;
+}
+
+.colaborador-nome-elegante {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1.2;
+    margin-bottom: 0.2rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.colaborador-setor-elegante {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.colaborador-icone {
+    font-size: 0.8rem;
+    color: #ffc107;
+    opacity: 0.7;
     transition: all 0.3s ease;
 }
 
-.loja-big-elegante {
-    border-color: rgba(102, 126, 234, 0.2);
+.colaborador-item-elegante:hover .colaborador-icone {
+    opacity: 1;
+    transform: scale(1.2);
 }
 
-.loja-big-elegante::before {
-    background: linear-gradient(90deg, #667eea, #764ba2);
+.colaborador-item-elegante.embaralhar-elegante {
+    animation: embaralharColaboradorCompacto 0.3s ease-in-out;
 }
 
-.loja-big-elegante:hover {
-    border-color: #667eea;
-    transform: translateY(-3px);
-    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.25);
+@keyframes embaralharColaboradorCompacto {
+    0%, 100% { 
+        transform: translateX(0) scale(1); 
+        opacity: 1; 
+    }
+    25% { 
+        transform: translateX(-3px) scale(0.98); 
+        opacity: 0.8; 
+    }
+    50% { 
+        transform: translateX(3px) scale(1.02); 
+        opacity: 0.9; 
+    }
+    75% { 
+        transform: translateX(-2px) scale(0.99); 
+        opacity: 0.85; 
+    }
 }
 
-.loja-ultra-elegante {
-    border-color: rgba(32, 201, 151, 0.2);
-}
-
-.loja-ultra-elegante::before {
-    background: linear-gradient(90deg, #20c997, #17a2b8);
-}
-
-.loja-ultra-elegante:hover {
-    border-color: #20c997;
-    transform: translateY(-3px);
-    box-shadow: 0 12px 40px rgba(32, 201, 151, 0.25);
-}
-
-.loja-badge-compacto {
-    background: linear-gradient(135deg, #2c3e50, #34495e);
-    color: white;
-    padding: 0.3rem 0.8rem;
-    border-radius: 15px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-}
-
-.loja-big-elegante .loja-badge-compacto {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-}
-
-.loja-ultra-elegante .loja-badge-compacto {
-    background: linear-gradient(135deg, #20c997, #17a2b8);
-}
-
-.loja-icone-compacto {
-    font-size: 2.5rem;
-    margin: 0.5rem 0;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-    animation: iconeFloat 3s ease-in-out infinite;
-}
-
-.loja-nome-compacto {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #2c3e50;
-    text-align: center;
-    line-height: 1.2;
-    margin-bottom: 0.2rem;
-}
-
-.loja-codigo-compacto {
-    font-size: 0.8rem;
-    color: #6c757d;
-    font-weight: 500;
-    opacity: 0.8;
-}
-
-/* Confetti para resultado compacto */
-.resultado-lojas-elegante .confetti-celebration {
-    border-radius: 20px;
-}
-
-/* Responsividade do Resultado Compacto */
+/* Responsividade do Pote Compacto */
 @media (max-width: 768px) {
-    .resultado-lojas-elegante {
-        padding: 1.5rem;
-        max-width: 90%;
+    .colaboradores-lista {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 0.5rem;
+        max-height: 240px;
     }
     
-    .lojas-ganhadoras-compacto {
-        flex-direction: column;
-        align-items: center;
+    .colaborador-item-elegante {
+        padding: 0.6rem;
+        min-height: 55px;
     }
     
-    .loja-ganhadora-compacta {
-        min-width: 200px;
-        max-width: 250px;
+    .colaborador-nome-elegante {
+        font-size: 0.8rem;
     }
     
-    .titulo-resultado-compacto {
-        font-size: 1.5rem;
-    }
-    
-    .loja-icone-compacto {
-        font-size: 2rem;
-    }
-    
-    .loja-nome-compacto {
-        font-size: 0.9rem;
-    }
-}
-
-/* Responsividade Geral */
-@media (max-width: 768px) {
-    .titulo-sorteio {
-        font-size: 1.8rem;
-    }
-    
-    .config-card {
-        padding: 1.5rem;
+    .colaborador-setor-elegante {
+        font-size: 0.7rem;
     }
     
     .pote-colaboradores {
-        padding: 1.5rem;
-    }
-    
-    .botoes-acao .btn {
-        margin-bottom: 0.5rem;
-        width: 100%;
-    }
-    
-    .btn-chacoalhar, .btn-sortear-final {
-        padding: 0.8rem 1.5rem;
-        font-size: 1rem;
-    }
-}
-
-/* Status de Sucesso Discreto */
-.sucesso-discreto {
-    background: linear-gradient(135deg, #d4edda, #c3e6cb) !important;
-    color: #155724 !important;
-    border: 1px solid #c3e6cb !important;
-    border-radius: 15px !important;
-    padding: 1rem !important;
-    text-align: center !important;
-    font-weight: 600 !important;
-    font-size: 1.1rem !important;
-    box-shadow: 0 4px 15px rgba(21, 87, 36, 0.15) !important;
-    animation: sucessoPulse 2s ease-in-out infinite;
-}
-
-@keyframes sucessoPulse {
-    0%, 100% { 
-        transform: scale(1);
-        box-shadow: 0 4px 15px rgba(21, 87, 36, 0.15);
-    }
-    50% { 
-        transform: scale(1.02);
-        box-shadow: 0 6px 20px rgba(21, 87, 36, 0.25);
+        padding: 1rem;
+        max-height: 320px;
     }
 }
 
@@ -2167,4 +1885,210 @@ main {
     background-color: #5a359e;
     border-color: #5a359e;
     box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.5);
+}
+/* ========================================
+   MELHORIAS DASHBOARD NAVEGA��O v1.1
+======================================== */
+
+/* Dashboard melhorado na navega��o */
+.navbar-nav .nav-link {
+    padding: 0.75rem 1rem !important;
+    border-radius: 8px !important;
+    margin: 0 0.2rem !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    position: relative !important;
+}
+
+.navbar-nav .nav-link:hover {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.1), rgba(13, 110, 253, 0.2)) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15) !important;
+}
+
+.navbar-nav .nav-link i {
+    margin-right: 0.5rem !important;
+    font-size: 1.1em !important;
+}
+
+/* ========================================
+   POTE COLABORADORES COMPACTO v1.1
+======================================== */
+
+.pote-colaboradores {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 2px solid #dee2e6;
+    animation: poteEntrada 0.6s ease-out;
+    max-height: 400px;
+    overflow: hidden;
+}
+
+.pote-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.pote-header h4 {
+    margin: 0;
+    color: #2c3e50;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.contador-colaboradores {
+    background: linear-gradient(135deg, #17a2b8, #20c997);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
+}
+
+.colaboradores-lista {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
+    max-height: 280px;
+    overflow-y: auto;
+    padding: 0.5rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.colaborador-item-elegante {
+    background: white;
+    border-radius: 12px;
+    padding: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    min-height: 60px;
+}
+
+.colaborador-item-elegante::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(135deg, #17a2b8, #20c997);
+    transition: width 0.3s ease;
+}
+
+.colaborador-item-elegante:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    border-color: #17a2b8;
+}
+
+.colaborador-item-elegante:hover::before {
+    width: 5px;
+}
+
+.colaborador-avatar {
+    font-size: 1.5rem;
+    color: #17a2b8;
+    margin-right: 0.3rem;
+}
+
+.colaborador-detalhes {
+    flex: 1;
+    min-width: 0;
+}
+
+.colaborador-nome-elegante {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1.2;
+    margin-bottom: 0.2rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.colaborador-setor-elegante {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.colaborador-icone {
+    font-size: 0.8rem;
+    color: #ffc107;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.colaborador-item-elegante:hover .colaborador-icone {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+.colaborador-item-elegante.embaralhar-elegante {
+    animation: embaralharColaboradorCompacto 0.3s ease-in-out;
+}
+
+@keyframes embaralharColaboradorCompacto {
+    0%, 100% { 
+        transform: translateX(0) scale(1); 
+        opacity: 1; 
+    }
+    25% { 
+        transform: translateX(-3px) scale(0.98); 
+        opacity: 0.8; 
+    }
+    50% { 
+        transform: translateX(3px) scale(1.02); 
+        opacity: 0.9; 
+    }
+    75% { 
+        transform: translateX(-2px) scale(0.99); 
+        opacity: 0.85; 
+    }
+}
+
+/* Responsividade do Pote Compacto */
+@media (max-width: 768px) {
+    .colaboradores-lista {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 0.5rem;
+        max-height: 240px;
+    }
+    
+    .colaborador-item-elegante {
+        padding: 0.6rem;
+        min-height: 55px;
+    }
+    
+    .colaborador-nome-elegante {
+        font-size: 0.8rem;
+    }
+    
+    .colaborador-setor-elegante {
+        font-size: 0.7rem;
+    }
+    
+    .pote-colaboradores {
+        padding: 1rem;
+        max-height: 320px;
+    }
 }
