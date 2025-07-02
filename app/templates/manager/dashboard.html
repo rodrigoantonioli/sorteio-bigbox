@@ -118,7 +118,12 @@
                                         <h6 class="card-title">Colaboradores</h6>
                                         <p class="card-text small">Gerenciar colaboradores da loja</p>
                                         <p class="text-muted">
-                                            <strong>{{ total_colaboradores }}</strong> colaboradores aptos
+                                            <strong>{{ total_colaboradores }}</strong> 
+                        {% if total_colaboradores == 1 %}
+                            colaborador apto
+                        {% else %}
+                            colaboradores aptos
+                        {% endif %}
                                         </p>
                                         <a href="{{ url_for('manager.colaboradores') }}" class="btn btn-primary btn-sm">
                                             <i class="fas fa-arrow-right"></i> Gerenciar
@@ -206,7 +211,7 @@
                 <div class="card">
                     <div class="card-header bg-success text-white">
                         <h5 class="card-title mb-0">
-                            <i class="fas fa-trophy"></i> Colaboradores Sorteados Esta Semana
+                                                            <i class="fas fa-trophy"></i> Colaboradores Sorteados
                         </h5>
                     </div>
                     <div class="card-body">

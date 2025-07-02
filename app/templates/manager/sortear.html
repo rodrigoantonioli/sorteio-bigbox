@@ -486,14 +486,14 @@ function initializeSorteioColaboradores() {
     }
     
     
-    // Função para configurar atualização ao fechar modal
+    // Funï¿½ï¿½o para configurar atualizaï¿½ï¿½o ao fechar modal
     function configurarAtualizacaoAoFecharModal() {
-        // Listener para detectar quando modal é fechado
+        // Listener para detectar quando modal ï¿½ fechado
         const modal = document.getElementById('sorteioModal');
         if (modal) {
             modal.addEventListener('hidden.bs.modal', function () {
                 if (window.sorteioRealizadoComSucesso) {
-                    console.log(' Modal fechado após sorteio bem-sucedido - atualizando página...');
+                    console.log(' Modal fechado apï¿½s sorteio bem-sucedido - atualizando pï¿½gina...');
                     setTimeout(() => {
                         window.location.reload();
                     }, 300);
@@ -504,7 +504,7 @@ function initializeSorteioColaboradores() {
         // Listener para clique fora do modal (backdrop)
         document.addEventListener('click', function(event) {
             if (event.target.classList.contains('modal-backdrop') && window.sorteioRealizadoComSucesso) {
-                console.log(' Clicou fora do modal após sorteio - atualizando página...');
+                console.log(' Clicou fora do modal apï¿½s sorteio - atualizando pï¿½gina...');
                 setTimeout(() => {
                     window.location.reload();
                 }, 300);
@@ -514,7 +514,7 @@ function initializeSorteioColaboradores() {
         // Listener para tecla ESC
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape' && window.sorteioRealizadoComSucesso) {
-                console.log(' ESC pressionado após sorteio - atualizando página...');
+                console.log(' ESC pressionado apï¿½s sorteio - atualizando pï¿½gina...');
                 setTimeout(() => {
                     window.location.reload();
                 }, 300);
