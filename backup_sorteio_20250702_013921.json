@@ -1,0 +1,2220 @@
+{
+  "colaboradores": {
+    "estrutura": [
+      [
+        "id",
+        "integer",
+        "NO",
+        "nextval('colaboradores_id_seq'::regclass)"
+      ],
+      [
+        "matricula",
+        "character varying",
+        "NO",
+        null
+      ],
+      [
+        "nome",
+        "character varying",
+        "NO",
+        null
+      ],
+      [
+        "setor",
+        "character varying",
+        "NO",
+        null
+      ],
+      [
+        "loja_id",
+        "integer",
+        "NO",
+        null
+      ],
+      [
+        "apto",
+        "boolean",
+        "YES",
+        null
+      ],
+      [
+        "ultima_atualizacao",
+        "timestamp without time zone",
+        "YES",
+        null
+      ]
+    ],
+    "colunas": [
+      "id",
+      "matricula",
+      "nome",
+      "setor",
+      "loja_id",
+      "apto",
+      "ultima_atualizacao"
+    ],
+    "dados": [
+      [
+        1,
+        "327",
+        "JOSE XIMENES DE ARAGAO",
+        "ADMINISTRACAO",
+        1,
+        true,
+        "2025-07-01 13:51:18.477046"
+      ],
+      [
+        2,
+        "1688",
+        "VALDEMIR SALVADOR NAZARIO",
+        "DOCAS/DEPOSITO",
+        1,
+        true,
+        "2025-07-01 13:51:18.482692"
+      ],
+      [
+        3,
+        "17774",
+        "LILIA MARIA BEZERRA DA SILVA",
+        "DOCAS/DEPOSITO",
+        1,
+        true,
+        "2025-07-01 13:51:18.568003"
+      ],
+      [
+        4,
+        "4505",
+        "CLEIDILENE BARBOSA SANTOS",
+        "REFEITORIO",
+        1,
+        true,
+        "2025-07-01 13:51:18.575796"
+      ],
+      [
+        5,
+        "8932",
+        "MARIA DO SOCORRO MENDES DOS SANTOS",
+        "REFEITORIO",
+        1,
+        true,
+        "2025-07-01 13:51:18.578917"
+      ],
+      [
+        6,
+        "399",
+        "PEDRO HENRIQUE RODRIGUES DE OLIVEIRA",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:18.581813"
+      ],
+      [
+        7,
+        "29962",
+        "MARCILON MARTINS DE ALMEIDA",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:18.584613"
+      ],
+      [
+        8,
+        "23634",
+        "DANIZE MARCIA RIBEIRO",
+        "LICENCA MATERNIDADE",
+        1,
+        true,
+        "2025-07-01 13:51:18.587449"
+      ],
+      [
+        9,
+        "1650",
+        "CARLIVAN RUFINO DE SOUSA",
+        "PREVENCAO",
+        1,
+        true,
+        "2025-07-01 13:51:18.590249"
+      ],
+      [
+        10,
+        "28763",
+        "WANDER ELIAS PORTUGAL",
+        "PREVENCAO",
+        1,
+        true,
+        "2025-07-01 13:51:18.593280"
+      ],
+      [
+        11,
+        "29999",
+        "LUCIENE RODRIGUES DE SOUZA SANTOS",
+        "PREVENCAO",
+        1,
+        true,
+        "2025-07-01 13:51:18.596247"
+      ],
+      [
+        12,
+        "30665",
+        "ERIK ADRYAN DE OLIVEIRA LEAL",
+        "PREVENCAO",
+        1,
+        true,
+        "2025-07-01 13:51:18.599092"
+      ],
+      [
+        13,
+        "32112",
+        "MAX ANTONIO DOS SANTOS SILVA",
+        "PREVENCAO",
+        1,
+        true,
+        "2025-07-01 13:51:18.601928"
+      ],
+      [
+        14,
+        "9677",
+        "ANTONIO BARBOSA VIEIRA DE OLIVEIRA",
+        "ACOUGUE",
+        1,
+        true,
+        "2025-07-01 13:51:18.604693"
+      ],
+      [
+        15,
+        "12722",
+        "ROSIVEL DE JESUS NEVES",
+        "ACOUGUE",
+        1,
+        true,
+        "2025-07-01 13:51:18.607374"
+      ],
+      [
+        16,
+        "12003",
+        "JOHN WERBETH RODRIGUES DA SILVA",
+        "ACOUGUE",
+        1,
+        true,
+        "2025-07-01 13:51:18.610635"
+      ],
+      [
+        17,
+        "22990",
+        "ALANA TAIS ALVES FEITOSA",
+        "ACOUGUE",
+        1,
+        true,
+        "2025-07-01 13:51:18.664135"
+      ],
+      [
+        18,
+        "29407",
+        "IRALDO BISPO RIBEIRO JUNIOR",
+        "ACOUGUE",
+        1,
+        true,
+        "2025-07-01 13:51:18.667722"
+      ],
+      [
+        19,
+        "23543",
+        "JOSE FRANCISCO DA SILVA",
+        "SERVICOS GERAIS",
+        1,
+        true,
+        "2025-07-01 13:51:18.670927"
+      ],
+      [
+        20,
+        "26076",
+        "MARIANGELA DOS SANTOS ARAUJO",
+        "SERVICOS GERAIS",
+        1,
+        true,
+        "2025-07-01 13:51:18.673973"
+      ],
+      [
+        21,
+        "30000",
+        "DEUZIMAR DE SOUSA BRITO",
+        "SERVICOS GERAIS",
+        1,
+        true,
+        "2025-07-01 13:51:18.676922"
+      ],
+      [
+        22,
+        "32396",
+        "LUCILIA FERREIRA DA SILVA ALVES",
+        "SERVICOS GERAIS",
+        1,
+        true,
+        "2025-07-01 13:51:18.679760"
+      ],
+      [
+        23,
+        "26737",
+        "JOAO VITOR PEREIRA DOS SANTOS",
+        "MERCEARIA",
+        1,
+        true,
+        "2025-07-01 13:51:18.682732"
+      ],
+      [
+        24,
+        "27614",
+        "MARCELY GARCIA ROCHA",
+        "MERCEARIA",
+        1,
+        true,
+        "2025-07-01 13:51:18.685593"
+      ],
+      [
+        25,
+        "29290",
+        "ANA LETICIA DAS NEVES SILVA",
+        "MERCEARIA",
+        1,
+        true,
+        "2025-07-01 13:51:18.688340"
+      ],
+      [
+        26,
+        "28470",
+        "FERNANDA DE ALMEIDA VIEIRA",
+        "REFEITORIO",
+        1,
+        true,
+        "2025-07-01 13:51:18.691150"
+      ],
+      [
+        27,
+        "7975",
+        "VALDIVINO TELIS DA SILVA",
+        "FLV",
+        1,
+        true,
+        "2025-07-01 13:51:18.693911"
+      ],
+      [
+        28,
+        "32168",
+        "FABIOLA DA SILVA OLIVEIRA",
+        "PAS",
+        1,
+        true,
+        "2025-07-01 13:51:18.696678"
+      ],
+      [
+        29,
+        "32248",
+        "MICHAEL RODRIGUES DOURADO",
+        "FLV",
+        1,
+        true,
+        "2025-07-01 13:51:18.699412"
+      ],
+      [
+        30,
+        "32186",
+        "CLODIONOR DA SILVA CLARA",
+        "PAS",
+        1,
+        true,
+        "2025-07-01 13:51:18.702165"
+      ],
+      [
+        31,
+        "31651",
+        "EDUARDA ESTER DE OLIVEIRA NASCIMENTO",
+        "INVENTARIOS",
+        1,
+        true,
+        "2025-07-01 13:51:18.764229"
+      ],
+      [
+        32,
+        "26795",
+        "THIAGO GOMES DE LIMA",
+        "INVENTARIOS",
+        1,
+        true,
+        "2025-07-01 13:51:18.768039"
+      ],
+      [
+        33,
+        "10094",
+        "JAILSON CORDEIRO DE PAULA JUNIOR",
+        "AFASTADOS",
+        1,
+        true,
+        "2025-07-01 13:51:18.771269"
+      ],
+      [
+        34,
+        "15577",
+        "MARIA DE FATIMA BARBOSA DE JESUS",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:18.774322"
+      ],
+      [
+        35,
+        "32260",
+        "ALISSON DA SILVA ALMEIDA",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:18.777590"
+      ],
+      [
+        36,
+        "30738",
+        "SUELLY CRISTIANE ROSA CARVALHO",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:18.780511"
+      ],
+      [
+        37,
+        "30937",
+        "ANA MARIA CONCEICAO DA SILVA",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:18.784399"
+      ],
+      [
+        38,
+        "32020",
+        "NICOLLE LOPES DE ARAUJO",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:18.787559"
+      ],
+      [
+        39,
+        "32038",
+        "ERYKA NATHALLY FERREIRA XAVIER",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:18.791347"
+      ],
+      [
+        40,
+        "28474",
+        "CARLOS DANIEL SANTOS DE OLIVEIRA",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:18.794596"
+      ],
+      [
+        41,
+        "32309",
+        "FRANCISCO DE ASSIS FERREIRA DOS SANTOS",
+        "FLV",
+        1,
+        true,
+        "2025-07-01 13:51:18.797777"
+      ],
+      [
+        42,
+        "30251",
+        "LIVIA MARINA DOS SANTOS LIMA",
+        "PADARIA",
+        1,
+        true,
+        "2025-07-01 13:51:18.800844"
+      ],
+      [
+        43,
+        "14764",
+        "MARCIA REGINA MAGALHAES RODRIGUES",
+        "PAS",
+        1,
+        true,
+        "2025-07-01 13:51:18.865781"
+      ],
+      [
+        44,
+        "20214",
+        "SOLANGE DA SILVA DO ROSARIO",
+        "PADARIA",
+        1,
+        true,
+        "2025-07-01 13:51:18.869434"
+      ],
+      [
+        45,
+        "16835",
+        "KENIA MARRIETE ANANIAS",
+        "ADMINISTRACAO",
+        1,
+        true,
+        "2025-07-01 13:51:18.874232"
+      ],
+      [
+        46,
+        "28764",
+        "LEYDIANNE KALINE MARTINS DE SOUSA",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:18.877841"
+      ],
+      [
+        47,
+        "29776",
+        "MARIA DA GUIA BRITO CAJA",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:18.881665"
+      ],
+      [
+        48,
+        "24663",
+        "THAIS ALESSANDRA GOMES FERREIRA",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:18.884774"
+      ],
+      [
+        49,
+        "25709",
+        "BRUNO CIRQUEIRA RODRIGUES",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:18.888068"
+      ],
+      [
+        50,
+        "25808",
+        "CARLA PATRICIA RIBEIRO COUTINHO",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:18.894881"
+      ],
+      [
+        51,
+        "25865",
+        "TAIS RODRIGUES DA SILVA",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:18.901542"
+      ],
+      [
+        52,
+        "16873",
+        "MARIANA PEREIRA DE ANDRADE",
+        "AFASTADOS",
+        1,
+        true,
+        "2025-07-01 13:51:18.905071"
+      ],
+      [
+        53,
+        "19040",
+        "ORLEANE PIRES BATISTA",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:18.908733"
+      ],
+      [
+        54,
+        "19561",
+        "GILSON DOS SANTOS DA SILVA",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:18.966316"
+      ],
+      [
+        55,
+        "6108",
+        "JOSE ARNALDO GONCALVES DOS SANTOS",
+        "MERCEARIA",
+        1,
+        true,
+        "2025-07-01 13:51:18.970154"
+      ],
+      [
+        56,
+        "3080",
+        "GERSON DE AGNELO",
+        "MERCEARIA",
+        1,
+        true,
+        "2025-07-01 13:51:18.976305"
+      ],
+      [
+        57,
+        "5110",
+        "VILIANE PEREIRA DE QUEIROZ",
+        "MERCEARIA",
+        1,
+        true,
+        "2025-07-01 13:51:18.980394"
+      ],
+      [
+        58,
+        "32151",
+        "RAFAEL VAZ DE SOUZA",
+        "MERCEARIA",
+        1,
+        true,
+        "2025-07-01 13:51:18.987499"
+      ],
+      [
+        59,
+        "28475",
+        "TIAGO PEREIRA DE OLIVEIRA",
+        "MERCEARIA",
+        1,
+        true,
+        "2025-07-01 13:51:18.991617"
+      ],
+      [
+        60,
+        "27221",
+        "HIGOR ABADE MARTINS",
+        "MERCEARIA",
+        1,
+        true,
+        "2025-07-01 13:51:18.995128"
+      ],
+      [
+        61,
+        "21880",
+        "GILMAR DA SILVA OLIVEIRA",
+        "MERCEARIA",
+        1,
+        true,
+        "2025-07-01 13:51:19.005903"
+      ],
+      [
+        62,
+        "14289",
+        "MARCOS AURELIO AQUINO DE OLIVEIRA",
+        "ADMINISTRACAO",
+        1,
+        true,
+        "2025-07-01 13:51:19.013619"
+      ],
+      [
+        63,
+        "4910",
+        "LUIZ CESAR MATOS SALES",
+        "PAS",
+        1,
+        true,
+        "2025-07-01 13:51:19.021965"
+      ],
+      [
+        64,
+        "5131",
+        "JACQUELINE CAMPOS SILVA",
+        "PADARIA",
+        1,
+        true,
+        "2025-07-01 13:51:19.068852"
+      ],
+      [
+        65,
+        "31884",
+        "IAN MELO GONCALVES",
+        "MERCEARIA",
+        1,
+        true,
+        "2025-07-01 13:51:19.073132"
+      ],
+      [
+        66,
+        "7502",
+        "LUCIANO VIEIRA DA SILVA SOUSA",
+        "MERCEARIA",
+        1,
+        true,
+        "2025-07-01 13:51:19.079682"
+      ],
+      [
+        67,
+        "6821",
+        "MARIA VANESSA BORGES DE OLIVEIRA",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:19.083127"
+      ],
+      [
+        68,
+        "15871",
+        "ANTONIA MARIA DA SILVA OLIVEIRA",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:19.086802"
+      ],
+      [
+        69,
+        "18640",
+        "JOAO RODRIGUES DOS SANTOS NETO",
+        "FLV",
+        1,
+        true,
+        "2025-07-01 13:51:19.090457"
+      ],
+      [
+        70,
+        "13002",
+        "MARIA ISABEL CARVALHO DE JESUS",
+        "FRENTE DE LOJA",
+        1,
+        true,
+        "2025-07-01 13:51:19.095517"
+      ],
+      [
+        71,
+        "19",
+        "LINDA ROSA DE ARAUJO PEREIRA",
+        "TESOURARIA",
+        1,
+        true,
+        "2025-07-01 13:51:19.098665"
+      ],
+      [
+        72,
+        "22866",
+        "WARLEY LELES GOUVEIA",
+        "PAS",
+        1,
+        true,
+        "2025-07-01 13:51:19.102272"
+      ],
+      [
+        73,
+        "6510",
+        "REGIVALDO MARQUES BRITO",
+        "MERCEARIA",
+        1,
+        true,
+        "2025-07-01 13:51:19.105744"
+      ],
+      [
+        74,
+        "17649",
+        "ALISSON PEREIRA DE MELO",
+        "PREVENCAO",
+        1,
+        true,
+        "2025-07-01 13:51:19.110170"
+      ],
+      [
+        75,
+        "450",
+        "CLAUDIO NEVES DE OLIVEIRA",
+        "ACOUGUE",
+        1,
+        true,
+        "2025-07-01 13:51:19.113430"
+      ],
+      [
+        76,
+        "327",
+        "JOSE XIMENES DE ARAGAO",
+        "ADMINISTRACAO",
+        27,
+        true,
+        "2025-07-01 14:57:15.168663"
+      ],
+      [
+        77,
+        "1688",
+        "VALDEMIR SALVADOR NAZARIO",
+        "DOCAS/DEPOSITO",
+        27,
+        true,
+        "2025-07-01 14:57:15.168795"
+      ],
+      [
+        78,
+        "17774",
+        "LILIA MARIA BEZERRA DA SILVA",
+        "DOCAS/DEPOSITO",
+        27,
+        true,
+        "2025-07-01 14:57:15.168852"
+      ],
+      [
+        79,
+        "4505",
+        "CLEIDILENE BARBOSA SANTOS",
+        "REFEITORIO",
+        27,
+        true,
+        "2025-07-01 14:57:15.168902"
+      ],
+      [
+        80,
+        "8932",
+        "MARIA DO SOCORRO MENDES DOS SANTOS",
+        "REFEITORIO",
+        27,
+        true,
+        "2025-07-01 14:57:15.168950"
+      ],
+      [
+        81,
+        "399",
+        "PEDRO HENRIQUE RODRIGUES DE OLIVEIRA",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.169000"
+      ],
+      [
+        82,
+        "29962",
+        "MARCILON MARTINS DE ALMEIDA",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.169047"
+      ],
+      [
+        83,
+        "23634",
+        "DANIZE MARCIA RIBEIRO",
+        "LICENCA MATERNIDADE",
+        27,
+        true,
+        "2025-07-01 14:57:15.169094"
+      ],
+      [
+        85,
+        "28763",
+        "WANDER ELIAS PORTUGAL",
+        "PREVENCAO",
+        27,
+        true,
+        "2025-07-01 14:57:15.169188"
+      ],
+      [
+        86,
+        "29999",
+        "LUCIENE RODRIGUES DE SOUZA SANTOS",
+        "PREVENCAO",
+        27,
+        true,
+        "2025-07-01 14:57:15.169234"
+      ],
+      [
+        87,
+        "30665",
+        "ERIK ADRYAN DE OLIVEIRA LEAL",
+        "PREVENCAO",
+        27,
+        true,
+        "2025-07-01 14:57:15.169282"
+      ],
+      [
+        88,
+        "32112",
+        "MAX ANTONIO DOS SANTOS SILVA",
+        "PREVENCAO",
+        27,
+        true,
+        "2025-07-01 14:57:15.169345"
+      ],
+      [
+        89,
+        "9677",
+        "ANTONIO BARBOSA VIEIRA DE OLIVEIRA",
+        "ACOUGUE",
+        27,
+        true,
+        "2025-07-01 14:57:15.169420"
+      ],
+      [
+        90,
+        "12722",
+        "ROSIVEL DE JESUS NEVES",
+        "ACOUGUE",
+        27,
+        true,
+        "2025-07-01 14:57:15.169469"
+      ],
+      [
+        91,
+        "12003",
+        "JOHN WERBETH RODRIGUES DA SILVA",
+        "ACOUGUE",
+        27,
+        true,
+        "2025-07-01 14:57:15.169516"
+      ],
+      [
+        92,
+        "22990",
+        "ALANA TAIS ALVES FEITOSA",
+        "ACOUGUE",
+        27,
+        true,
+        "2025-07-01 14:57:15.169557"
+      ],
+      [
+        93,
+        "29407",
+        "IRALDO BISPO RIBEIRO JUNIOR",
+        "ACOUGUE",
+        27,
+        true,
+        "2025-07-01 14:57:15.169604"
+      ],
+      [
+        94,
+        "23543",
+        "JOSE FRANCISCO DA SILVA",
+        "SERVICOS GERAIS",
+        27,
+        true,
+        "2025-07-01 14:57:15.169652"
+      ],
+      [
+        95,
+        "26076",
+        "MARIANGELA DOS SANTOS ARAUJO",
+        "SERVICOS GERAIS",
+        27,
+        true,
+        "2025-07-01 14:57:15.169698"
+      ],
+      [
+        96,
+        "30000",
+        "DEUZIMAR DE SOUSA BRITO",
+        "SERVICOS GERAIS",
+        27,
+        true,
+        "2025-07-01 14:57:15.169744"
+      ],
+      [
+        97,
+        "32396",
+        "LUCILIA FERREIRA DA SILVA ALVES",
+        "SERVICOS GERAIS",
+        27,
+        true,
+        "2025-07-01 14:57:15.169791"
+      ],
+      [
+        98,
+        "26737",
+        "JOAO VITOR PEREIRA DOS SANTOS",
+        "MERCEARIA",
+        27,
+        true,
+        "2025-07-01 14:57:15.169841"
+      ],
+      [
+        99,
+        "27614",
+        "MARCELY GARCIA ROCHA",
+        "MERCEARIA",
+        27,
+        true,
+        "2025-07-01 14:57:15.169887"
+      ],
+      [
+        101,
+        "28470",
+        "FERNANDA DE ALMEIDA VIEIRA",
+        "REFEITORIO",
+        27,
+        true,
+        "2025-07-01 14:57:15.169980"
+      ],
+      [
+        102,
+        "7975",
+        "VALDIVINO TELIS DA SILVA",
+        "FLV",
+        27,
+        true,
+        "2025-07-01 14:57:15.170026"
+      ],
+      [
+        103,
+        "32168",
+        "FABIOLA DA SILVA OLIVEIRA",
+        "PAS",
+        27,
+        true,
+        "2025-07-01 14:57:15.170071"
+      ],
+      [
+        104,
+        "32248",
+        "MICHAEL RODRIGUES DOURADO",
+        "FLV",
+        27,
+        true,
+        "2025-07-01 14:57:15.170115"
+      ],
+      [
+        105,
+        "32186",
+        "CLODIONOR DA SILVA CLARA",
+        "PAS",
+        27,
+        true,
+        "2025-07-01 14:57:15.170161"
+      ],
+      [
+        106,
+        "31651",
+        "EDUARDA ESTER DE OLIVEIRA NASCIMENTO",
+        "INVENTARIOS",
+        27,
+        true,
+        "2025-07-01 14:57:15.170205"
+      ],
+      [
+        107,
+        "26795",
+        "THIAGO GOMES DE LIMA",
+        "INVENTARIOS",
+        27,
+        true,
+        "2025-07-01 14:57:15.170252"
+      ],
+      [
+        108,
+        "10094",
+        "JAILSON CORDEIRO DE PAULA JUNIOR",
+        "AFASTADOS",
+        27,
+        true,
+        "2025-07-01 14:57:15.170295"
+      ],
+      [
+        109,
+        "15577",
+        "MARIA DE FATIMA BARBOSA DE JESUS",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.170341"
+      ],
+      [
+        110,
+        "32260",
+        "ALISSON DA SILVA ALMEIDA",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.170410"
+      ],
+      [
+        111,
+        "30738",
+        "SUELLY CRISTIANE ROSA CARVALHO",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.170457"
+      ],
+      [
+        112,
+        "30937",
+        "ANA MARIA CONCEICAO DA SILVA",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.170503"
+      ],
+      [
+        113,
+        "32020",
+        "NICOLLE LOPES DE ARAUJO",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.170548"
+      ],
+      [
+        114,
+        "32038",
+        "ERYKA NATHALLY FERREIRA XAVIER",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.170593"
+      ],
+      [
+        115,
+        "28474",
+        "CARLOS DANIEL SANTOS DE OLIVEIRA",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.170637"
+      ],
+      [
+        116,
+        "32309",
+        "FRANCISCO DE ASSIS FERREIRA DOS SANTOS",
+        "FLV",
+        27,
+        true,
+        "2025-07-01 14:57:15.170681"
+      ],
+      [
+        117,
+        "30251",
+        "LIVIA MARINA DOS SANTOS LIMA",
+        "PADARIA",
+        27,
+        true,
+        "2025-07-01 14:57:15.170725"
+      ],
+      [
+        118,
+        "14764",
+        "MARCIA REGINA MAGALHAES RODRIGUES",
+        "PAS",
+        27,
+        true,
+        "2025-07-01 14:57:15.170769"
+      ],
+      [
+        119,
+        "20214",
+        "SOLANGE DA SILVA DO ROSARIO",
+        "PADARIA",
+        27,
+        true,
+        "2025-07-01 14:57:15.170815"
+      ],
+      [
+        120,
+        "16835",
+        "KENIA MARRIETE ANANIAS",
+        "ADMINISTRACAO",
+        27,
+        true,
+        "2025-07-01 14:57:15.170864"
+      ],
+      [
+        121,
+        "28764",
+        "LEYDIANNE KALINE MARTINS DE SOUSA",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.170913"
+      ],
+      [
+        122,
+        "29776",
+        "MARIA DA GUIA BRITO CAJA",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.170960"
+      ],
+      [
+        123,
+        "24663",
+        "THAIS ALESSANDRA GOMES FERREIRA",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171005"
+      ],
+      [
+        124,
+        "25709",
+        "BRUNO CIRQUEIRA RODRIGUES",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171050"
+      ],
+      [
+        125,
+        "25808",
+        "CARLA PATRICIA RIBEIRO COUTINHO",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171095"
+      ],
+      [
+        126,
+        "25865",
+        "TAIS RODRIGUES DA SILVA",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171139"
+      ],
+      [
+        127,
+        "16873",
+        "MARIANA PEREIRA DE ANDRADE",
+        "AFASTADOS",
+        27,
+        true,
+        "2025-07-01 14:57:15.171184"
+      ],
+      [
+        128,
+        "19040",
+        "ORLEANE PIRES BATISTA",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171229"
+      ],
+      [
+        129,
+        "19561",
+        "GILSON DOS SANTOS DA SILVA",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171276"
+      ],
+      [
+        130,
+        "6108",
+        "JOSE ARNALDO GONCALVES DOS SANTOS",
+        "MERCEARIA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171323"
+      ],
+      [
+        131,
+        "3080",
+        "GERSON DE AGNELO",
+        "MERCEARIA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171389"
+      ],
+      [
+        132,
+        "5110",
+        "VILIANE PEREIRA DE QUEIROZ",
+        "MERCEARIA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171436"
+      ],
+      [
+        133,
+        "32151",
+        "RAFAEL VAZ DE SOUZA",
+        "MERCEARIA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171482"
+      ],
+      [
+        134,
+        "28475",
+        "TIAGO PEREIRA DE OLIVEIRA",
+        "MERCEARIA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171527"
+      ],
+      [
+        135,
+        "27221",
+        "HIGOR ABADE MARTINS",
+        "MERCEARIA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171571"
+      ],
+      [
+        136,
+        "21880",
+        "GILMAR DA SILVA OLIVEIRA",
+        "MERCEARIA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171616"
+      ],
+      [
+        137,
+        "14289",
+        "MARCOS AURELIO AQUINO DE OLIVEIRA",
+        "ADMINISTRACAO",
+        27,
+        true,
+        "2025-07-01 14:57:15.171671"
+      ],
+      [
+        138,
+        "4910",
+        "LUIZ CESAR MATOS SALES",
+        "PAS",
+        27,
+        true,
+        "2025-07-01 14:57:15.171716"
+      ],
+      [
+        139,
+        "5131",
+        "JACQUELINE CAMPOS SILVA",
+        "PADARIA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171761"
+      ],
+      [
+        140,
+        "31884",
+        "IAN MELO GONCALVES",
+        "MERCEARIA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171812"
+      ],
+      [
+        141,
+        "7502",
+        "LUCIANO VIEIRA DA SILVA SOUSA",
+        "MERCEARIA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171858"
+      ],
+      [
+        142,
+        "6821",
+        "MARIA VANESSA BORGES DE OLIVEIRA",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171902"
+      ],
+      [
+        143,
+        "15871",
+        "ANTONIA MARIA DA SILVA OLIVEIRA",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.171948"
+      ],
+      [
+        144,
+        "18640",
+        "JOAO RODRIGUES DOS SANTOS NETO",
+        "FLV",
+        27,
+        true,
+        "2025-07-01 14:57:15.172011"
+      ],
+      [
+        145,
+        "13002",
+        "MARIA ISABEL CARVALHO DE JESUS",
+        "FRENTE DE LOJA",
+        27,
+        true,
+        "2025-07-01 14:57:15.172060"
+      ],
+      [
+        146,
+        "19",
+        "LINDA ROSA DE ARAUJO PEREIRA",
+        "TESOURARIA",
+        27,
+        true,
+        "2025-07-01 14:57:15.172106"
+      ],
+      [
+        147,
+        "22866",
+        "WARLEY LELES GOUVEIA",
+        "PAS",
+        27,
+        true,
+        "2025-07-01 14:57:15.172151"
+      ],
+      [
+        148,
+        "6510",
+        "REGIVALDO MARQUES BRITO",
+        "MERCEARIA",
+        27,
+        true,
+        "2025-07-01 14:57:15.172202"
+      ],
+      [
+        149,
+        "17649",
+        "ALISSON PEREIRA DE MELO",
+        "PREVENCAO",
+        27,
+        true,
+        "2025-07-01 14:57:15.172249"
+      ],
+      [
+        150,
+        "450",
+        "CLAUDIO NEVES DE OLIVEIRA",
+        "ACOUGUE",
+        27,
+        true,
+        "2025-07-01 14:57:15.172302"
+      ],
+      [
+        100,
+        "29290",
+        "ANA LETICIA DAS NEVES SILVA",
+        "MERCEARIA",
+        27,
+        false,
+        "2025-07-01 14:57:39.326394"
+      ],
+      [
+        84,
+        "1650",
+        "CARLIVAN RUFINO DE SOUSA",
+        "PREVENCAO",
+        27,
+        false,
+        "2025-07-01 14:57:43.085009"
+      ]
+    ],
+    "total_registros": 150
+  },
+  "lojas": {
+    "estrutura": [
+      [
+        "id",
+        "integer",
+        "NO",
+        "nextval('lojas_id_seq'::regclass)"
+      ],
+      [
+        "codigo",
+        "character varying",
+        "NO",
+        null
+      ],
+      [
+        "nome",
+        "character varying",
+        "NO",
+        null
+      ],
+      [
+        "bandeira",
+        "character varying",
+        "NO",
+        null
+      ],
+      [
+        "ativo",
+        "boolean",
+        "YES",
+        null
+      ],
+      [
+        "criado_em",
+        "timestamp without time zone",
+        "YES",
+        null
+      ]
+    ],
+    "colunas": [
+      "id",
+      "codigo",
+      "nome",
+      "bandeira",
+      "ativo",
+      "criado_em"
+    ],
+    "dados": [
+      [
+        1,
+        "BIG01 - 106 NORTE",
+        "106 NORTE",
+        "BIG",
+        true,
+        "2025-07-01 05:36:17.878056"
+      ],
+      [
+        2,
+        "BIG02 - 402 NORTE",
+        "402 NORTE",
+        "BIG",
+        true,
+        "2025-07-01 05:36:18.317642"
+      ],
+      [
+        3,
+        "BIG03 - 413 SUL",
+        "413 SUL",
+        "BIG",
+        true,
+        "2025-07-01 05:36:18.749078"
+      ],
+      [
+        4,
+        "BIG04 - 301 SW",
+        "301 SW",
+        "BIG",
+        true,
+        "2025-07-01 05:36:19.179465"
+      ],
+      [
+        5,
+        "BIG05 - 408 NORTE",
+        "408 NORTE",
+        "BIG",
+        true,
+        "2025-07-01 05:36:19.614816"
+      ],
+      [
+        6,
+        "BIG06 - SIBERIA",
+        "SIBERIA",
+        "BIG",
+        true,
+        "2025-07-01 05:36:20.090318"
+      ],
+      [
+        7,
+        "BIG08 - 503 SUL",
+        "503 SUL",
+        "BIG",
+        true,
+        "2025-07-01 05:36:20.530289"
+      ],
+      [
+        8,
+        "BIG09 - PENINSULA",
+        "PENINSULA",
+        "BIG",
+        true,
+        "2025-07-01 05:36:20.957046"
+      ],
+      [
+        9,
+        "BIG10 - CARMO PAINEIRAS",
+        "CARMO PAINEIRAS",
+        "BIG",
+        true,
+        "2025-07-01 05:36:21.385129"
+      ],
+      [
+        10,
+        "BIG11 - 310 NORTE",
+        "310 NORTE",
+        "BIG",
+        true,
+        "2025-07-01 05:36:21.816807"
+      ],
+      [
+        11,
+        "BIG12 - 208 NORTE",
+        "208 NORTE",
+        "BIG",
+        true,
+        "2025-07-01 05:36:22.251700"
+      ],
+      [
+        12,
+        "BIG13 - QI",
+        "QI",
+        "BIG",
+        true,
+        "2025-07-01 05:36:22.686586"
+      ],
+      [
+        13,
+        "BIG14 - 508 SUL",
+        "508 SUL",
+        "BIG",
+        true,
+        "2025-07-01 05:36:23.118123"
+      ],
+      [
+        14,
+        "BIG15 - 105 SW",
+        "105 SW",
+        "BIG",
+        true,
+        "2025-07-01 05:36:23.552461"
+      ],
+      [
+        15,
+        "BIG16 - 512 SUL",
+        "512 SUL",
+        "BIG",
+        true,
+        "2025-07-01 05:36:23.992932"
+      ],
+      [
+        16,
+        "BIG17 - LAGO SUL",
+        "LAGO SUL",
+        "BIG",
+        true,
+        "2025-07-01 05:36:24.421877"
+      ],
+      [
+        17,
+        "BIG18 - 211 NORTE",
+        "211 NORTE",
+        "BIG",
+        true,
+        "2025-07-01 05:36:24.849402"
+      ],
+      [
+        18,
+        "BIG19 - CARMO CASTANHEIRAS",
+        "CARMO CASTANHEIRAS",
+        "BIG",
+        true,
+        "2025-07-01 05:36:25.272190"
+      ],
+      [
+        19,
+        "BIG20 - TAGUATINGA C 1",
+        "TAGUATINGA C 1",
+        "BIG",
+        true,
+        "2025-07-01 05:36:25.743521"
+      ],
+      [
+        20,
+        "BIG21 - TAGUATINGA CNB 12",
+        "TAGUATINGA CNB 12",
+        "BIG",
+        true,
+        "2025-07-01 05:36:26.169668"
+      ],
+      [
+        21,
+        "BIG22 - NOROESTE",
+        "NOROESTE",
+        "BIG",
+        true,
+        "2025-07-01 05:36:26.601895"
+      ],
+      [
+        22,
+        "BIG23 - SOLEDADE - LAGO SUL",
+        "SOLEDADE - LAGO SUL",
+        "BIG",
+        true,
+        "2025-07-01 05:36:27.025445"
+      ],
+      [
+        23,
+        "BIG24 - 314 NORTE",
+        "314 NORTE",
+        "BIG",
+        true,
+        "2025-07-01 05:36:27.452315"
+      ],
+      [
+        24,
+        "ULTRA01 - PLANALTINA",
+        "PLANALTINA",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:27.873257"
+      ],
+      [
+        25,
+        "ULTRA02 - GAMA",
+        "GAMA",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:28.359028"
+      ],
+      [
+        26,
+        "ULTRA03 - COLORADO",
+        "COLORADO",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:28.788910"
+      ],
+      [
+        27,
+        "ULTRA04 - CEILANDIA SUL",
+        "CEILANDIA SUL",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:29.216580"
+      ],
+      [
+        28,
+        "ULTRA05 - POLO JK",
+        "POLO JK",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:29.642849"
+      ],
+      [
+        29,
+        "ULTRA06 - SOBRADINHO",
+        "SOBRADINHO",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:30.069608"
+      ],
+      [
+        30,
+        "ULTRA07 - ADE",
+        "ADE",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:30.497038"
+      ],
+      [
+        31,
+        "ULTRA08 - ARAPOANGA",
+        "ARAPOANGA",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:30.930622"
+      ],
+      [
+        32,
+        "ULTRA09 - CEILANDIA NORTE",
+        "CEILANDIA NORTE",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:31.360072"
+      ],
+      [
+        33,
+        "ULTRA10 - ESTRUTURAL",
+        "ESTRUTURAL",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:31.801214"
+      ],
+      [
+        34,
+        "ULTRA11 - ITAPOA",
+        "ITAPOA",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:32.231721"
+      ],
+      [
+        35,
+        "ULTRA12 - SÃO SEBASTIÃO",
+        "SÃO SEBASTIÃO",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:32.665811"
+      ],
+      [
+        36,
+        "ULTRA13 - RECANTO DAS EMAS",
+        "RECANTO DAS EMAS",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:33.093936"
+      ],
+      [
+        37,
+        "ULTRA14 - AGUAS LINDAS",
+        "AGUAS LINDAS",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:33.521880"
+      ],
+      [
+        38,
+        "ULTRA15 - SOL NASCENTE",
+        "SOL NASCENTE",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:33.958761"
+      ],
+      [
+        39,
+        "ULTRA16 - PARANOA PARQUE",
+        "PARANOA PARQUE",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:34.394128"
+      ],
+      [
+        40,
+        "ULTRA18 - BRAZLÂNDIA",
+        "BRAZLÂNDIA",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:34.826190"
+      ],
+      [
+        41,
+        "ULTRA17 - SAMAMBAIA SUL",
+        "SAMAMBAIA SUL",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:35.257086"
+      ],
+      [
+        42,
+        "ULTRA19 - VIA PARK",
+        "VIA PARK",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:35.743223"
+      ],
+      [
+        43,
+        "ULTRA20 - TAGUATINGA SUL",
+        "TAGUATINGA SUL",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:36.173126"
+      ],
+      [
+        44,
+        "ULTRA21 - BRASILINHA",
+        "BRASILINHA",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:36.608412"
+      ],
+      [
+        45,
+        "ULTRA22 - VICENTE PIRES",
+        "VICENTE PIRES",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:37.048987"
+      ],
+      [
+        46,
+        "ULTRA23 -  SANTA MARIA",
+        " SANTA MARIA",
+        "ULTRA",
+        true,
+        "2025-07-01 05:36:37.480401"
+      ],
+      [
+        47,
+        "INDUSPAN - 106 NORTE",
+        "INDUSPAN",
+        "BIG",
+        true,
+        "2025-07-01 14:07:48.558434"
+      ],
+      [
+        48,
+        "ULTRA - TOTAL DISTRIBUIDORA",
+        "TOTAL DISTRIBUIDORA",
+        "ULTRA",
+        true,
+        "2025-07-01 14:09:45.943295"
+      ]
+    ],
+    "total_registros": 48
+  },
+  "premios": {
+    "estrutura": [
+      [
+        "id",
+        "integer",
+        "NO",
+        "nextval('premios_id_seq'::regclass)"
+      ],
+      [
+        "nome",
+        "character varying",
+        "NO",
+        null
+      ],
+      [
+        "descricao",
+        "text",
+        "YES",
+        null
+      ],
+      [
+        "data_evento",
+        "date",
+        "NO",
+        null
+      ],
+      [
+        "tipo",
+        "character varying",
+        "NO",
+        null
+      ],
+      [
+        "loja_id",
+        "integer",
+        "YES",
+        null
+      ],
+      [
+        "ativo",
+        "boolean",
+        "YES",
+        null
+      ],
+      [
+        "criado_em",
+        "timestamp without time zone",
+        "YES",
+        null
+      ],
+      [
+        "criado_por",
+        "integer",
+        "NO",
+        null
+      ]
+    ],
+    "colunas": [
+      "id",
+      "nome",
+      "descricao",
+      "data_evento",
+      "tipo",
+      "loja_id",
+      "ativo",
+      "criado_em",
+      "criado_por"
+    ],
+    "dados": [
+      [
+        1,
+        "Show (05/07) - sexta-feira - Alcione, Diogo Nogueira e Leci Brandão",
+        "Show da Alcione, Diogo Nogueira e Leci Brandão",
+        "2025-07-05",
+        "show",
+        21,
+        true,
+        "2025-07-01 14:36:22.183525",
+        1
+      ],
+      [
+        2,
+        "Day Use (05/07) - sábado",
+        "Day Use (05/07) -  sábado",
+        "2025-07-05",
+        "day_use",
+        27,
+        true,
+        "2025-07-01 14:37:48.070949",
+        1
+      ],
+      [
+        3,
+        "Show (05/07) - sábado - Wesley Safadão e Nattan",
+        "Show (05/07) - sábado - Wesley Safadão e Nattan",
+        "2025-07-05",
+        "show",
+        27,
+        true,
+        "2025-07-01 14:39:05.008240",
+        1
+      ],
+      [
+        4,
+        "Day Use (06/07) - domingo",
+        "Day Use (06/07) - domingo",
+        "2025-07-06",
+        "day_use",
+        21,
+        true,
+        "2025-07-01 14:39:56.120057",
+        1
+      ],
+      [
+        5,
+        "Show (06/07) - domingo - Vintage Culture, Doozie e Jackson",
+        "Show (06/07) - domingo - Vintage Culture, Doozie e Jackson",
+        "2025-07-06",
+        "show",
+        21,
+        true,
+        "2025-07-01 14:40:48.145450",
+        1
+      ]
+    ],
+    "total_registros": 5
+  },
+  "sorteios_colaboradores": {
+    "estrutura": [
+      [
+        "id",
+        "integer",
+        "NO",
+        "nextval('sorteios_colaboradores_id_seq'::regclass)"
+      ],
+      [
+        "sorteio_semanal_id",
+        "integer",
+        "NO",
+        null
+      ],
+      [
+        "premio_id",
+        "integer",
+        "NO",
+        null
+      ],
+      [
+        "colaborador_id",
+        "integer",
+        "NO",
+        null
+      ],
+      [
+        "data_sorteio",
+        "timestamp without time zone",
+        "YES",
+        null
+      ],
+      [
+        "sorteado_por",
+        "integer",
+        "NO",
+        null
+      ],
+      [
+        "lista_confirmada",
+        "boolean",
+        "YES",
+        null
+      ],
+      [
+        "colaboradores_snapshot",
+        "text",
+        "YES",
+        null
+      ]
+    ],
+    "colunas": [
+      "id",
+      "sorteio_semanal_id",
+      "premio_id",
+      "colaborador_id",
+      "data_sorteio",
+      "sorteado_por",
+      "lista_confirmada",
+      "colaboradores_snapshot"
+    ],
+    "dados": [],
+    "total_registros": 0
+  },
+  "sorteios_semanais": {
+    "estrutura": [
+      [
+        "id",
+        "integer",
+        "NO",
+        "nextval('sorteios_semanais_id_seq'::regclass)"
+      ],
+      [
+        "semana_inicio",
+        "date",
+        "NO",
+        null
+      ],
+      [
+        "loja_big_id",
+        "integer",
+        "NO",
+        null
+      ],
+      [
+        "loja_ultra_id",
+        "integer",
+        "NO",
+        null
+      ],
+      [
+        "data_sorteio",
+        "timestamp without time zone",
+        "YES",
+        null
+      ],
+      [
+        "sorteado_por",
+        "integer",
+        "NO",
+        null
+      ]
+    ],
+    "colunas": [
+      "id",
+      "semana_inicio",
+      "loja_big_id",
+      "loja_ultra_id",
+      "data_sorteio",
+      "sorteado_por"
+    ],
+    "dados": [
+      [
+        3,
+        "2025-07-01",
+        2,
+        29,
+        "2025-07-01 19:01:13.539978",
+        1
+      ]
+    ],
+    "total_registros": 1
+  },
+  "usuarios": {
+    "estrutura": [
+      [
+        "id",
+        "integer",
+        "NO",
+        "nextval('usuarios_id_seq'::regclass)"
+      ],
+      [
+        "email",
+        "character varying",
+        "NO",
+        null
+      ],
+      [
+        "senha_hash",
+        "character varying",
+        "NO",
+        null
+      ],
+      [
+        "nome",
+        "character varying",
+        "NO",
+        null
+      ],
+      [
+        "tipo",
+        "character varying",
+        "NO",
+        null
+      ],
+      [
+        "loja_id",
+        "integer",
+        "YES",
+        null
+      ],
+      [
+        "ativo",
+        "boolean",
+        "YES",
+        null
+      ],
+      [
+        "criado_em",
+        "timestamp without time zone",
+        "YES",
+        null
+      ]
+    ],
+    "colunas": [
+      "id",
+      "email",
+      "senha_hash",
+      "nome",
+      "tipo",
+      "loja_id",
+      "ativo",
+      "criado_em"
+    ],
+    "dados": [
+      [
+        1,
+        "admin@bigbox.com",
+        "scrypt:32768:8:1$WgCjNapwHvGqgKeI$79780d66b82c56f3d52cfa7588023ff8c58d7b3a598242d55db9d8be91a435cf0a66d013b71087b0d14a54e7e8f5bebcaa92334375e51231d7ab9abe92b8e72a",
+        "Administrador",
+        "admin",
+        null,
+        true,
+        "2025-07-01 05:36:16.476673"
+      ],
+      [
+        3,
+        "auxiliarg2@bigbox.com.br",
+        "scrypt:32768:8:1$NfnlhAzQejSuCLWH$5809434b5979b93d9b8f31e81b63722a495160aff4825f4f1975185b34054c6247467f3ec2ad13d6093f9a185c26a5d3e309e77d7d4d0c771ea64cd5db2f376a",
+        "CAMILA TEIXEIRA",
+        "assistente",
+        2,
+        true,
+        "2025-07-01 14:17:56.273523"
+      ],
+      [
+        2,
+        "auxiliarg1@bigbox.com.br",
+        "scrypt:32768:8:1$UIvlQexCISROgKIO$274bc3f234a2f0a72f7acc9654d9383a181fabffbff24e150e3405c3f6413c454dfda966299c30fc6c493c8e059fc36e44d9a886afc03e8ed31b43c99257596e",
+        "KENIA MARRIETE ANANIAS CAVALCANTE",
+        "assistente",
+        1,
+        true,
+        "2025-07-01 14:16:38.768869"
+      ],
+      [
+        4,
+        "auxiliarg3@bigbox.com.br",
+        "scrypt:32768:8:1$R54NsGhrAx5k7ke4$cc0de9bcc5222792c65e57c88352506a6d18b21c63e75550c43f27aaa56d62c9e7bf12e9aca2e2550468d9eab90cd124faad0616272c6f2b7eddd4b1e3eb3d97",
+        "LEANDRA TORRES DUARTE",
+        "assistente",
+        3,
+        true,
+        "2025-07-01 14:19:16.667578"
+      ],
+      [
+        5,
+        "auxiliarg40@bigbox.com.br",
+        "scrypt:32768:8:1$h7SVHECcqL4ZCMTo$e6f4bb081126cef26e9a78016276a1e409ac2e572072913becab4b586ddf82bb920c62c8b0ffa82f1a78d1c8e67c293786c6637361c95bc9220e158620caf18a",
+        "FABIANA DE CARVALHO JUSTO",
+        "assistente",
+        21,
+        true,
+        "2025-07-01 14:48:53.568736"
+      ],
+      [
+        6,
+        "auxiliarg14@bigbox.com.br",
+        "scrypt:32768:8:1$2vlsWQEWN2tJFCcf$c1356057687cbebb8eeb38c85a1a231193f90de3bb685bbaef98155eb326c6802e77f704bf4488fdc00cc2a05b1443fdd86ec97b3c870eb56319e5eee1c68a75",
+        "DEUSIENE LOPES",
+        "assistente",
+        27,
+        true,
+        "2025-07-01 14:50:43.571910"
+      ]
+    ],
+    "total_registros": 6
+  }
+}
