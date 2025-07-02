@@ -1089,6 +1089,78 @@ def excluir_colaborador(id):
     flash(f'Colaborador {nome} foi excluído com sucesso.', 'success')
     return redirect(url_for('admin.colaboradores'))
 
+@admin_bp.route('/colaboradores/acoes-lote', methods=['POST'])
+@admin_required
+def colaboradores_acoes_lote():
+    """Executar ações em lote nos colaboradores selecionados"""
+    try:
+        # Pega os IDs dos colaboradores selecionados
+        colaboradores_ids = request.form.getlist('colaboradores_ids[]')
+        acao = request.form.get('acao')
+        
+        if not colaboradores_ids:
+            flash('Nenhum colaborador selecionado!', 'warning')
+            return redirect(url_for('admin.colaboradores'))
+        
+        if not acao:
+            flash('Nenhuma ação selecionada!', 'warning')
+            return redirect(url_for('admin.colaboradores'))
+        
+        # Converte IDs para inteiros
+        colaboradores_ids = [int(id) for id in colaboradores_ids]
+        
+        # Busca colaboradores
+        colaboradores = Colaborador.query.filter(Colaborador.id.in_(colaboradores_ids)).all()
+        
+        if not colaboradores:
+            flash('Colaboradores não encontrados!', 'danger')
+            return redirect(url_for('admin.colaboradores'))
+        
+        # Executa ação conforme solicitado
+        if acao == 'ativar':
+            for colaborador in colaboradores:
+                colaborador.apto = True
+                colaborador.ultima_atualizacao = get_brazil_datetime()
+            db.session.commit()
+            flash(f'✅ {len(colaboradores)} colaborador(es) ativado(s) com sucesso!', 'success')
+            
+        elif acao == 'desativar':
+            for colaborador in colaboradores:
+                colaborador.apto = False
+                colaborador.ultima_atualizacao = get_brazil_datetime()
+            db.session.commit()
+            flash(f'❌ {len(colaboradores)} colaborador(es) desativado(s) com sucesso!', 'warning')
+            
+        elif acao == 'excluir':
+            # Verifica quais têm histórico
+            excluidos = 0
+            com_historico = 0
+            
+            for colaborador in colaboradores:
+                tem_historico = SorteioColaborador.query.filter_by(colaborador_id=colaborador.id).first()
+                if tem_historico:
+                    com_historico += 1
+                else:
+                    db.session.delete(colaborador)
+                    excluidos += 1
+            
+            db.session.commit()
+            
+            mensagem = f'🗑️ {excluidos} colaborador(es) excluído(s) com sucesso!'
+            if com_historico > 0:
+                mensagem += f' ({com_historico} não puderam ser excluídos por terem histórico de sorteios)'
+            
+            flash(mensagem, 'info' if excluidos > 0 else 'warning')
+        
+        else:
+            flash('Ação inválida!', 'danger')
+    
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Erro ao executar ação em lote: {str(e)}', 'danger')
+    
+    return redirect(url_for('admin.colaboradores'))
+
 @admin_bp.route('/lojas')
 @admin_required
 def lojas():

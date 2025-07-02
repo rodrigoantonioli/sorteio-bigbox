@@ -89,6 +89,40 @@
     </div>
 
     {% if colaboradores %}
+    <!-- Controles de Ações em Lote -->
+    <div class="card mb-3" id="acoes-lote-card" style="display: none;">
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('admin.colaboradores_acoes_lote') }}" id="form-acoes-lote">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <span class="text-muted">
+                            <span id="contador-selecionados">0</span> colaborador(es) selecionado(s)
+                        </span>
+                        {% if loja_selecionada %}
+                        <button type="button" class="btn btn-sm btn-outline-primary ms-3" onclick="selecionarTodosLojaAtual()">
+                            <i class="fas fa-check-double"></i> Selecionar todos desta loja
+                        </button>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <select name="acao" class="form-select form-select-sm d-inline-block w-auto me-2" required>
+                            <option value="">Escolha uma ação...</option>
+                            <option value="ativar">✅ Tornar Apto</option>
+                            <option value="desativar">❌ Tornar Inapto</option>
+                            <option value="excluir">🗑️ Excluir Selecionados</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-primary" onclick="return confirmarAcaoLote()">
+                            <i class="fas fa-play"></i> Executar Ação
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="limparSelecao()">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Tabela de Colaboradores -->
     <div class="card">
         <div class="card-header bg-primary text-white">
@@ -104,6 +138,9 @@
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
+                            <th width="40">
+                                <input type="checkbox" class="form-check-input" id="select-all" title="Selecionar todos">
+                            </th>
                             <th>Matrícula</th>
                             <th>Nome</th>
                             <th>Loja</th>
@@ -116,6 +153,12 @@
                     <tbody>
                         {% for colaborador in colaboradores %}
                         <tr>
+                            <td>
+                                <input type="checkbox" class="form-check-input colaborador-checkbox" 
+                                       value="{{ colaborador.id }}" 
+                                       data-loja-id="{{ colaborador.loja_id }}"
+                                       title="Selecionar {{ colaborador.nome }}">
+                            </td>
                             <td><strong>{{ colaborador.matricula }}</strong></td>
                             <td>{{ colaborador.nome }}</td>
                             <td>
@@ -238,4 +281,141 @@
     </div>
     {% endif %}
 </div>
+
+<script>
+// Gerenciamento de seleção múltipla
+document.addEventListener('DOMContentLoaded', function() {
+    const selectAll = document.getElementById('select-all');
+    const checkboxes = document.querySelectorAll('.colaborador-checkbox');
+    const acoesLoteCard = document.getElementById('acoes-lote-card');
+    const contadorSelecionados = document.getElementById('contador-selecionados');
+    const formAcoesLote = document.getElementById('form-acoes-lote');
+    
+    // Função para atualizar contador e mostrar/ocultar ações
+    function atualizarContador() {
+        const selecionados = document.querySelectorAll('.colaborador-checkbox:checked');
+        const count = selecionados.length;
+        
+        if (contadorSelecionados) {
+            contadorSelecionados.textContent = count;
+        }
+        
+        if (acoesLoteCard) {
+            acoesLoteCard.style.display = count > 0 ? 'block' : 'none';
+        }
+        
+        // Atualiza estado do checkbox "selecionar todos"
+        if (selectAll) {
+            selectAll.checked = count > 0 && count === checkboxes.length;
+            selectAll.indeterminate = count > 0 && count < checkboxes.length;
+        }
+    }
+    
+    // Checkbox "Selecionar todos"
+    if (selectAll) {
+        selectAll.addEventListener('change', function() {
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            atualizarContador();
+        });
+    }
+    
+    // Checkboxes individuais
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            atualizarContador();
+        });
+    });
+    
+    // Antes de enviar o formulário, adiciona os IDs selecionados
+    if (formAcoesLote) {
+        formAcoesLote.addEventListener('submit', function(e) {
+            // Remove inputs anteriores
+            const oldInputs = this.querySelectorAll('input[name="colaboradores_ids[]"]');
+            oldInputs.forEach(input => input.remove());
+            
+            // Adiciona novos inputs com IDs selecionados
+            const selecionados = document.querySelectorAll('.colaborador-checkbox:checked');
+            selecionados.forEach(checkbox => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'colaboradores_ids[]';
+                input.value = checkbox.value;
+                this.appendChild(input);
+            });
+        });
+    }
+});
+
+// Função para selecionar todos da loja atual
+function selecionarTodosLojaAtual() {
+    const lojaId = {{ loja_selecionada|default("null") }};
+    if (lojaId !== null) {
+        const checkboxes = document.querySelectorAll('.colaborador-checkbox[data-loja-id="' + lojaId + '"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = true;
+        });
+        
+        // Atualiza contador
+        const event = new Event('change');
+        if (checkboxes.length > 0) {
+            checkboxes[0].dispatchEvent(event);
+        }
+    }
+}
+
+// Função para limpar seleção
+function limparSelecao() {
+    const checkboxes = document.querySelectorAll('.colaborador-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    
+    const selectAll = document.getElementById('select-all');
+    if (selectAll) {
+        selectAll.checked = false;
+    }
+    
+    // Atualiza contador
+    const event = new Event('change');
+    if (checkboxes.length > 0) {
+        checkboxes[0].dispatchEvent(event);
+    }
+}
+
+// Função para confirmar ação em lote
+function confirmarAcaoLote() {
+    const acao = document.querySelector('select[name="acao"]').value;
+    const selecionados = document.querySelectorAll('.colaborador-checkbox:checked').length;
+    
+    if (!acao) {
+        alert('Por favor, selecione uma ação!');
+        return false;
+    }
+    
+    if (selecionados === 0) {
+        alert('Por favor, selecione pelo menos um colaborador!');
+        return false;
+    }
+    
+    let mensagem = 'Tem certeza que deseja ';
+    
+    switch(acao) {
+        case 'ativar':
+            mensagem += 'ATIVAR ' + selecionados + ' colaborador(es)?';
+            break;
+        case 'desativar':
+            mensagem += 'DESATIVAR ' + selecionados + ' colaborador(es)?';
+            break;
+        case 'excluir':
+            mensagem += 'EXCLUIR ' + selecionados + ' colaborador(es)? Esta ação não pode ser desfeita!';
+            break;
+        default:
+            return false;
+    }
+    
+    return confirm(mensagem);
+}
+</script>
 {% endblock %} 
