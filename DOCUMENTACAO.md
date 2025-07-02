@@ -1,4 +1,4 @@
-# 📋 Sistema de Sorteios BigBox & UltraBox v1.7
+# 📋 Sistema de Sorteios BigBox & UltraBox v1.1
 ## Festival Na Praia 2025 - Documentação Completa
 
 ---
@@ -18,7 +18,7 @@
 
 ## 🎯 **VISÃO GERAL** {#visao-geral}
 
-O **Sistema de Sorteios BigBox & UltraBox v1.7** é uma aplicação web desenvolvida para gerenciar sorteios de ingressos do **Festival Na Praia 2025**. 
+O **Sistema de Sorteios BigBox & UltraBox v1.1** é uma aplicação web desenvolvida para gerenciar sorteios de ingressos do **Festival Na Praia 2025**. 
 
 ### **✨ Funcionalidades Principais**
 - 🏆 **Sorteio Semanal de Lojas**: Sorteia 1 loja BIG + 1 loja ULTRA por semana
@@ -28,13 +28,13 @@ O **Sistema de Sorteios BigBox & UltraBox v1.7** é uma aplicação web desenvol
 - 🎨 **Interface Premium**: Design cinematográfico preparado para filmagem
 - 📱 **Totalmente Responsivo**: Funciona perfeitamente em mobile, tablet e desktop
 
-### **🎬 Características da v1.7**
-- **Design Compacto**: Interface otimizada para filmagem sem elementos desnecessários
-- **Reload Automático**: Atualização silenciosa após sorteios 
-- **Terminologia Assistente**: Linguagem adequada "assistentes das lojas"
-- **Interface de Senha Inteligente**: Gestão avançada de senhas para admin
-- **Validações Perfeitas**: Formulários robustos sem erros
-- **Zero Loops**: Sistema estável sem redirecionamentos infinitos
+### **🎬 Características da v1.1**
+- **Interface Cinematográfica**: Layout compacto otimizado para filmagem
+- **Atualização Inteligente**: Resultado permanece na tela durante gravação
+- **Design Premium**: Cards elegantes com gradientes e animações
+- **Visual Polido**: Singular/plural correto, terminologia consistente
+- **Responsividade Total**: Funciona perfeitamente em todos dispositivos
+- **Performance Otimizada**: Animações suaves e carregamento rápido
 
 ---
 
@@ -416,11 +416,11 @@ python tests/test_colaboradores.py # Colaboradores
 
 #### **❌ "Esta página não está funcionando - muitos redirecionamentos"**
 **Causa**: Assistente sem loja associada  
-**Solução**: Todo assistente deve ter loja obrigatória (corrigido na v1.7)
+**Solução**: Todo assistente deve ter loja obrigatória (corrigido na v1.1)
 
 #### **❌ "Senha deve ter entre 6 e 50 caracteres" (na edição)**
 **Causa**: Validação incorreta  
-**Solução**: Campo senha vazio mantém senha atual (corrigido na v1.7)
+**Solução**: Campo senha vazio mantém senha atual (corrigido na v1.1)
 
 #### **❌ Upload de colaboradores não funciona**
 **Causa**: Formato do Excel incorreto  
@@ -436,7 +436,7 @@ python tests/test_colaboradores.py # Colaboradores
 ```
 
 ### **📋 Informações Técnicas**
-- **Versão**: 1.7 Final - Edição Cinematográfica
+- **Versão**: 1.1 Final - Interface Cinematográfica
 - **Framework**: Flask 2.3.3 + Bootstrap 5
 - **Banco**: SQLite (dev) / PostgreSQL (prod)
 - **Compatibilidade**: Chrome, Firefox, Safari, Edge
@@ -445,7 +445,7 @@ python tests/test_colaboradores.py # Colaboradores
 ### **📋 Informações do Sistema**
 
 #### **Versões**
-- **Sistema**: v1.7 Final
+- **Sistema**: v1.1 Final
 - **Python**: 3.8+
 - **Flask**: 2.3.3
 - **Database**: SQLite (dev) / PostgreSQL (prod)
@@ -472,7 +472,7 @@ python tests/test_colaboradores.py # Colaboradores
 
 ## 🎉 **CONCLUSÃO**
 
-O **Sistema de Sorteios BigBox & UltraBox v1.7** representa o estado da arte em sistemas de sorteio para eventos, combinando:
+O **Sistema de Sorteios BigBox & UltraBox v1.1** representa o estado da arte em sistemas de sorteio para eventos, combinando:
 
 - ✨ **Design Cinematográfico**: Interface premium preparada para filmagem
 - 🚀 **Performance Excepcional**: Carregamento rápido e animações suaves  
@@ -486,4 +486,4 @@ O **Sistema de Sorteios BigBox & UltraBox v1.7** representa o estado da arte em 
 ---
 
 *Desenvolvido com ❤️ para criar momentos inesquecíveis*  
-*Sistema de Sorteios v1.7 - Janeiro 2025* 
+*Sistema de Sorteios v1.1 - Janeiro 2025* 
