@@ -12,6 +12,69 @@ import json
 
 manager_bp = Blueprint('manager', __name__)
 
+def detectar_formato_planilha(sheet):
+    """
+    Detecta automaticamente o formato da planilha Excel baseado na estrutura das colunas
+    
+    Formato 1 (5 colunas): A=Unidade, B=Bandeira, C=Matrícula, D=Nome, E=Setor
+    Formato 2 (6+ colunas): A=Filial, B=Unidade, C=Bandeira, D=Matrícula, E=Nome, F=Setor
+    """
+    try:
+        # Analisa a primeira linha de dados (linha 2, já que linha 1 é cabeçalho)
+        primeira_linha = list(sheet.iter_rows(min_row=2, max_row=2, values_only=True))[0]
+        
+        if not primeira_linha:
+            # Fallback para formato 2 se não conseguir detectar
+            return {
+                "nome": "Formato 2 (Padrão) - 6 colunas",
+                "col_matricula": 3,  # Coluna D
+                "col_nome": 4,       # Coluna E
+                "col_setor": 5,      # Coluna F
+                "min_colunas": 6
+            }
+        
+        # Verifica se a coluna A (índice 0) é numérica (indica formato 2)
+        # Formato 2: A = número da filial (ex: 20202, 131329)
+        col_a = primeira_linha[0] if len(primeira_linha) > 0 else None
+        if col_a and str(col_a).strip().isdigit():
+            return {
+                "nome": "Formato 2 (6 colunas) - A:Filial, B:Unidade, C:Bandeira, D:Matrícula, E:Nome, F:Setor",
+                "col_matricula": 3,  # Coluna D
+                "col_nome": 4,       # Coluna E
+                "col_setor": 5,      # Coluna F
+                "min_colunas": 6
+            }
+        
+        # Verifica se a coluna A contém código de loja (indica formato 1)
+        # Formato 1: A = código da loja (ex: "BIG01 - 106 NORTE")
+        if col_a and ("BIG" in str(col_a) or "ULTRA" in str(col_a)) and "-" in str(col_a):
+            return {
+                "nome": "Formato 1 (5 colunas) - A:Unidade, B:Bandeira, C:Matrícula, D:Nome, E:Setor",
+                "col_matricula": 2,  # Coluna C
+                "col_nome": 3,       # Coluna D
+                "col_setor": 4,      # Coluna E
+                "min_colunas": 5
+            }
+        
+        # Se não conseguir detectar claramente, usa formato 2 como padrão
+        return {
+            "nome": "Formato 2 (Padrão detectado) - 6 colunas",
+            "col_matricula": 3,  # Coluna D
+            "col_nome": 4,       # Coluna E
+            "col_setor": 5,      # Coluna F
+            "min_colunas": 6
+        }
+        
+    except Exception as e:
+        # Em caso de erro, retorna formato 2 como fallback
+        return {
+            "nome": f"Formato 2 (Fallback após erro: {str(e)})",
+            "col_matricula": 3,  # Coluna D
+            "col_nome": 4,       # Coluna E
+            "col_setor": 5,      # Coluna F
+            "min_colunas": 6
+        }
+
 def manager_required(f):
     """Decorator para verificar se usuário é assistente"""
     @wraps(f)
@@ -330,18 +393,22 @@ def upload_colaboradores():
             workbook = openpyxl.load_workbook(arquivo)
             sheet = workbook.active
             
+            # Detecta automaticamente o formato da planilha
+            formato_detectado = detectar_formato_planilha(sheet)
+            flash(f'Formato detectado: {formato_detectado["nome"]}', 'info')
+            
             novos_colaboradores = []
             erros = []
             
             # Processa cada linha (pula o cabeçalho)
             for row_num, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
-                if not row or len(row) < 5:
+                if not row or len(row) < formato_detectado["min_colunas"]:
                     continue
                     
-                # Extrai dados das colunas corretas (C=2, D=3, E=4 em zero-based)
-                matricula = row[2]  # Coluna C
-                nome = row[3]       # Coluna D  
-                setor = row[4]      # Coluna E
+                # Extrai dados das colunas corretas baseado no formato detectado
+                matricula = row[formato_detectado["col_matricula"]]  
+                nome = row[formato_detectado["col_nome"]]       
+                setor = row[formato_detectado["col_setor"]]
                 
                 # Valida dados obrigatórios
                 if not matricula or not nome or not setor:

@@ -845,6 +845,10 @@ def upload_colaboradores():
             workbook = openpyxl.load_workbook(filepath)
             sheet = workbook.active
             
+            # Detecta automaticamente o formato da planilha (importa função do manager)
+            from app.routes.manager import detectar_formato_planilha
+            formato_detectado = detectar_formato_planilha(sheet)
+            
             colaboradores_processados = 0
             colaboradores_atualizados = 0
             colaboradores_criados = 0
@@ -871,14 +875,20 @@ def upload_colaboradores():
             
             # Processa cada linha (pula cabeçalho)
             for row_num, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
-                if not row or len(row) < 4:
+                if not row or len(row) < formato_detectado["min_colunas"]:
                     continue
                 
                 try:
-                    codigo_loja = str(row[0]).strip() if row[0] else ''
-                    matricula = str(row[2]).strip() if row[2] else ''
-                    nome = str(row[3]).strip() if row[3] else ''
-                    setor = str(row[4]).strip() if row[4] else ''
+                    # Extrai código da loja baseado no formato detectado
+                    if formato_detectado["min_colunas"] == 5:  # Formato 1
+                        codigo_loja = str(row[0]).strip() if row[0] else ''  # Coluna A (Unidade)
+                    else:  # Formato 2
+                        codigo_loja = str(row[1]).strip() if row[1] else ''  # Coluna B (Unidade)
+                    
+                    # Extrai outros dados baseado no formato detectado
+                    matricula = str(row[formato_detectado["col_matricula"]]).strip() if row[formato_detectado["col_matricula"]] else ''
+                    nome = str(row[formato_detectado["col_nome"]]).strip() if row[formato_detectado["col_nome"]] else ''
+                    setor = str(row[formato_detectado["col_setor"]]).strip() if row[formato_detectado["col_setor"]] else ''
                     
                     if not all([codigo_loja, matricula, nome, setor]):
                         erros.append(f"Linha {row_num}: Dados incompletos")
@@ -935,6 +945,7 @@ def upload_colaboradores():
             
             # Mensagem de sucesso
             mensagem = f"✅ Processamento concluído!\n"
+            mensagem += f"📋 {formato_detectado['nome']}\n"
             if loja_especifica_id:
                 mensagem += f"🏪 Loja específica: {loja_especifica.nome}\n"
             mensagem += f"📊 Colaboradores processados: {colaboradores_processados}\n"

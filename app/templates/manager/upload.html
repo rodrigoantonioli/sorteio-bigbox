@@ -35,15 +35,15 @@
                         {{ form.hidden_tag() }}
                         
                         <div class="mb-4">
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i>
-                                <strong>Formato da Planilha:</strong>
-                                <ul class="mb-0 mt-2">
-                                    <li><strong>Coluna C (3):</strong> Matrícula do colaborador</li>
-                                    <li><strong>Coluna D (4):</strong> Nome completo</li>
-                                    <li><strong>Coluna E (5):</strong> Setor de trabalho</li>
+                            <div class="alert alert-success alert-permanent">
+                                <i class="fas fa-magic"></i>
+                                <strong>✨ Detecção Automática de Formato!</strong>
+                                <p class="mb-2 mt-2">O sistema detecta automaticamente o formato da sua planilha e processa corretamente:</p>
+                                <ul class="mb-0">
+                                    <li><strong>Formato 1:</strong> A=Unidade, B=Bandeira, C=Matrícula, D=Nome, E=Setor</li>
+                                    <li><strong>Formato 2:</strong> A=Filial, B=Unidade, C=Bandeira, D=Matrícula, E=Nome, F=Setor</li>
                                     <li><strong>Primeira linha:</strong> Cabeçalho (será ignorada)</li>
-                                    <li><strong>Formato:</strong> .xlsx ou .xls</li>
+                                    <li><strong>Arquivos:</strong> .xlsx ou .xls</li>
                                 </ul>
                             </div>
                         </div>
@@ -101,14 +101,35 @@
                         <table class="table table-bordered table-sm">
                             <thead class="table-light">
                                 <tr>
-                                    <th>A</th>
-                                    <th>B</th>
-                                    <th class="table-success">C (Matrícula)</th>
-                                    <th class="table-success">D (Nome)</th>
-                                    <th class="table-success">E (Setor)</th>
-                                    <th>F</th>
+                                    <th>A (Filial)</th>
+                                    <th>B (Unidade)</th>
+                                    <th>C (Bandeira)</th>
+                                    <th class="table-success">D (Matrícula)</th>
+                                    <th class="table-success">E (Nome)</th>
+                                    <th class="table-success">F (Setor)</th>
+                                    <th>G+</th>
                                 </tr>
                             </thead>
+                            <tbody>
+                                <tr class="table-light">
+                                    <td>20202</td>
+                                    <td>BIG02 - 402 NORTE</td>
+                                    <td>BIG</td>
+                                    <td><strong>4769</strong></td>
+                                    <td><strong>MARIA LUCIA DE FATIMA</strong></td>
+                                    <td><strong>AFASTADOS</strong></td>
+                                    <td>...</td>
+                                </tr>
+                                <tr class="table-light">
+                                    <td>131329</td>
+                                    <td>ULTRA06 - SOBRADINHO</td>
+                                    <td>ULTRA</td>
+                                    <td><strong>19486</strong></td>
+                                    <td><strong>CARLOS ALESSANDRO RIBEIRO</strong></td>
+                                    <td><strong>PREVENCAO</strong></td>
+                                    <td>...</td>
+                                </tr>
+                            </tbody>
                             <tbody>
                                 <tr>
                                     <td>BIG01 - 106 NORTE</td>
