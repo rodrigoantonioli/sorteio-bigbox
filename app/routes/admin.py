@@ -2,11 +2,14 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from app.models import db, Usuario, Loja, SorteioSemanal, SorteioColaborador, Colaborador, Premio
 from app.forms.admin import SorteioSemanalForm, UsuarioForm, PremioForm, LojaForm, AtribuirPremioForm
+from app.utils import get_brazil_datetime, get_brazil_date, format_brazil_datetime
 from datetime import datetime, date, timedelta
 from functools import wraps
+from werkzeug.utils import secure_filename
 import random
 import os
 import glob
+import uuid
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -66,6 +69,34 @@ def safe_remove_file(filepath):
         return False
     except Exception:
         return False
+
+def allowed_image_file(filename):
+    """Verifica se o arquivo de imagem é permitido"""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ['jpg', 'jpeg', 'png']
+
+def save_premio_image(image_file):
+    """Salva a imagem do prêmio e retorna o nome do arquivo"""
+    # Verifica se é um objeto FileStorage válido
+    if (image_file and 
+        hasattr(image_file, 'filename') and 
+        image_file.filename and 
+        allowed_image_file(image_file.filename)):
+        
+        # Gera nome único para o arquivo
+        filename = secure_filename(image_file.filename)
+        unique_filename = f"{uuid.uuid4().hex}_{filename}"
+        
+        # Cria diretório se não existir
+        upload_dir = 'app/static/images/premios'
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # Salva arquivo
+        filepath = os.path.join(upload_dir, unique_filename)
+        image_file.save(filepath)
+        
+        return unique_filename
+    return None
 
 @admin_bp.route('/dashboard')
 @admin_required
@@ -149,80 +180,214 @@ def dashboard():
 @admin_bp.route('/sortear', methods=['GET', 'POST'])
 @admin_required
 def sortear_lojas():
-    """Sorteia lojas semanalmente"""
+    """Sortear lojas ganhadoras da semana"""
+    from datetime import date, timedelta
+    
+    # Calcula a terça-feira da semana atual
+    hoje = date.today()
+    dias_para_terca = (1 - hoje.weekday()) % 7  # 1 = terça-feira (0=segunda, 1=terça, etc.)
+    if dias_para_terca == 0 and hoje.weekday() > 1:  # Se já passou da terça
+        dias_para_terca = 7  # Próxima terça
+    terca_feira_atual = hoje + timedelta(days=dias_para_terca)
+    
     form = SorteioSemanalForm()
     
-    # Busca lojas ativas que ainda NÃO foram sorteadas
-    # Pega IDs das lojas já sorteadas
-    lojas_ja_sorteadas_ids = set()
-    sorteios_existentes = SorteioSemanal.query.all()
-    for sorteio in sorteios_existentes:
-        lojas_ja_sorteadas_ids.add(sorteio.loja_big_id)
-        lojas_ja_sorteadas_ids.add(sorteio.loja_ultra_id)
+    # Pré-seleciona a data da terça-feira atual
+    if not form.semana_inicio.data:
+        form.semana_inicio.data = terca_feira_atual
     
-    # Filtra lojas ativas que ainda não foram sorteadas
-    lojas_big = Loja.query.filter(
-        Loja.bandeira == 'BIG',
-        Loja.ativo == True,
-        ~Loja.id.in_(lojas_ja_sorteadas_ids)
-    ).all()
+    # Busca lojas por bandeira
+    todas_lojas_big = Loja.query.filter_by(bandeira='BIG', ativo=True).all()
+    todas_lojas_ultra = Loja.query.filter_by(bandeira='ULTRA', ativo=True).all()
     
-    lojas_ultra = Loja.query.filter(
-        Loja.bandeira == 'ULTRA',
-        Loja.ativo == True,
-        ~Loja.id.in_(lojas_ja_sorteadas_ids)
-    ).all()
+    # Busca sorteios já realizados para filtrar lojas
+    sorteios_realizados = SorteioSemanal.query.all()
+    lojas_big_sorteadas_ids = {s.loja_big_id for s in sorteios_realizados}
+    lojas_ultra_sorteadas_ids = {s.loja_ultra_id for s in sorteios_realizados}
     
-    # Serializa lojas para JSON
-    lojas_big_json = [{'id': l.id, 'codigo': l.codigo, 'nome': l.nome} for l in lojas_big]
-    lojas_ultra_json = [{'id': l.id, 'codigo': l.codigo, 'nome': l.nome} for l in lojas_ultra]
+    # Filtra lojas disponíveis (que não foram sorteadas)
+    lojas_big_disponiveis = [l for l in todas_lojas_big if l.id not in lojas_big_sorteadas_ids]
+    lojas_ultra_disponiveis = [l for l in todas_lojas_ultra if l.id not in lojas_ultra_sorteadas_ids]
     
-    if form.validate_on_submit():
-        semana_inicio = form.semana_inicio.data
-        
-        # Verifica se já existe sorteio para esta semana
-        sorteio_existente = SorteioSemanal.query.filter_by(semana_inicio=semana_inicio).first()
+    # Lojas já sorteadas
+    lojas_big_sorteadas = [l for l in todas_lojas_big if l.id in lojas_big_sorteadas_ids]
+    lojas_ultra_sorteadas = [l for l in todas_lojas_ultra if l.id in lojas_ultra_sorteadas_ids]
+    
+    # Converte para JSON serializável
+    lojas_big_json = [{'id': l.id, 'codigo': l.codigo, 'nome': l.nome} for l in lojas_big_disponiveis]
+    lojas_ultra_json = [{'id': l.id, 'codigo': l.codigo, 'nome': l.nome} for l in lojas_ultra_disponiveis]
+    lojas_big_sorteadas_json = [{'id': l.id, 'codigo': l.codigo, 'nome': l.nome} for l in lojas_big_sorteadas]
+    lojas_ultra_sorteadas_json = [{'id': l.id, 'codigo': l.codigo, 'nome': l.nome} for l in lojas_ultra_sorteadas]
+    
+    # Verifica se já existe sorteio para a data atual
+    sorteio_existente = None
+    if form.semana_inicio.data:
+        sorteio_existente = SorteioSemanal.query.filter_by(semana_inicio=form.semana_inicio.data).first()
+    
+    if request.method == 'POST' and form.validate_on_submit():
+        # Verifica novamente se já existe sorteio
         if sorteio_existente:
-            flash(f'Já existe sorteio para a semana de {semana_inicio.strftime("%d/%m/%Y")}!', 'warning')
-            return render_template('admin/sortear.html', form=form, lojas_big=lojas_big_json, lojas_ultra=lojas_ultra_json)
+            flash('Já existe um sorteio para esta semana!', 'warning')
+            return render_template('admin/sortear.html', 
+                                 form=form,
+                                 lojas_big=lojas_big_json,
+                                 lojas_ultra=lojas_ultra_json,
+                                 lojas_big_sorteadas=lojas_big_sorteadas_json,
+                                 lojas_ultra_sorteadas=lojas_ultra_sorteadas_json,
+                                 sorteio_existente=sorteio_existente)
         
-        if not lojas_big or not lojas_ultra:
-            if not lojas_big and not lojas_ultra:
-                flash('Não há mais lojas disponíveis para sorteio! Todas as lojas BIG e ULTRA já foram sorteadas.', 'warning')
-            elif not lojas_big:
-                flash('Não há mais lojas BIG disponíveis para sorteio! Todas já foram sorteadas.', 'warning')
-            else:
-                flash('Não há mais lojas ULTRA disponíveis para sorteio! Todas já foram sorteadas.', 'warning')
-            return render_template('admin/sortear.html', form=form, lojas_big=lojas_big_json, lojas_ultra=lojas_ultra_json)
+        # Sorteia uma loja de cada bandeira
+        if not lojas_big_disponiveis or not lojas_ultra_disponiveis:
+            flash('Não há lojas suficientes para sortear!', 'danger')
+            return render_template('admin/sortear.html', 
+                                 form=form,
+                                 lojas_big=lojas_big_json,
+                                 lojas_ultra=lojas_ultra_json,
+                                 lojas_big_sorteadas=lojas_big_sorteadas_json,
+                                 lojas_ultra_sorteadas=lojas_ultra_sorteadas_json,
+                                 sorteio_existente=sorteio_existente)
         
-        # Verifica se é sorteio animado (com IDs das lojas escolhidas)
-        loja_big_id = request.form.get('loja_big_id', type=int)
-        loja_ultra_id = request.form.get('loja_ultra_id', type=int)
+        # Realiza o sorteio
+        import random
+        loja_big = random.choice(lojas_big_disponiveis)
+        loja_ultra = random.choice(lojas_ultra_disponiveis)
         
-        if loja_big_id and loja_ultra_id:
-            # Sorteio animado - usa as lojas escolhidas pela animação
-            loja_big_sorteada = Loja.query.get(loja_big_id)
-            loja_ultra_sorteada = Loja.query.get(loja_ultra_id)
-        else:
-            # Sorteio simples - sorteia aleatoriamente
-            loja_big_sorteada = random.choice(lojas_big)
-            loja_ultra_sorteada = random.choice(lojas_ultra)
-        
-        # Cria o sorteio
+        # Salva no banco
         sorteio = SorteioSemanal(
-            semana_inicio=semana_inicio,
-            loja_big_id=loja_big_sorteada.id,
-            loja_ultra_id=loja_ultra_sorteada.id,
+            semana_inicio=form.semana_inicio.data,
+            loja_big_id=loja_big.id,
+            loja_ultra_id=loja_ultra.id,
             sorteado_por=current_user.id
         )
         
         db.session.add(sorteio)
         db.session.commit()
         
-        flash(f'Sorteio realizado! Lojas sorteadas: {loja_big_sorteada.nome} (BIG) e {loja_ultra_sorteada.nome} (ULTRA)', 'success')
-        return redirect(url_for('admin.dashboard'))
+        flash(f'Sorteio realizado! Lojas sorteadas: {loja_big.nome} (BIG) e {loja_ultra.nome} (ULTRA)', 'success')
+        return redirect(url_for('admin.sortear_lojas'))
     
-    return render_template('admin/sortear.html', form=form, lojas_big=lojas_big_json, lojas_ultra=lojas_ultra_json)
+    return render_template('admin/sortear.html',
+                         form=form,
+                         lojas_big=lojas_big_json,
+                         lojas_ultra=lojas_ultra_json,
+                         lojas_big_sorteadas=lojas_big_sorteadas_json,
+                         lojas_ultra_sorteadas=lojas_ultra_sorteadas_json,
+                         sorteio_existente=sorteio_existente)
+
+@admin_bp.route('/sortear/ajax', methods=['POST'])
+@admin_required
+def sortear_lojas_ajax():
+    """Sorteia lojas via AJAX sem redirecionamento"""
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({'success': False, 'message': 'Dados não fornecidos'}), 400
+        
+        semana_inicio_str = data.get('semana_inicio')
+        loja_big_id = data.get('loja_big_id')
+        loja_ultra_id = data.get('loja_ultra_id')
+        
+        if not all([semana_inicio_str, loja_big_id, loja_ultra_id]):
+            return jsonify({'success': False, 'message': 'Dados incompletos'}), 400
+        
+        # Converte data
+        semana_inicio = datetime.strptime(semana_inicio_str, '%Y-%m-%d').date()
+        
+        # Verifica se já existe sorteio para esta semana
+        sorteio_existente = SorteioSemanal.query.filter_by(semana_inicio=semana_inicio).first()
+        if sorteio_existente:
+            return jsonify({
+                'success': False, 
+                'message': f'Já existe sorteio para a semana de {semana_inicio.strftime("%d/%m/%Y")}!'
+            }), 400
+        
+        # Busca as lojas
+        loja_big = Loja.query.get(loja_big_id)
+        loja_ultra = Loja.query.get(loja_ultra_id)
+        
+        if not loja_big or not loja_ultra:
+            return jsonify({'success': False, 'message': 'Lojas não encontradas'}), 400
+        
+        # Cria o sorteio
+        sorteio = SorteioSemanal(
+            semana_inicio=semana_inicio,
+            loja_big_id=loja_big.id,
+            loja_ultra_id=loja_ultra.id,
+            sorteado_por=current_user.id
+        )
+        
+        db.session.add(sorteio)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'Sorteio realizado! Lojas sorteadas: {loja_big.nome} (BIG) e {loja_ultra.nome} (ULTRA)',
+            'data': {
+                'semana': semana_inicio.strftime('%d/%m/%Y'),
+                'loja_big': {'nome': loja_big.nome, 'codigo': loja_big.codigo},
+                'loja_ultra': {'nome': loja_ultra.nome, 'codigo': loja_ultra.codigo}
+            }
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': f'Erro interno: {str(e)}'}), 500
+
+@admin_bp.route('/sortear/verificar', methods=['POST'])
+@admin_required
+def verificar_sorteio_existente():
+    """Verifica se já existe sorteio para uma data específica ou semana corrente"""
+    try:
+        data = request.get_json()
+        semana_inicio_str = data.get('semana_inicio')
+        
+        if not semana_inicio_str:
+            return jsonify({'success': False, 'message': 'Data não fornecida'}), 400
+        
+        # Converte data
+        data_selecionada = datetime.strptime(semana_inicio_str, '%Y-%m-%d').date()
+        
+        # CORREÇÃO: Calcula o intervalo da semana (segunda a domingo)
+        # Descobre que dia da semana é a data selecionada
+        dia_semana = data_selecionada.weekday()  # 0=segunda, 1=terça, ..., 6=domingo
+        
+        # Calcula segunda-feira da semana da data selecionada
+        segunda_feira = data_selecionada - timedelta(days=dia_semana)
+        # Calcula domingo da mesma semana
+        domingo = segunda_feira + timedelta(days=6)
+        
+        # Verifica se JÁ EXISTE qualquer sorteio na semana corrente (segunda a domingo)
+        sorteio_na_semana = SorteioSemanal.query.filter(
+            SorteioSemanal.semana_inicio >= segunda_feira,
+            SorteioSemanal.semana_inicio <= domingo
+        ).first()
+        
+        if sorteio_na_semana:
+            return jsonify({
+                'existe': True,
+                'bloqueio_semanal': True,  # Flag para indicar bloqueio por semana
+                'data': {
+                    'semana': sorteio_na_semana.semana_inicio.strftime('%d/%m/%Y'),
+                    'semana_completa': f"{segunda_feira.strftime('%d/%m')} a {domingo.strftime('%d/%m/%Y')}",
+                    'loja_big': {
+                        'nome': sorteio_na_semana.loja_big.nome,
+                        'codigo': sorteio_na_semana.loja_big.codigo
+                    },
+                    'loja_ultra': {
+                        'nome': sorteio_na_semana.loja_ultra.nome, 
+                        'codigo': sorteio_na_semana.loja_ultra.codigo
+                    },
+                    'data_sorteio': sorteio_na_semana.data_sorteio.strftime('%d/%m/%Y %H:%M'),
+                    'motivo_bloqueio': f'Já existe sorteio na semana de {segunda_feira.strftime("%d/%m")} a {domingo.strftime("%d/%m/%Y")}' + 
+                                     f' (realizado na terça-feira {sorteio_na_semana.semana_inicio.strftime("%d/%m/%Y")})'
+                }
+            })
+        else:
+            return jsonify({'existe': False})
+            
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Erro: {str(e)}'}), 500
 
 @admin_bp.route('/usuarios')
 @admin_required
@@ -239,7 +404,7 @@ def novo_usuario():
     
     # Popula lojas disponíveis
     lojas = Loja.query.filter_by(ativo=True).order_by(Loja.nome).all()
-    form.loja_id.choices = [(0, 'Selecione uma loja')] + [(l.id, f"{l.codigo} - {l.nome}") for l in lojas]
+    form.loja_id.choices = [(l.id, f"{l.nome} ({l.codigo})") for l in lojas]
     
     # Se loja_id foi passada como parâmetro, pré-seleciona
     loja_id_param = request.args.get('loja_id', type=int)
@@ -247,21 +412,22 @@ def novo_usuario():
         form.loja_id.data = loja_id_param
     
     if form.validate_on_submit():
+        # Na criação, senha é obrigatória
+        if not form.password.data:
+            flash('Senha é obrigatória para novo assistente!', 'danger')
+            return render_template('admin/usuario_form.html', form=form, titulo='Novo Assistente')
+        
         # Verifica se email já existe
         usuario_existente = Usuario.query.filter_by(email=form.email.data).first()
         if usuario_existente:
             flash('Este email já está cadastrado!', 'danger')
-            return render_template('admin/usuario_form.html', form=form, titulo='Novo Usuário')
-        
-        if not form.password.data:
-            flash('Senha é obrigatória para novo usuário!', 'danger')
-            return render_template('admin/usuario_form.html', form=form, titulo='Novo Usuário')
+            return render_template('admin/usuario_form.html', form=form, titulo='Novo Assistente')
         
         usuario = Usuario(
             nome=form.nome.data,
             email=form.email.data,
             tipo='assistente',
-            loja_id=form.loja_id.data if form.loja_id.data > 0 else None,
+            loja_id=form.loja_id.data,
             ativo=True
         )
         usuario.set_password(form.password.data)
@@ -269,10 +435,10 @@ def novo_usuario():
         db.session.add(usuario)
         db.session.commit()
         
-        flash(f'Usuário {usuario.nome} criado com sucesso!', 'success')
+        flash(f'Assistente {usuario.nome} criado com sucesso!', 'success')
         return redirect(url_for('admin.usuarios'))
     
-    return render_template('admin/usuario_form.html', form=form, titulo='Novo Usuário')
+    return render_template('admin/usuario_form.html', form=form, titulo='Novo Assistente')
 
 @admin_bp.route('/usuarios/<int:id>/editar', methods=['GET', 'POST'])
 @admin_required
@@ -284,18 +450,18 @@ def editar_usuario(id):
     
     # Popula lojas disponíveis
     lojas = Loja.query.filter_by(ativo=True).order_by(Loja.nome).all()
-    form.loja_id.choices = [(0, 'Selecione uma loja')] + [(l.id, f"{l.codigo} - {l.nome}") for l in lojas]
+    form.loja_id.choices = [(l.id, f"{l.nome} ({l.codigo})") for l in lojas]
     
     if form.validate_on_submit():
         # Verifica se email já existe (exceto o próprio)
         usuario_existente = Usuario.query.filter_by(email=form.email.data).filter(Usuario.id != id).first()
         if usuario_existente:
-            flash('Este email já está cadastrado por outro usuário!', 'danger')
-            return render_template('admin/usuario_form.html', form=form, titulo='Editar Usuário')
+            flash('Este email já está cadastrado por outro assistente!', 'danger')
+            return render_template('admin/usuario_form.html', form=form, titulo='Editar Assistente', usuario=usuario)
         
         usuario.nome = form.nome.data
         usuario.email = form.email.data
-        usuario.loja_id = form.loja_id.data if form.loja_id.data > 0 else None
+        usuario.loja_id = form.loja_id.data
         
         # Atualiza senha apenas se fornecida
         if form.password.data:
@@ -303,10 +469,10 @@ def editar_usuario(id):
         
         db.session.commit()
         
-        flash(f'Usuário {usuario.nome} atualizado com sucesso!', 'success')
+        flash(f'Assistente {usuario.nome} atualizado com sucesso!', 'success')
         return redirect(url_for('admin.usuarios'))
     
-    return render_template('admin/usuario_form.html', form=form, titulo='Editar Usuário')
+    return render_template('admin/usuario_form.html', form=form, titulo='Editar Assistente', usuario=usuario)
 
 @admin_bp.route('/usuarios/<int:id>/toggle')
 @admin_required
@@ -318,7 +484,7 @@ def toggle_usuario(id):
     db.session.commit()
     
     status = 'ativado' if usuario.ativo else 'desativado'
-    flash(f'Usuário {usuario.nome} foi {status}.', 'success')
+    flash(f'Assistente {usuario.nome} foi {status}.', 'success')
     
     return redirect(url_for('admin.usuarios'))
 
@@ -332,7 +498,7 @@ def excluir_usuario(id):
     db.session.delete(usuario)
     db.session.commit()
     
-    flash(f'Usuário {nome} foi excluído com sucesso.', 'success')
+    flash(f'Assistente {nome} foi excluído com sucesso.', 'success')
     return redirect(url_for('admin.usuarios'))
 
 @admin_bp.route('/premios')
@@ -373,11 +539,19 @@ def novo_premio():
     form = PremioForm()
     
     if form.validate_on_submit():
+        # Processa upload de imagem APENAS se há um arquivo válido
+        imagem_filename = None
+        if (form.imagem.data and 
+            hasattr(form.imagem.data, 'filename') and 
+            form.imagem.data.filename):
+            imagem_filename = save_premio_image(form.imagem.data)
+        
         premio = Premio(
             nome=form.nome.data,
             descricao=form.descricao.data,
             data_evento=form.data_evento.data,
             tipo=form.tipo.data,
+            imagem=imagem_filename,
             loja_id=None,  # Sempre sem loja por padrão
             criado_por=current_user.id,
             ativo=True
@@ -406,6 +580,32 @@ def editar_premio(id):
     form = PremioForm(obj=premio)
     
     if form.validate_on_submit():
+        # Verifica se deve remover a imagem
+        remover_imagem = request.form.get('remover_imagem') == 'true'
+        
+        if remover_imagem:
+            # Remove imagem atual se existir
+            if premio.imagem:
+                old_image_path = os.path.join('app/static/images/premios', premio.imagem)
+                safe_remove_file(old_image_path)
+            
+            # Define como None para usar imagem padrão
+            premio.imagem = None
+            
+        elif (form.imagem.data and 
+              hasattr(form.imagem.data, 'filename') and 
+              form.imagem.data.filename):
+            
+            # Remove imagem anterior se existir
+            if premio.imagem:
+                old_image_path = os.path.join('app/static/images/premios', premio.imagem)
+                safe_remove_file(old_image_path)
+            
+            # Salva nova imagem
+            nova_imagem = save_premio_image(form.imagem.data)
+            if nova_imagem:
+                premio.imagem = nova_imagem
+        
         premio.nome = form.nome.data
         premio.descricao = form.descricao.data
         premio.data_evento = form.data_evento.data
@@ -417,7 +617,7 @@ def editar_premio(id):
         flash(f'✅ Prêmio "{premio.nome}" atualizado com sucesso!', 'success')
         return redirect(url_for('admin.premios'))
     
-    return render_template('admin/premio_form.html', form=form, titulo='Editar Prêmio')
+    return render_template('admin/premio_form.html', form=form, titulo='Editar Prêmio', premio=premio)
 
 @admin_bp.route('/premios/<int:id>/atribuir', methods=['GET', 'POST'])
 @admin_required
@@ -705,7 +905,7 @@ def upload_colaboradores():
                         # Atualiza dados
                         colaborador_existente.nome = nome
                         colaborador_existente.setor = setor
-                        colaborador_existente.ultima_atualizacao = datetime.utcnow()
+                        colaborador_existente.ultima_atualizacao = get_brazil_datetime()
                         colaboradores_atualizados += 1
                     else:
                         # Cria novo colaborador
@@ -715,7 +915,7 @@ def upload_colaboradores():
                             setor=setor,
                             loja_id=loja_id,
                             apto=True,
-                            ultima_atualizacao=datetime.utcnow()
+                            ultima_atualizacao=get_brazil_datetime()
                         )
                         db.session.add(novo_colaborador)
                         colaboradores_criados += 1
@@ -806,7 +1006,7 @@ def adicionar_colaborador():
             setor=form.setor.data,
             loja_id=form.loja_id.data,
             apto=form.apto.data,
-            ultima_atualizacao=datetime.utcnow()
+            ultima_atualizacao=get_brazil_datetime()
         )
         
         db.session.add(novo_colaborador)
@@ -846,7 +1046,7 @@ def editar_colaborador(id):
         colaborador.setor = form.setor.data
         colaborador.loja_id = form.loja_id.data
         colaborador.apto = form.apto.data
-        colaborador.ultima_atualizacao = datetime.utcnow()
+        colaborador.ultima_atualizacao = get_brazil_datetime()
         
         db.session.commit()
         
@@ -862,7 +1062,7 @@ def toggle_colaborador(id):
     colaborador = Colaborador.query.get_or_404(id)
     
     colaborador.apto = not colaborador.apto
-    colaborador.ultima_atualizacao = datetime.utcnow()
+    colaborador.ultima_atualizacao = get_brazil_datetime()
     db.session.commit()
     
     status = 'ativado' if colaborador.apto else 'desativado'

@@ -1,182 +1,545 @@
 {% extends "base.html" %}
 
-{% block title %}Sortear Colaboradores - {{ current_user.loja.nome }}{% endblock %}
+{% block title %}Sortear Colaborador - {{ current_user.loja.nome }}{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+<!-- Header do Sorteio -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card-header-sorteio">
+            <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="h3 mb-0">🎲 Sortear Colaboradores</h1>
-                    <small class="text-muted">
-                        <span class="badge bg-{{ 'success' if current_user.loja.bandeira == 'BIG' else 'info' }}">
-                            {{ current_user.loja.codigo }}
+                    <h1 class="titulo-sorteio">
+                        🎲 Sorteio de Colaboradores
+                    </h1>
+                    <div class="subtitulo-sorteio">
+                        <span class="badge-loja bg-{{ 'primary' if current_user.loja.bandeira == 'BIG' else 'success' }}">
+                            {{ current_user.loja.bandeira }} BOX
                         </span>
-                    </small>
-                </div>
-                <a href="{{ url_for('manager.dashboard') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left"></i> Voltar
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <div class="card shadow">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-dice"></i> Realizar Sorteio de Colaboradores
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <form method="POST" id="sorteioColaboradoresForm">
-                        {{ form.hidden_tag() }}
-                        
-                        <div class="mb-3">
-                            {{ form.premio_id.label(class="form-label") }}
-                            {{ form.premio_id(class="form-select") }}
-                            {% if form.premio_id.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {% for error in form.premio_id.errors %}
-                                        <div>{{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            <div class="form-text">
-                                <i class="fas fa-gift"></i> 
-                                Prêmio cadastrado pelo administrador
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form.quantidade_ingressos.label(class="form-label") }}
-                            {{ form.quantidade_ingressos(class="form-control") }}
-                            {% if form.quantidade_ingressos.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {% for error in form.quantidade_ingressos.errors %}
-                                        <div>{{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            <div class="form-text">
-                                <i class="fas fa-info-circle"></i> 
-                                Quantos colaboradores serão sorteados ({{ colaboradores_count }} disponíveis)
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <div class="form-check">
-                                {{ form.confirmar_lista(class="form-check-input") }}
-                                {{ form.confirmar_lista.label(class="form-check-label") }}
-                            </div>
-                            {% if form.confirmar_lista.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {% for error in form.confirmar_lista.errors %}
-                                        <div>{{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            <div class="form-text">
-                                <i class="fas fa-shield-alt text-warning"></i>
-                                Esta confirmação garante a transparência do processo
-                            </div>
-                        </div>
-
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i>
-                            <strong>Como funciona o sorteio:</strong>
-                            <ul class="mb-0 mt-2">
-                                <li>Apenas colaboradores <strong>aptos</strong> participam</li>
-                                <li>O sorteio é <strong>aleatório</strong> e transparente</li>
-                                <li>Todos os sorteios ficam registrados no histórico</li>
-                                <li>Não é possível sortear duas vezes na mesma semana</li>
-                            </ul>
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="button" class="btn btn-sortear btn-lg" id="btnSortearAnimado">
-                                <i class="fas fa-dice"></i> 🎲 Sortear com Animação
-                            </button>
-                            <button type="submit" class="btn btn-outline-warning" id="btnSortearSimples">
-                                <i class="fas fa-list"></i> Sorteio Simples (sem animação)
-                            </button>
-                        </div>
-                    </form>
+                        {{ current_user.loja.nome }} • {{ current_user.loja.codigo }}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Área Principal do Sorteio -->
+<div class="row">
+    <div class="col-12">
+        <div class="sorteio-container-colaboradores">
+            <!-- Formulário de Configuração -->
+            <div class="row justify-content-center mb-4">
+                <div class="col-lg-8">
+                    <div class="config-card">
+                        <form method="POST" id="sorteioColaboradoresForm">
+                            {{ form.hidden_tag() }}
+                            
+                            <div class="config-header text-center mb-4">
+                                <h3>⚙️ Configuração do Sorteio</h3>
+                                <p class="text-muted">Configure o prêmio e confirme a lista antes de sortear</p>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    {{ form.premio_id.label(class="form-label fw-bold") }}
+                                    {{ form.premio_id(class="form-select form-select-lg premio-select") }}
+                                    {% if form.premio_id.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.premio_id.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-bold">Status do Sorteio</label>
+                                    <div class="status-info">
+                                        <div class="status-item">
+                                            <span class="status-number">{{ colaboradores_count }}</span>
+                                            <span class="status-label">
+                                                {% if colaboradores_count == 1 %}
+                                                    Colaborador Apto
+                                                {% else %}
+                                                    Colaboradores Aptos
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        {% if total_premios is defined and premios_sorteados is defined %}
+                                        <div class="status-item mt-2">
+                                            <span class="status-number text-warning">{{ premios_sorteados }}/{{ total_premios }}</span>
+                                            <span class="status-label">
+                                                {% if premios_sorteados == 1 %}
+                                                    já sorteado
+                                                {% else %}
+                                                    já sorteados
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="confirmacao-area mb-3">
+                                <div class="form-check form-check-lg">
+                                    {{ form.confirmar_lista(class="form-check-input") }}
+                                    <label for="{{ form.confirmar_lista.id }}" class="form-check-label">
+                                        Confirmo que a <a href="{{ url_for('manager.colaboradores') }}" class="link-colaboradores" target="_blank">lista de colaboradores</a> está atualizada
+                                    </label>
+                                </div>
+                                {% if form.confirmar_lista.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.confirmar_lista.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Status do Sistema -->
+                            <div id="statusSorteio" class="alert alert-info text-center">
+                                <span id="statusTexto">Selecione um prêmio e confirme a lista para começar</span>
+                            </div>
+                            
+                            <!-- Botões de Ação -->
+                            <div class="botoes-acao text-center">
+                                <button type="button" class="btn btn-chacoalhar me-3" id="btnChacoalhar" disabled>
+                                    🎲 Chacoalhar Pote
+                                </button>
+                                <button type="button" class="btn btn-sortear-final" id="btnSortearFinal" disabled>
+                                    🎯 Realizar Sorteio Cinematográfico
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pote de Colaboradores -->
+            <div class="row" id="poteContainer" style="display: none;">
+                <div class="col-12">
+                    <div class="pote-colaboradores">
+                        <div class="pote-header">
+                            <h4>🏺 Pote de Colaboradores</h4>
+                            <div class="contador-colaboradores">
+                                <span id="contadorColaboradores">{{ colaboradores_count }}</span> 
+                                {% if colaboradores_count == 1 %}
+                                    colaborador
+                                {% else %}
+                                    colaboradores
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="colaboradores-lista" id="colaboradoresLista">
+                            {% for colaborador in colaboradores %}
+                            <div class="colaborador-item-elegante" data-id="{{ colaborador.id }}">
+                                <div class="colaborador-avatar">
+                                    <i class="bi bi-person-circle"></i>
+                                </div>
+                                <div class="colaborador-detalhes">
+                                    <div class="colaborador-nome-elegante">{{ colaborador.nome }}</div>
+                                    <div class="colaborador-setor-elegante">{{ colaborador.setor }}</div>
+                                </div>
+                                <div class="colaborador-icone">
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resultado Existente (se houver) -->
+            <div id="resultadoExistente" style="display: none;">
+                <!-- Conteúdo será inserido dinamicamente -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript do Sorteio -->
 <script>
+// ==========================================
+//      SISTEMA DE SORTEIO COLABORADORES
+//      VERSÃO v1.1 FINAL
+// ==========================================
+
 document.addEventListener('DOMContentLoaded', function() {
-    const btnSortearAnimado = document.getElementById('btnSortearAnimado');
+    console.log('🎬 Inicializando Sistema de Sorteio de Colaboradores...');
+    
+    setTimeout(function() {
+        initializeSorteioColaboradores();
+    }, 500);
+});
+
+function initializeSorteioColaboradores() {
+    console.log('🚀 === INICIALIZANDO SORTEIO COLABORADORES ===');
+    
+    // Elementos DOM
     const form = document.getElementById('sorteioColaboradoresForm');
+    const btnChacoalhar = document.getElementById('btnChacoalhar');
+    const btnSortearFinal = document.getElementById('btnSortearFinal');
+    const poteContainer = document.getElementById('poteContainer');
+    const premioSelect = document.querySelector('select[name="premio_id"]');
+    const confirmarCheck = document.querySelector('input[name="confirmar_lista"]');
+    const statusSorteio = document.getElementById('statusSorteio');
+    const statusTexto = document.getElementById('statusTexto');
     
-    // Dados dos colaboradores (passados do backend)
+    // Dados dos colaboradores e loja
     const colaboradores = JSON.parse('{{ colaboradores | tojson | safe }}');
+    const loja = {
+        nome: '{{ current_user.loja.nome }}',
+        codigo: '{{ current_user.loja.codigo }}',
+        bandeira: '{{ current_user.loja.bandeira }}'
+    };
     
-    btnSortearAnimado.addEventListener('click', function() {
-        // Valida o formulário
-        const premioId = document.querySelector('select[name="premio_id"]').value;
-        const quantidade = document.querySelector('input[name="quantidade_ingressos"]').value;
-        const confirmado = document.querySelector('input[name="confirmar_lista"]').checked;
+    console.log('📊 Colaboradores disponíveis:', colaboradores.length);
+    console.log('🏢 Loja:', loja);
+    
+    // Variáveis de controle
+    let poteChacoalhado = false;
+    let seedRandom = Date.now();
+    
+    // Event Listeners
+    premioSelect.addEventListener('change', verificarFormulario);
+    confirmarCheck.addEventListener('change', verificarFormulario);
+    
+    function verificarFormulario() {
+        const premioSelecionado = premioSelect.value && premioSelect.value !== '';
+        const listaConfirmada = confirmarCheck.checked;
         
-        if (!premioId || premioId === '0') {
-            alert('Por favor, selecione um prêmio antes de realizar o sorteio.');
-            return;
+        if (premioSelecionado && listaConfirmada) {
+            liberarChacoalhar();
+        } else {
+            desabilitarBotoes();
         }
-        
-        if (!quantidade || quantidade < 1) {
-            alert('Por favor, informe a quantidade de colaboradores a serem sorteados.');
-            return;
-        }
-        
-        if (!confirmado) {
-            alert('Por favor, confirme que a lista de colaboradores está atualizada.');
-            return;
-        }
-        
-        const quantidadeNum = parseInt(quantidade);
-        
-        // Verifica se há colaboradores suficientes
+    }
+    
+    function liberarChacoalhar() {
         if (colaboradores.length === 0) {
-            alert('Não há colaboradores aptos para sortear.');
+            statusTexto.textContent = '⚠️ Não há colaboradores disponíveis para sorteio!';
+            statusSorteio.className = 'alert alert-warning text-center';
             return;
         }
         
-        if (quantidadeNum > colaboradores.length) {
-            alert(`Não há colaboradores suficientes. Disponíveis: ${colaboradores.length}`);
-            return;
-        }
+        btnChacoalhar.disabled = false;
+        poteContainer.style.display = 'block';
+        statusTexto.textContent = 'Pronto! Chacoalhe o pote para começar';
+        statusSorteio.className = 'alert alert-success text-center';
+    }
+    
+    function desabilitarBotoes() {
+        btnChacoalhar.disabled = true;
+        btnSortearFinal.disabled = true;
+        poteContainer.style.display = 'none';
+        statusTexto.textContent = 'Selecione um prêmio e confirme a lista para começar';
+        statusSorteio.className = 'alert alert-info text-center';
+    }
+    
+    // Chacoalhar
+    btnChacoalhar.addEventListener('click', function() {
+        console.log('🎲 Chacoalhando pote...');
         
-        // Inicia o sorteio animado
-        iniciarSorteioColaboradores(colaboradores, quantidadeNum);
+        seedRandom = Date.now();
+        
+        // Efeito visual
+        poteContainer.classList.add('tremor');
+        btnChacoalhar.disabled = true;
+        btnChacoalhar.innerHTML = '🌪️ CHACOALHANDO...';
+        
+        statusTexto.textContent = 'Chacoalhando o pote...';
+        statusSorteio.className = 'alert alert-info text-center';
+        
+        // Embaralha colaboradores visualmente
+        embaralharColaboradores();
+        
+        setTimeout(() => {
+            poteContainer.classList.remove('tremor');
+            btnChacoalhar.disabled = false;
+            btnChacoalhar.innerHTML = '✅ POTE CHACOALHADO';
+            btnChacoalhar.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
+            
+            btnSortearFinal.disabled = false;
+            poteChacoalhado = true;
+            
+            statusTexto.textContent = 'Pote chacoalhado! Clique em "Realizar Sorteio Cinematográfico"';
+            statusSorteio.className = 'alert alert-primary text-center';
+        }, 2000);
     });
     
-    // Sobrescreve a função de submissão para incluir os resultados
-    window.sorteioAnimado.submitarFormularioColaboradores = function(resultados) {
-        // Cria campos hidden com os resultados
-        resultados.forEach((colaborador, index) => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = `colaborador_sorteado_${index}`;
-            input.value = colaborador.id;
-            form.appendChild(input);
+    function embaralharColaboradores() {
+        const lista = document.getElementById('colaboradoresLista');
+        const intervalos = [];
+        
+        intervalos.push(setInterval(() => {
+            embaralharElementos(lista);
+        }, 100));
+        
+        setTimeout(() => {
+            intervalos.forEach(interval => clearInterval(interval));
+        }, 1500);
+    }
+    
+    function embaralharElementos(container) {
+        const elementos = Array.from(container.children);
+        elementos.forEach(el => el.classList.add('embaralhar-elegante'));
+        
+        for (let i = elementos.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            container.appendChild(elementos[j]);
+        }
+        
+        setTimeout(() => {
+            elementos.forEach(el => el.classList.remove('embaralhar-elegante'));
+        }, 300);
+    }
+    
+    // Sortear Final (Animado)
+    btnSortearFinal.addEventListener('click', function(event) {
+        event.preventDefault();
+        
+        if (!poteChacoalhado) {
+            alert('⚠️ Você precisa chacoalhar o pote primeiro!');
+            return;
+        }
+        
+        if (colaboradores.length === 0) {
+            alert('❌ Não há colaboradores para sortear!');
+            return;
+        }
+        
+        console.log('🎯 Iniciando sorteio animado...');
+        
+        // Configura seed determinística
+        if (typeof Math.customRandom === 'function') {
+            window.customRandomGenerator = Math.customRandom(seedRandom);
+            const originalRandom = Math.random;
+            Math.random = window.customRandomGenerator;
+            
+            window.restoreOriginalRandom = function() {
+                Math.random = originalRandom;
+            };
+        }
+        
+        statusTexto.textContent = 'Iniciando sorteio cinematográfico...';
+        statusSorteio.className = 'alert alert-warning text-center';
+        
+        btnSortearFinal.disabled = true;
+        btnSortearFinal.textContent = '🎬 SORTEANDO...';
+        
+        // Chama sorteio animado
+        try {
+            window.sorteioAnimado.iniciarSorteioColaboradores(colaboradores, 1);
+        } catch (error) {
+            console.error('❌ Erro no sorteio:', error);
+            alert('❌ Erro ao iniciar sorteio: ' + error.message);
+            btnSortearFinal.disabled = false;
+            btnSortearFinal.textContent = '🎯 Realizar Sorteio Cinematográfico';
+        }
+    });
+    
+    // Sobrescreve função AJAX do sorteio - VERSÃO MELHORADA COM LOJA
+    window.sorteioAnimado.submitarFormularioColaboradoresAjax = function(resultados) {
+        console.log('💾 Salvando resultado do sorteio:', resultados);
+        
+        // Restaura Math.random
+        if (typeof window.restoreOriginalRandom === 'function') {
+            window.restoreOriginalRandom();
+        }
+        
+        const colaboradorSorteado = resultados[0];
+        
+        if (!colaboradorSorteado) {
+            window.sorteioAnimado.exibirErro('Erro no resultado do sorteio');
+            return;
+        }
+        
+        const premioId = premioSelect.value;
+        const premioNome = premioSelect.options[premioSelect.selectedIndex].text;
+        
+        const dados = {
+            premio_id: parseInt(premioId),
+            colaborador_id: colaboradorSorteado.id
+        };
+        
+        fetch('/assistente/sortear/ajax', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': form.querySelector('input[name="csrf_token"]').value
+            },
+            body: JSON.stringify(dados)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // VERSÃO MELHORADA COM LOJA EM DESTAQUE E SEM BOTÃO DASHBOARD
+                const mensagemParabens = `
+                                        <div class="resultado-colaborador-elegante">
+                        <!-- Confetes dinâmicos -->
+                        <div class="confetti-celebration" id="confettiCelebration"></div>
+
+                        <!-- Parabéns Compacto -->
+                        <div class="parabens-compacto mb-4">
+                            🎉 PARABÉNS AO GANHADOR! 🎉
+                        </div>
+
+                        <!-- Container Compacto -->
+                        <div class="resultado-compacto-container">
+                            <div class="resultado-detalhes-flex">
+                                <!-- Loja Compacta -->
+                                <div class="loja-compacta">
+                                    <div class="loja-bandeira">${loja.bandeira} BOX</div>
+                                    <div class="loja-nome">${loja.nome}</div>
+                                    <div class="loja-codigo">${loja.codigo}</div>
+                                </div>
+                                
+                                <!-- Colaborador Ganhador Compacto -->
+                                <div class="ganhador-compacto">
+                                    <div class="colaborador-avatar">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div class="colaborador-nome">${colaboradorSorteado.nome}</div>
+                                    <div class="colaborador-setor">${colaboradorSorteado.setor}</div>
+                                </div>
+                                
+                                <!-- Prêmio Compacto -->
+                                <div class="premio-compacto">
+                                    <div class="premio-icone">🎁</div>
+                                    <div class="premio-nome">${data.data.premio.nome}</div>
+                                    <div class="premio-data">${data.data.premio.data_evento}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                window.sorteioAnimado.exibirSucesso(mensagemParabens);
+                
+                // Marca sorteio como realizado com sucesso
+                window.sorteioRealizadoComSucesso = true;
+                
+                // Desabilita botões para evitar repetição
+                btnChacoalhar.disabled = true;
+                btnSortearFinal.disabled = true;
+                btnChacoalhar.innerHTML = '✅ SORTEIO REALIZADO';
+                btnSortearFinal.innerHTML = '🎯 SORTEIO CONCLUÍDO';
+                
+                // Atualiza status
+                statusTexto.textContent = 'Sorteio realizado com sucesso! Resultado salvo.';
+                statusSorteio.className = 'alert alert-success text-center';
+                
+                // Ativa confetes dinâmicos
+                setTimeout(() => {
+                    window.sorteioAnimado.criarConfettiCelebracao();
+                }, 500);
+
+                // Configura atualização quando modal for fechado
+                configurarAtualizacaoAoFecharModal();
+            } else {
+                window.sorteioAnimado.exibirErro(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('❌ Erro AJAX:', error);
+            window.sorteioAnimado.exibirErro('Erro de comunicação com o servidor');
+        });
+    };
+    
+    // Função para configurar atualização ao fechar modal
+    function configurarAtualizacaoAoFecharModal() {
+        // Listener para detectar quando modal é fechado
+        const modal = document.getElementById('sorteioModal');
+        if (modal) {
+            modal.addEventListener('hidden.bs.modal', function () {
+                if (window.sorteioRealizadoComSucesso) {
+                    console.log('🔄 Modal fechado após sorteio bem-sucedido - atualizando página...');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300);
+                }
+            });
+        }
+        
+        // Listener para clique fora do modal (backdrop)
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal-backdrop') && window.sorteioRealizadoComSucesso) {
+                console.log('🔄 Clicou fora do modal após sorteio - atualizando página...');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
+            }
         });
         
-        // Adiciona flag indicando que foi sorteio animado
-        const flagAnimado = document.createElement('input');
-        flagAnimado.type = 'hidden';
-        flagAnimado.name = 'sorteio_animado';
-        flagAnimado.value = 'true';
-        form.appendChild(flagAnimado);
+        // Listener para tecla ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && window.sorteioRealizadoComSucesso) {
+                console.log('🔄 ESC pressionado após sorteio - atualizando página...');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
+            }
+        });
+    }
+    
+    
+    // Fun��o para configurar atualiza��o ao fechar modal
+    function configurarAtualizacaoAoFecharModal() {
+        // Listener para detectar quando modal � fechado
+        const modal = document.getElementById('sorteioModal');
+        if (modal) {
+            modal.addEventListener('hidden.bs.modal', function () {
+                if (window.sorteioRealizadoComSucesso) {
+                    console.log(' Modal fechado ap�s sorteio bem-sucedido - atualizando p�gina...');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300);
+                }
+            });
+        }
         
-        // Submete o formulário
-        form.submit();
+        // Listener para clique fora do modal (backdrop)
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal-backdrop') && window.sorteioRealizadoComSucesso) {
+                console.log(' Clicou fora do modal ap�s sorteio - atualizando p�gina...');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
+            }
+        });
+        
+        // Listener para tecla ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && window.sorteioRealizadoComSucesso) {
+                console.log(' ESC pressionado ap�s sorteio - atualizando p�gina...');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
+            }
+        });
+    }
+    // Inicialização
+    verificarFormulario();
+    
+    console.log('✅ Sistema de sorteio de colaboradores inicializado!');
+}
+
+// Sistema de Random determinístico (mesmo do sorteio de lojas)
+function simpleSeededRandom(seed) {
+    var m = 0x80000000;
+    var a = 1103515245;
+    var c = 12345;
+    var state = seed ? seed : Math.floor(Math.random() * (m - 1));
+    
+    return function() {
+        state = (a * state + c) % m;
+        return state / (m - 1);
     };
-});
+}
+
+Math.customRandom = simpleSeededRandom;
 </script>
 {% endblock %} 

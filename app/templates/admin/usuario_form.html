@@ -62,14 +62,41 @@
                                 </div>
                             {% endif %}
                             <div class="form-text">
-                                <i class="fas fa-info-circle"></i> 
-                                Opcional: associe o usuário a uma loja específica
+                                <i class="bi bi-info-circle"></i> 
+                                Selecione a loja onde o assistente trabalhará
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            {{ form.password.label(class="form-label") }}
-                            {{ form.password(class="form-control") }}
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label for="password" class="form-label mb-0">Senha</label>
+                                <button type="button" class="btn btn-success btn-sm" id="gerarSenha" title="Gerar senha aleatória">
+                                    <i class="bi bi-shuffle"></i> Gerar
+                                </button>
+                            </div>
+                            
+                            {% if 'Editar' in titulo and usuario %}
+                                <!-- Modo Edição: Mostrar senha atual ou campo para nova -->
+                                <div id="senhaAtualDiv" class="mb-2">
+                                    <div class="alert alert-info d-flex align-items-center">
+                                        <i class="bi bi-shield-lock me-2"></i>
+                                        <div class="flex-grow-1">
+                                            <strong>Senha atual definida</strong>
+                                            <small class="d-block">Clique em "Gerar" para criar uma nova senha ou digite uma personalizada abaixo</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="input-group">
+                                <input type="password" name="password" id="password" class="form-control" 
+                                       placeholder="{% if 'Editar' in titulo %}Digite nova senha ou use 'Gerar'{% else %}Digite a senha{% endif %}"
+                                       value="{{ form.password.data if form.password.data else '' }}">
+                                <button type="button" class="btn btn-outline-secondary" id="togglePassword" title="Mostrar/Ocultar senha">
+                                    <i class="bi bi-eye" id="eyeIcon"></i>
+                                </button>
+                            </div>
+                            
                             {% if form.password.errors %}
                                 <div class="invalid-feedback d-block">
                                     {% for error in form.password.errors %}
@@ -77,18 +104,43 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                            
                             {% if 'Editar' in titulo %}
                                 <div class="form-text">
-                                    <i class="fas fa-info-circle"></i> 
-                                    Deixe em branco para manter a senha atual
+                                    <i class="bi bi-info-circle"></i> 
+                                    Deixe em branco para manter a senha atual. Digite uma nova senha ou use "Gerar" para alterar.
+                                </div>
+                            {% else %}
+                                <div class="form-text">
+                                    <i class="bi bi-lightbulb"></i> 
+                                    Use o botão "Gerar" para criar uma senha simples ou digite uma personalizada
                                 </div>
                             {% endif %}
+                            
+                            <!-- Alert para senha gerada -->
+                            <div id="senhaGeradaAlert" class="alert alert-success mt-2" style="display: none;">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    <div class="flex-grow-1">
+                                        <strong>Nova senha gerada!</strong>
+                                        <div class="mt-1">
+                                            <small>Copie e envie esta senha para o assistente:</small>
+                                            <div class="input-group input-group-sm mt-1">
+                                                <input type="text" id="senhaParaCopiar" class="form-control" readonly>
+                                                <button type="button" class="btn btn-outline-primary" id="copiarSenha" title="Copiar senha">
+                                                    <i class="bi bi-clipboard"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="fas fa-save"></i> 
-                                {{ 'Atualizar' if 'Editar' in titulo else 'Criar' }} Usuário
+                                {{ 'Atualizar' if 'Editar' in titulo else 'Criar' }} Assistente
                             </button>
                         </div>
                     </form>
@@ -97,4 +149,126 @@
         </div>
     </div>
 </div>
+
+<script>
+// Funcionalidade de mostrar/ocultar senha
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordField = document.getElementById('password');
+    const toggleButton = document.getElementById('togglePassword');
+    const eyeIcon = document.getElementById('eyeIcon');
+    const gerarSenhaButton = document.getElementById('gerarSenha');
+    const senhaGeradaAlert = document.getElementById('senhaGeradaAlert');
+    const senhaParaCopiar = document.getElementById('senhaParaCopiar');
+    const copiarSenhaButton = document.getElementById('copiarSenha');
+    
+    // Toggle password visibility
+    toggleButton.addEventListener('click', function() {
+        const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordField.setAttribute('type', type);
+        
+        if (type === 'text') {
+            eyeIcon.className = 'bi bi-eye-slash';
+            toggleButton.title = 'Ocultar senha';
+        } else {
+            eyeIcon.className = 'bi bi-eye';
+            toggleButton.title = 'Mostrar senha';
+        }
+    });
+    
+    // Gerar senha aleatória
+    gerarSenhaButton.addEventListener('click', function() {
+        const palavrasSupermercado = [
+            'queijo', 'leite', 'cafe', 'arroz', 'carne', 'frango', 'peixe', 'banana',
+            'laranja', 'tomate', 'batata', 'ovos', 'manteiga', 'iogurte', 'biscoito',
+            'chocolate', 'shampoo', 'papel', 'agua', 'suco', 'massa', 'molho',
+            'sal', 'vinagre', 'farinha', 'aveia', 'cereal', 'gelado', 'sorvete',
+            'prato', 'copo', 'mesa', 'cadeira', 'porta', 'janela', 'chave', 'bolsa',
+            'sacola', 'caixa', 'pacote', 'produto', 'promo', 'oferta', 'desconto'
+        ];
+        
+        const palavraAleatoria = palavrasSupermercado[Math.floor(Math.random() * palavrasSupermercado.length)];
+        let numeroAleatorio = Math.floor(Math.random() * 99) + 1; // 1-99
+        let senhaGerada = palavraAleatoria + numeroAleatorio;
+        
+        // Garantir pelo menos 6 caracteres
+        while (senhaGerada.length < 6) {
+            numeroAleatorio = Math.floor(Math.random() * 99) + 10; // 10-99 para números maiores
+            senhaGerada = palavraAleatoria + numeroAleatorio;
+        }
+        
+        // Atualiza o campo de senha
+        passwordField.value = senhaGerada;
+        
+        // Mostra a senha gerada temporariamente
+        if (passwordField.getAttribute('type') === 'password') {
+            passwordField.setAttribute('type', 'text');
+            eyeIcon.className = 'bi bi-eye-slash';
+            toggleButton.title = 'Ocultar senha';
+        }
+        
+        // Atualiza o campo para copiar
+        senhaParaCopiar.value = senhaGerada;
+        
+        // Mostra o alert de senha gerada
+        senhaGeradaAlert.style.display = 'block';
+        
+        // Adiciona efeito visual de sucesso no botão
+        gerarSenhaButton.innerHTML = '<i class="bi bi-check"></i> Gerada!';
+        gerarSenhaButton.classList.remove('btn-success');
+        gerarSenhaButton.classList.add('btn-primary');
+        
+        setTimeout(() => {
+            gerarSenhaButton.innerHTML = '<i class="bi bi-shuffle"></i> Gerar';
+            gerarSenhaButton.classList.remove('btn-primary');
+            gerarSenhaButton.classList.add('btn-success');
+        }, 3000);
+        
+        // Foca no campo para facilitar a visualização
+        passwordField.focus();
+    });
+    
+    // Funcionalidade de copiar senha
+    if (copiarSenhaButton) {
+        copiarSenhaButton.addEventListener('click', function() {
+            senhaParaCopiar.select();
+            senhaParaCopiar.setSelectionRange(0, 99999); // Para mobile
+            
+            try {
+                navigator.clipboard.writeText(senhaParaCopiar.value).then(function() {
+                    // Sucesso ao copiar
+                    copiarSenhaButton.innerHTML = '<i class="bi bi-check"></i>';
+                    copiarSenhaButton.classList.remove('btn-outline-primary');
+                    copiarSenhaButton.classList.add('btn-success');
+                    
+                    setTimeout(() => {
+                        copiarSenhaButton.innerHTML = '<i class="bi bi-clipboard"></i>';
+                        copiarSenhaButton.classList.remove('btn-success');
+                        copiarSenhaButton.classList.add('btn-outline-primary');
+                    }, 2000);
+                }).catch(function() {
+                    // Fallback para navegadores antigos
+                    document.execCommand('copy');
+                    copiarSenhaButton.innerHTML = '<i class="bi bi-check"></i>';
+                });
+            } catch (err) {
+                // Fallback adicional
+                try {
+                    document.execCommand('copy');
+                    copiarSenhaButton.innerHTML = '<i class="bi bi-check"></i>';
+                } catch (err2) {
+                    alert('Não foi possível copiar automaticamente. Selecione e copie manualmente.');
+                }
+            }
+        });
+    }
+    
+    // Esconde o alert quando o usuário digita no campo de senha
+    passwordField.addEventListener('input', function() {
+        if (senhaGeradaAlert.style.display === 'block' && passwordField.value !== senhaParaCopiar.value) {
+            senhaGeradaAlert.style.display = 'none';
+        }
+    });
+});
+</script>
+
 {% endblock %} 

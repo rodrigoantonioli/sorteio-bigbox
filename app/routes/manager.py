@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from app.models import db, Colaborador, SorteioSemanal, SorteioColaborador, Premio
 from app.forms.manager import UploadColaboradoresForm, SorteioColaboradorForm, ColaboradorForm
+from app.utils import get_brazil_datetime, get_brazil_date, format_brazil_datetime
 from datetime import datetime, date, timedelta
 from functools import wraps
 import os
@@ -54,18 +55,36 @@ def dashboard():
                 Colaborador.loja_id == current_user.loja_id
             ).all()
     
-    # Estatísticas da loja
+        # Estatísticas da loja
     total_colaboradores = Colaborador.query.filter_by(
         loja_id=current_user.loja_id,
         apto=True
     ).count()
-    
+
+    # Verifica prêmios disponíveis para sorteio
+    premios_disponiveis_count = 0
+    if sorteio_atual and loja_sorteada:
+        # Prêmios já sorteados
+        premios_ja_sorteados = db.session.query(SorteioColaborador.premio_id).join(Colaborador).filter(
+            SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+            Colaborador.loja_id == current_user.loja_id
+        ).subquery()
+
+        # Conta prêmios disponíveis
+        premios_disponiveis_count = Premio.query.filter(
+            Premio.ativo == True,
+            Premio.data_evento >= date.today(),
+            db.or_(Premio.loja_id == current_user.loja_id, Premio.loja_id.is_(None)),
+            ~Premio.id.in_(premios_ja_sorteados)
+        ).count()
+
     return render_template('manager/dashboard.html',
                          loja=current_user.loja,
                          loja_sorteada=loja_sorteada,
                          sorteio_atual=sorteio_atual,
                          colaboradores_sorteados=colaboradores_sorteados,
-                         total_colaboradores=total_colaboradores)
+                         total_colaboradores=total_colaboradores,
+                         premios_disponiveis=premios_disponiveis_count)
 
 @manager_bp.route('/colaboradores')
 @manager_required
@@ -117,6 +136,9 @@ def novo_colaborador():
     
     form = ColaboradorForm()
     
+    # Configura choices para campo loja_id (mesmo que não seja usado no template)
+    form.loja_id.choices = [(current_user.loja_id, current_user.loja.nome)]
+    
     if form.validate_on_submit():
         # Verifica se matrícula já existe na loja
         existente = Colaborador.query.filter_by(
@@ -134,7 +156,7 @@ def novo_colaborador():
             setor=form.setor.data,
             loja_id=current_user.loja_id,
             apto=form.apto.data,
-            ultima_atualizacao=datetime.utcnow()
+            ultima_atualizacao=get_brazil_datetime()
         )
         
         db.session.add(colaborador)
@@ -153,6 +175,9 @@ def editar_colaborador(id):
     
     form = ColaboradorForm(obj=colaborador)
     
+    # Configura choices para campo loja_id (mesmo que não seja usado no template)
+    form.loja_id.choices = [(current_user.loja_id, current_user.loja.nome)]
+    
     if form.validate_on_submit():
         # Verifica se matrícula já existe (exceto o próprio)
         existente = Colaborador.query.filter_by(
@@ -168,7 +193,7 @@ def editar_colaborador(id):
         colaborador.nome = form.nome.data
         colaborador.setor = form.setor.data
         colaborador.apto = form.apto.data
-        colaborador.ultima_atualizacao = datetime.utcnow()
+        colaborador.ultima_atualizacao = get_brazil_datetime()
         
         db.session.commit()
         
@@ -184,7 +209,7 @@ def toggle_colaborador(id):
     colaborador = Colaborador.query.filter_by(id=id, loja_id=current_user.loja_id).first_or_404()
     
     colaborador.apto = not colaborador.apto
-    colaborador.ultima_atualizacao = datetime.utcnow()
+    colaborador.ultima_atualizacao = get_brazil_datetime()
     db.session.commit()
     
     status = 'habilitado' if colaborador.apto else 'desabilitado'
@@ -254,14 +279,14 @@ def acao_lote():
     if acao == 'ativar':
         for colaborador in colaboradores:
             colaborador.apto = True
-            colaborador.ultima_atualizacao = datetime.utcnow()
+            colaborador.ultima_atualizacao = get_brazil_datetime()
             sucesso += 1
         flash(f'{sucesso} colaboradores foram habilitados para sorteios.', 'success')
         
     elif acao == 'desativar':
         for colaborador in colaboradores:
             colaborador.apto = False
-            colaborador.ultima_atualizacao = datetime.utcnow()
+            colaborador.ultima_atualizacao = get_brazil_datetime()
             sucesso += 1
         flash(f'{sucesso} colaboradores foram desabilitados para sorteios.', 'success')
         
@@ -387,7 +412,7 @@ def upload_colaboradores():
                     setor=dados['setor'],
                     loja_id=current_user.loja_id,
                     apto=True,
-                    ultima_atualizacao=datetime.utcnow()
+                    ultima_atualizacao=get_brazil_datetime()
                 )
                 db.session.add(novo_colaborador)
                 adicionados += 1
@@ -421,7 +446,7 @@ def upload_colaboradores():
 @manager_bp.route('/sortear', methods=['GET', 'POST'])
 @manager_required
 def sortear_colaboradores():
-    """Sorteia colaboradores para os prêmios"""
+    """Sorteia 1 colaborador para o prêmio"""
     if not current_user.loja:
         flash('Você não está associado a nenhuma loja.', 'warning')
         return redirect(url_for('main.index'))
@@ -437,20 +462,27 @@ def sortear_colaboradores():
     form = SorteioColaboradorForm()
     
     # Popula prêmios disponíveis (ativos, futuros e específicos da loja ou gerais)
+    # E que ainda não foram sorteados
+    premios_ja_sorteados = db.session.query(SorteioColaborador.premio_id).join(Colaborador).filter(
+        SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+        Colaborador.loja_id == current_user.loja_id
+    ).subquery()
+    
     premios_disponiveis = Premio.query.filter(
         Premio.ativo == True,
         Premio.data_evento >= date.today(),
-        db.or_(Premio.loja_id == current_user.loja_id, Premio.loja_id.is_(None))
+        db.or_(Premio.loja_id == current_user.loja_id, Premio.loja_id.is_(None)),
+        ~Premio.id.in_(premios_ja_sorteados)  # Exclui prêmios já sorteados
     ).order_by(Premio.data_evento).all()
     
     form.premio_id.choices = [(p.id, f"{p.nome} - {p.data_evento.strftime('%d/%m/%Y')}") for p in premios_disponiveis]
     
     if not premios_disponiveis:
-        flash('Não há prêmios disponíveis para sorteio. Contate o administrador.', 'warning')
+        flash('Não há mais prêmios disponíveis para sorteio. Contate o administrador.', 'warning')
         return redirect(url_for('manager.dashboard'))
     
     if form.validate_on_submit():
-        # Verifica se já houve sorteio para este prêmio
+        # Verifica novamente se já houve sorteio para este prêmio (dupla verificação)
         premio_selecionado = Premio.query.get(form.premio_id.data)
         ja_sorteado = SorteioColaborador.query.join(Colaborador).filter(
             SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
@@ -462,16 +494,40 @@ def sortear_colaboradores():
             flash(f'Já foi realizado sorteio para o prêmio "{premio_selecionado.nome}" esta semana.', 'warning')
             return redirect(url_for('manager.dashboard'))
         
-        # Busca colaboradores aptos
+        # Busca colaboradores já sorteados nesta semana (para excluir da lista)
+        colaboradores_ja_sorteados = db.session.query(SorteioColaborador.colaborador_id).join(Colaborador).filter(
+            SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+            Colaborador.loja_id == current_user.loja_id
+        ).subquery()
+        
+        # Busca colaboradores aptos (excluindo os já sorteados)
         colaboradores_aptos = Colaborador.query.filter_by(
             loja_id=current_user.loja_id,
             apto=True
+        ).filter(
+            ~Colaborador.id.in_(colaboradores_ja_sorteados)  # Exclui já sorteados
         ).all()
         
-        if len(colaboradores_aptos) < form.quantidade_ingressos.data:
-            flash(f'Não há colaboradores suficientes. Disponíveis: {len(colaboradores_aptos)}', 'warning')
-            return render_template('manager/sortear.html', form=form, 
-                                 colaboradores_count=len(colaboradores_aptos))
+        if len(colaboradores_aptos) < 1:
+            flash('Não há colaboradores disponíveis para sorteio (todos já foram sorteados).', 'warning')
+            
+            # Calcula informações de prêmios para a loja
+            total_premios_loja = Premio.query.filter(
+                Premio.ativo == True,
+                Premio.data_evento >= date.today(),
+                db.or_(Premio.loja_id == current_user.loja_id, Premio.loja_id.is_(None))
+            ).count()
+            
+            premios_sorteados_count = db.session.query(SorteioColaborador).join(Colaborador).filter(
+                SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+                Colaborador.loja_id == current_user.loja_id
+            ).count()
+            
+            return render_template('manager/sortear.html', form=form,
+                                 colaboradores_count=len(colaboradores_aptos),
+                                 colaboradores=[],
+                                 total_premios=total_premios_loja,
+                                 premios_sorteados=premios_sorteados_count)
         
         # Cria snapshot da lista de colaboradores
         colaboradores_snapshot = [
@@ -483,30 +539,59 @@ def sortear_colaboradores():
             } for c in colaboradores_aptos
         ]
         
-        # Realiza o sorteio
-        sorteados = random.sample(colaboradores_aptos, form.quantidade_ingressos.data)
+        # Verifica se veio do sorteio animado
+        sorteio_animado = request.form.get('sorteio_animado') == 'true'
+        colaborador_sorteado = None
         
-        # Registra os sorteados
-        for colaborador in sorteados:
-            sorteio = SorteioColaborador(
-                sorteio_semanal_id=sorteio_atual.id,
-                premio_id=form.premio_id.data,
-                colaborador_id=colaborador.id,
-                sorteado_por=current_user.id,
-                lista_confirmada=True,  # Assistente confirmou
-                colaboradores_snapshot=json.dumps(colaboradores_snapshot)
-            )
-            db.session.add(sorteio)
+        if sorteio_animado:
+            # Pega o colaborador sorteado pela animação
+            colaborador_id = request.form.get('colaborador_sorteado_id')
+            if colaborador_id:
+                colaborador_sorteado = Colaborador.query.filter_by(
+                    id=int(colaborador_id),
+                    loja_id=current_user.loja_id,
+                    apto=True
+                ).first()
+                
+                # Verifica se o colaborador não foi sorteado já
+                if colaborador_sorteado and colaborador_sorteado.id in [sc.colaborador_id for sc in SorteioColaborador.query.join(Colaborador).filter(
+                    SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+                    Colaborador.loja_id == current_user.loja_id
+                ).all()]:
+                    flash('O colaborador sorteado já foi contemplado esta semana.', 'warning')
+                    return redirect(url_for('manager.dashboard'))
         
+        if not colaborador_sorteado:
+            # Realiza sorteio aleatório (sorteio simples)
+            colaborador_sorteado = random.choice(colaboradores_aptos)
+        
+        # Registra o sorteado
+        sorteio = SorteioColaborador(
+            sorteio_semanal_id=sorteio_atual.id,
+            premio_id=form.premio_id.data,
+            colaborador_id=colaborador_sorteado.id,
+            sorteado_por=current_user.id,
+            lista_confirmada=True,  # Assistente confirmou
+            colaboradores_snapshot=json.dumps(colaboradores_snapshot)
+        )
+        db.session.add(sorteio)
         db.session.commit()
         
-        flash(f'Sorteio realizado com sucesso! {len(sorteados)} colaboradores sorteados para "{premio_selecionado.nome}".', 'success')
+        flash(f'🎉 Colaborador {colaborador_sorteado.nome} foi sorteado para "{premio_selecionado.nome}"!', 'success')
         return redirect(url_for('manager.dashboard'))
     
-    # Busca colaboradores aptos para o frontend
+    # Busca colaboradores já sorteados nesta semana (para excluir da lista)
+    colaboradores_ja_sorteados = db.session.query(SorteioColaborador.colaborador_id).join(Colaborador).filter(
+        SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+        Colaborador.loja_id == current_user.loja_id
+    ).subquery()
+    
+    # Busca colaboradores aptos para o frontend (excluindo os já sorteados)
     colaboradores_aptos = Colaborador.query.filter_by(
         loja_id=current_user.loja_id,
         apto=True
+    ).filter(
+        ~Colaborador.id.in_(colaboradores_ja_sorteados)  # Exclui já sorteados
     ).all()
     
     # Serializa colaboradores para JSON
@@ -518,8 +603,132 @@ def sortear_colaboradores():
             'setor': c.setor
         } for c in colaboradores_aptos
     ]
+
+    # Calcula informações de prêmios para a loja
+    total_premios_loja = Premio.query.filter(
+        Premio.ativo == True,
+        Premio.data_evento >= date.today(),
+        db.or_(Premio.loja_id == current_user.loja_id, Premio.loja_id.is_(None))
+    ).count()
     
-    return render_template('manager/sortear.html', 
-                         form=form, 
+    premios_sorteados_count = db.session.query(SorteioColaborador).join(Colaborador).filter(
+        SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+        Colaborador.loja_id == current_user.loja_id
+    ).count()
+
+    return render_template('manager/sortear.html',
+                         form=form,
                          colaboradores_count=len(colaboradores_aptos),
-                         colaboradores=colaboradores_json) 
+                         colaboradores=colaboradores_json,
+                         total_premios=total_premios_loja,
+                         premios_sorteados=premios_sorteados_count)
+
+@manager_bp.route('/sortear/ajax', methods=['POST'])
+@manager_required
+def sortear_colaboradores_ajax():
+    """Sorteia colaborador via AJAX sem redirecionamento"""
+    if not current_user.loja:
+        return jsonify({'success': False, 'message': 'Você não está associado a nenhuma loja.'}), 400
+    
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({'success': False, 'message': 'Dados não fornecidos'}), 400
+        
+        premio_id = data.get('premio_id')
+        colaborador_id = data.get('colaborador_id')
+        
+        if not all([premio_id, colaborador_id]):
+            return jsonify({'success': False, 'message': 'Dados incompletos'}), 400
+        
+        # Verifica se a loja foi sorteada
+        sorteio_atual = SorteioSemanal.query.order_by(SorteioSemanal.semana_inicio.desc()).first()
+        
+        if not sorteio_atual or (current_user.loja_id != sorteio_atual.loja_big_id and 
+                               current_user.loja_id != sorteio_atual.loja_ultra_id):
+            return jsonify({'success': False, 'message': 'Sua loja não foi sorteada esta semana.'}), 400
+        
+        # Busca prêmio
+        premio = Premio.query.get(premio_id)
+        if not premio:
+            return jsonify({'success': False, 'message': 'Prêmio não encontrado'}), 400
+        
+        # Busca colaborador
+        colaborador = Colaborador.query.filter_by(
+            id=colaborador_id,
+            loja_id=current_user.loja_id,
+            apto=True
+        ).first()
+        
+        if not colaborador:
+            return jsonify({'success': False, 'message': 'Colaborador não encontrado ou não apto'}), 400
+        
+        # Verifica se já foi sorteado nesta semana
+        ja_sorteado = SorteioColaborador.query.join(Colaborador).filter(
+            SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+            SorteioColaborador.colaborador_id == colaborador.id,
+            Colaborador.loja_id == current_user.loja_id
+        ).first()
+        
+        if ja_sorteado:
+            return jsonify({'success': False, 'message': 'Este colaborador já foi sorteado esta semana'}), 400
+        
+        # Verifica se já houve sorteio para este prêmio
+        premio_ja_sorteado = SorteioColaborador.query.join(Colaborador).filter(
+            SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+            SorteioColaborador.premio_id == premio.id,
+            Colaborador.loja_id == current_user.loja_id
+        ).first()
+        
+        if premio_ja_sorteado:
+            return jsonify({'success': False, 'message': f'Já foi realizado sorteio para o prêmio "{premio.nome}" esta semana'}), 400
+        
+        # Busca todos os colaboradores aptos para snapshot
+        colaboradores_ja_sorteados = db.session.query(SorteioColaborador.colaborador_id).join(Colaborador).filter(
+            SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+            Colaborador.loja_id == current_user.loja_id
+        ).subquery()
+        
+        colaboradores_aptos = Colaborador.query.filter_by(
+            loja_id=current_user.loja_id,
+            apto=True
+        ).filter(
+            ~Colaborador.id.in_(colaboradores_ja_sorteados)
+        ).all()
+        
+        # Cria snapshot da lista
+        colaboradores_snapshot = [
+            {
+                'id': c.id,
+                'matricula': c.matricula,
+                'nome': c.nome,
+                'setor': c.setor
+            } for c in colaboradores_aptos
+        ]
+        
+        # Registra o sorteio
+        sorteio = SorteioColaborador(
+            sorteio_semanal_id=sorteio_atual.id,
+            premio_id=premio.id,
+            colaborador_id=colaborador.id,
+            sorteado_por=current_user.id,
+            lista_confirmada=True,
+            colaboradores_snapshot=json.dumps(colaboradores_snapshot)
+        )
+        
+        db.session.add(sorteio)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'🎉 Colaborador {colaborador.nome} foi sorteado para "{premio.nome}"!',
+            'data': {
+                'colaborador': {'nome': colaborador.nome, 'setor': colaborador.setor},
+                'premio': {'nome': premio.nome, 'data_evento': premio.data_evento.strftime('%d/%m/%Y')}
+            }
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': f'Erro interno: {str(e)}'}), 500 

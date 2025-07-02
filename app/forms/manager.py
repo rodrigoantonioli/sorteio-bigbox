@@ -32,14 +32,10 @@ class ColaboradorForm(FlaskForm):
     submit = SubmitField('Salvar')
 
 class SorteioColaboradorForm(FlaskForm):
-    """Formulário para sortear colaboradores"""
+    """Formulário para sortear 1 colaborador por prêmio"""
     premio_id = SelectField('Prêmio', coerce=int, validators=[
         DataRequired(message='Selecione um prêmio')
     ])
-    quantidade_ingressos = IntegerField('Quantidade de Ingressos', validators=[
-        DataRequired(message='Informe a quantidade'),
-        NumberRange(min=1, max=50, message='Quantidade deve ser entre 1 e 50')
-    ], default=2)
     confirmar_lista = BooleanField('Confirmo que a lista de colaboradores está correta', validators=[
         DataRequired(message='Você deve confirmar que a lista está correta')
     ])

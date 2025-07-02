@@ -28,13 +28,8 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.index') }}">
-                            <i class="bi bi-house"></i> Início
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.historico') }}">
-                            <i class="bi bi-clock-history"></i> Histórico
+                        <a class="nav-link" href="{{ url_for('main.festival') }}">
+                            <i class="bi bi-calendar-event"></i> Festival
                         </a>
                     </li>
                     <li class="nav-item">
@@ -45,6 +40,20 @@
                 </ul>
                 <ul class="navbar-nav">
                     {% if current_user.is_authenticated %}
+                        <!-- Dashboard direto no menu -->
+                        <li class="nav-item">
+                            {% if current_user.tipo == 'admin' %}
+                                <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+                                    <i class="bi bi-speedometer2"></i> Dashboard
+                                </a>
+                            {% else %}
+                                <a class="nav-link" href="{{ url_for('manager.dashboard') }}">
+                                    <i class="bi bi-speedometer2"></i> Dashboard
+                                </a>
+                            {% endif %}
+                        </li>
+                        
+                        <!-- Menu do usuário -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
                                data-bs-toggle="dropdown" aria-expanded="false">
@@ -52,11 +61,6 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 {% if current_user.tipo == 'admin' %}
-                                    <li>
-                                        <a class="dropdown-item" href="{{ url_for('admin.dashboard') }}">
-                                            <i class="bi bi-speedometer2"></i> Dashboard Admin
-                                        </a>
-                                    </li>
                                     <li>
                                         <a class="dropdown-item" href="{{ url_for('admin.sortear_lojas') }}">
                                             <i class="bi bi-dice-6"></i> Sortear Lojas
@@ -83,19 +87,29 @@
                                         </a>
                                     </li>
                                     <li>
+                                        <a class="dropdown-item" href="{{ url_for('admin.usuarios') }}">
+                                            <i class="bi bi-person-badge"></i> Gerenciar Assistentes
+                                        </a>
+                                    </li>
+                                    <li>
                                         <a class="dropdown-item" href="{{ url_for('admin.sorteios') }}">
-                                            <i class="bi bi-clock-history"></i> Histórico de Sorteios
+                                            <i class="bi bi-gear"></i> Gerenciar Sorteios
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('admin.configuracoes') }}">
+                                            <i class="bi bi-gear-fill"></i> Configurações
                                         </a>
                                     </li>
                                 {% else %}
                                     <li>
-                                        <a class="dropdown-item" href="{{ url_for('manager.dashboard') }}">
-                                            <i class="bi bi-speedometer2"></i> Dashboard
+                                        <a class="dropdown-item" href="{{ url_for('manager.colaboradores') }}">
+                                            <i class="bi bi-people"></i> Colaboradores
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="{{ url_for('manager.colaboradores') }}">
-                                            <i class="bi bi-people"></i> Colaboradores
+                                        <a class="dropdown-item" href="{{ url_for('manager.upload_colaboradores') }}">
+                                            <i class="bi bi-file-excel"></i> Upload Colaboradores
                                         </a>
                                     </li>
                                 {% endif %}

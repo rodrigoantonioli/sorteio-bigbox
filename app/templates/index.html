@@ -1,228 +1,94 @@
 {% extends "base.html" %}
 
-{% block title %}Início - Sistema de Sorteios{% endblock %}
+{% block title %}Festival Na Praia 2025 - Sistema de Sorteios{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <div class="jumbotron bg-light p-5 rounded-3 mb-4">
-            <h1 class="display-4">
-                <i class="bi bi-gift-fill text-primary"></i> 
-                Sorteios Festival Na Praia
-            </h1>
-            <p class="lead">
-                Sistema oficial de sorteios de ingressos para colaboradores das lojas Big Box e UltraBox
-            </p>
-            <hr class="my-4">
-            <p>
-                Toda semana, uma loja de cada bandeira é sorteada para distribuir ingressos do festival entre seus colaboradores!
-            </p>
-        </div>
-    </div>
-</div>
-
-<!-- Atalhos para usuários logados -->
-{% if current_user.is_authenticated %}
-<div class="row mb-4">
-    <div class="col-12">
-        <h2 class="mb-3">
-            <i class="fas fa-rocket text-primary"></i> 
-            Acesso Rápido
-        </h2>
-        
-        {% if current_user.tipo == 'admin' %}
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <div class="card border-primary h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-tachometer-alt fa-3x text-primary mb-3"></i>
-                            <h6 class="card-title">Dashboard Admin</h6>
-                            <p class="card-text small">Visão geral completa</p>
-                            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-arrow-right"></i> Acessar
-                            </a>
-                        </div>
+<!-- Hero Section -->
+<div class="hero-section mb-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="hero-card">
+                <div class="hero-content text-center">
+                    <div class="hero-icon mb-3">
+                        <i class="bi bi-gift-fill"></i>
                     </div>
-                </div>
-                
-                <div class="col-md-3 mb-3">
-                    <div class="card border-success h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-dice-six fa-3x text-success mb-3"></i>
-                            <h6 class="card-title">Sortear Lojas</h6>
-                            <p class="card-text small">Sorteio semanal</p>
-                            <a href="{{ url_for('admin.sortear_lojas') }}" class="btn btn-success btn-sm">
-                                <i class="fas fa-arrow-right"></i> Sortear
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-3 mb-3">
-                    <div class="card border-info h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-users fa-3x text-info mb-3"></i>
-                            <h6 class="card-title">Colaboradores</h6>
-                            <p class="card-text small">Gerenciar todos</p>
-                            <a href="{{ url_for('admin.colaboradores') }}" class="btn btn-info btn-sm">
-                                <i class="fas fa-arrow-right"></i> Gerenciar
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-3 mb-3">
-                    <div class="card border-warning h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-file-excel fa-3x text-warning mb-3"></i>
-                            <h6 class="card-title">Upload Excel</h6>
-                            <p class="card-text small">Importar colaboradores</p>
-                            <a href="{{ url_for('admin.upload_colaboradores') }}" class="btn btn-warning btn-sm">
-                                <i class="fas fa-arrow-right"></i> Upload
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-3 mb-3">
-                    <div class="card border-secondary h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-store fa-3x text-secondary mb-3"></i>
-                            <h6 class="card-title">Lojas</h6>
-                            <p class="card-text small">Gerenciar lojas</p>
-                            <a href="{{ url_for('admin.lojas') }}" class="btn btn-secondary btn-sm">
-                                <i class="fas fa-arrow-right"></i> Gerenciar
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-3 mb-3">
-                    <div class="card border-secondary h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-gift fa-3x text-secondary mb-3"></i>
-                            <h6 class="card-title">Prêmios</h6>
-                            <p class="card-text small">Cadastrar e atribuir</p>
-                            <a href="{{ url_for('admin.premios') }}" class="btn btn-secondary btn-sm">
-                                <i class="fas fa-arrow-right"></i> Gerenciar
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-3 mb-3">
-                    <div class="card border-dark h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-user-cog fa-3x text-dark mb-3"></i>
-                            <h6 class="card-title">Usuários</h6>
-                            <p class="card-text small">Editar assistentes</p>
-                            <a href="{{ url_for('admin.usuarios') }}" class="btn btn-dark btn-sm">
-                                <i class="fas fa-arrow-right"></i> Gerenciar
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-3 mb-3">
-                    <div class="card border-primary h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-history fa-3x text-primary mb-3"></i>
-                            <h6 class="card-title">Histórico</h6>
-                            <p class="card-text small">Sorteios realizados</p>
-                            <a href="{{ url_for('admin.sorteios') }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-arrow-right"></i> Ver
-                            </a>
+                    <h1 class="hero-title">
+                        Festival Na Praia 2025
+                    </h1>
+                    <p class="hero-subtitle">
+                        Sistema oficial de sorteios de ingressos para colaboradores <strong>Big Box</strong> e <strong>UltraBox</strong>
+                    </p>
+                    <div class="hero-description">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <div class="info-box">
+                                    <h4><i class="bi bi-stars"></i> Como Funciona</h4>
+                                    <p>Toda semana, uma loja de cada bandeira é sorteada para distribuir ingressos exclusivos do festival entre seus colaboradores. Os sorteados ganham ingressos Day Use ou para Shows especiais!</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        {% else %}
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <div class="card border-primary h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-tachometer-alt fa-3x text-primary mb-3"></i>
-                            <h6 class="card-title">Dashboard</h6>
-                            <p class="card-text small">Status da sua loja</p>
-                            <a href="{{ url_for('manager.dashboard') }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-arrow-right"></i> Acessar
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4 mb-3">
-                    <div class="card border-success h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-users fa-3x text-success mb-3"></i>
-                            <h6 class="card-title">Colaboradores</h6>
-                            <p class="card-text small">Gerenciar sua equipe</p>
-                            <a href="{{ url_for('manager.colaboradores') }}" class="btn btn-success btn-sm">
-                                <i class="fas fa-arrow-right"></i> Gerenciar
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4 mb-3">
-                    <div class="card border-info h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-dice fa-3x text-info mb-3"></i>
-                            <h6 class="card-title">Sortear</h6>
-                            <p class="card-text small">Sortear colaboradores</p>
-                            <a href="{{ url_for('manager.sortear') }}" class="btn btn-info btn-sm">
-                                <i class="fas fa-arrow-right"></i> Sortear
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                         </div>
-         {% endif %}
         </div>
     </div>
 </div>
-{% endif %}
 
 {% if sorteio_atual %}
-<div class="row mb-4">
-    <div class="col-12">
-        <h2 class="mb-3">
-            <i class="bi bi-trophy-fill text-warning"></i> 
-            Lojas Sorteadas da Semana
-        </h2>
-        <p class="text-muted">
-            Semana iniciada em {{ sorteio_atual.semana_inicio.strftime('%d/%m/%Y') }}
-        </p>
-        
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <div class="card border-primary">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">
-                            <i class="bi bi-building"></i> BIG BOX
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">{{ sorteio_atual.loja_big.nome }}</h4>
-                        <p class="card-text text-muted">
-                            Código: {{ sorteio_atual.loja_big.codigo }}
-                        </p>
-                    </div>
-                </div>
+<!-- Sorteio Atual em Destaque -->
+<div class="sorteio-atual-section mb-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="section-header text-center mb-4">
+                <h2 class="section-title">
+                    <i class="bi bi-trophy-fill text-warning"></i> 
+                    Lojas Sorteadas desta Semana
+                </h2>
+                <p class="section-subtitle">
+                    <i class="bi bi-calendar-check"></i> Semana iniciada em {{ sorteio_atual.semana_inicio.strftime('%d/%m/%Y') }}
+                </p>
             </div>
             
-            <div class="col-md-6 mb-3">
-                <div class="card border-success">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">
-                            <i class="bi bi-building"></i> ULTRABOX
-                        </h5>
+            <div class="lojas-vencedoras">
+                <div class="row justify-content-center">
+                    <div class="col-md-5 mb-4">
+                        <div class="loja-card loja-big">
+                            <div class="loja-header">
+                                <h3><i class="bi bi-building-fill"></i> BIG BOX</h3>
+                            </div>
+                            <div class="loja-content">
+                                <div class="loja-star">
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                                <h4 class="loja-nome">{{ sorteio_atual.loja_big.nome }}</h4>
+                                <p class="loja-codigo">
+                                    <i class="bi bi-tag-fill"></i> {{ sorteio_atual.loja_big.codigo }}
+                                </p>
+                                <div class="loja-parabens">
+                                    🎉 PARABÉNS EQUIPE! 🎉
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <h4 class="card-title">{{ sorteio_atual.loja_ultra.nome }}</h4>
-                        <p class="card-text text-muted">
-                            Código: {{ sorteio_atual.loja_ultra.codigo }}
-                        </p>
+                    
+                    <div class="col-md-5 mb-4">
+                        <div class="loja-card loja-ultra">
+                            <div class="loja-header">
+                                <h3><i class="bi bi-building-fill"></i> ULTRABOX</h3>
+                            </div>
+                            <div class="loja-content">
+                                <div class="loja-star">
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                                <h4 class="loja-nome">{{ sorteio_atual.loja_ultra.nome }}</h4>
+                                <p class="loja-codigo">
+                                    <i class="bi bi-tag-fill"></i> {{ sorteio_atual.loja_ultra.codigo }}
+                                </p>
+                                <div class="loja-parabens">
+                                    🎉 PARABÉNS EQUIPE! 🎉
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -231,103 +97,140 @@
 </div>
 
 {% if colaboradores_sorteados %}
-<div class="row mb-4">
-    <div class="col-12">
-        <h3 class="mb-3">
-            <i class="bi bi-people-fill text-info"></i> 
-            Colaboradores Sorteados
-        </h3>
-        
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Loja</th>
-                        <th>Colaborador</th>
-                        <th>Setor</th>
-                        <th>Tipo de Ingresso</th>
-                        <th>Data do Evento</th>
-                    </tr>
-                </thead>
-                <tbody>
+<!-- Colaboradores Premiados da Semana -->
+<div class="colaboradores-section mb-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="section-header text-center mb-4">
+                <h3 class="section-title">
+                    <i class="bi bi-people-fill text-info"></i> 
+                    Colaboradores Premiados desta Semana
+                </h3>
+                <p class="section-subtitle">
+                    Os sortudos que garantiram seus ingressos para o festival!
+                </p>
+            </div>
+            
+            <div class="colaboradores-grid">
+                <div class="row">
                     {% for sorteio in colaboradores_sorteados %}
-                    <tr>
-                        <td>
-                            <span class="badge bg-{{ 'primary' if sorteio.colaborador.loja.bandeira == 'BIG' else 'success' }}">
-                                {{ sorteio.colaborador.loja.bandeira }}
-                            </span>
-                            {{ sorteio.colaborador.loja.nome }}
-                        </td>
-                        <td>
-                            <strong>{{ sorteio.colaborador.nome }}</strong>
-                        </td>
-                        <td>{{ sorteio.colaborador.setor }}</td>
-                        <td>
-                            {% if sorteio.premio.tipo == 'show' %}
-                                <i class="bi bi-music-note-beamed"></i> {{ sorteio.premio.nome }}
-                            {% else %}
-                                <i class="bi bi-sun"></i> {{ sorteio.premio.nome }}
-                            {% endif %}
-                        </td>
-                        <td>{{ sorteio.premio.data_evento.strftime('%d/%m/%Y') }}</td>
-                    </tr>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="colaborador-card">
+                            <div class="colaborador-header {% if sorteio.colaborador.loja.bandeira == 'BIG' %}header-big{% else %}header-ultra{% endif %}">
+                                <h6>
+                                    <i class="bi bi-building-fill"></i> 
+                                    {{ sorteio.colaborador.loja.bandeira }} BOX
+                                </h6>
+                                <small>{{ sorteio.colaborador.loja.nome }}</small>
+                            </div>
+                            <div class="colaborador-content">
+                                <div class="colaborador-avatar">
+                                    <i class="bi bi-person-circle"></i>
+                                </div>
+                                <h5 class="colaborador-nome">{{ sorteio.colaborador.nome }}</h5>
+                                <p class="colaborador-setor">
+                                    <i class="bi bi-briefcase"></i> {{ sorteio.colaborador.setor }}
+                                </p>
+                                <div class="premio-info">
+                                    <div class="premio-icon">
+                                        {% if sorteio.premio.tipo == 'show' %}
+                                            <i class="bi bi-music-note-beamed text-warning"></i>
+                                            <span class="premio-tipo text-warning">SHOW</span>
+                                        {% else %}
+                                            <i class="bi bi-sun text-info"></i>
+                                            <span class="premio-tipo text-info">DAY USE</span>
+                                        {% endif %}
+                                    </div>
+                                    <h6 class="premio-nome">{{ sorteio.premio.nome }}</h6>
+                                    <small class="premio-data">
+                                        <i class="bi bi-calendar-event"></i> {{ sorteio.premio.data_evento.strftime('%d/%m/%Y') }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-{% endif %}
-
-{% else %}
-<div class="row">
-    <div class="col-12">
-        <div class="alert alert-info">
-            <h4 class="alert-heading">
-                <i class="bi bi-info-circle"></i> Nenhum sorteio realizado ainda
-            </h4>
-            <p>O sorteio desta semana ainda não foi realizado. Aguarde!</p>
-        </div>
-    </div>
-</div>
-{% endif %}
-
-{% if historico %}
-<div class="row">
-    <div class="col-12">
-        <h3 class="mb-3">
-            <i class="bi bi-clock-history"></i> 
-            Últimos Sorteios
-        </h3>
-        
-        <div class="row">
-            {% for sorteio in historico %}
-            {% if sorteio != sorteio_atual %}
-            <div class="col-md-6 col-lg-3 mb-3">
-                <div class="card">
-                    <div class="card-header bg-secondary text-white">
-                        <small>{{ sorteio.semana_inicio.strftime('%d/%m/%Y') }}</small>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-1">
-                            <span class="badge bg-primary">BIG</span>
-                            <small>{{ sorteio.loja_big.nome }}</small>
-                        </p>
-                        <p class="mb-0">
-                            <span class="badge bg-success">ULTRA</span>
-                            <small>{{ sorteio.loja_ultra.nome }}</small>
-                        </p>
-                    </div>
                 </div>
             </div>
-            {% endif %}
-            {% endfor %}
         </div>
-        
-        <div class="text-center mt-3">
-            <a href="{{ url_for('main.historico') }}" class="btn btn-outline-primary">
-                Ver Histórico Completo
-            </a>
+    </div>
+</div>
+{% endif %}
+{% endif %}
+
+<!-- Histórico Completo de Sorteios -->
+{% if todos_sorteios %}
+<div class="historico-section">
+    <div class="row">
+        <div class="col-12">
+            <div class="section-header text-center mb-4">
+                <h3 class="section-title">
+                    <i class="bi bi-clock-history"></i> 
+                    {% if sorteio_atual %}Histórico de Sorteios{% else %}Sorteios Realizados{% endif %}
+                </h3>
+                <p class="section-subtitle">
+                    {% if todos_sorteios|length > 1 %}
+                        {{ todos_sorteios|length }} sorteios realizados no total
+                    {% else %}
+                        Primeiro sorteio do festival
+                    {% endif %}
+                </p>
+            </div>
+            
+            <div class="historico-grid">
+                <div class="row">
+                    {% for sorteio in todos_sorteios %}
+                    {% if not sorteio_atual or sorteio.id != sorteio_atual.id %}
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="historico-card">
+                            <div class="historico-header">
+                                <div class="historico-data">
+                                    <i class="bi bi-calendar-week"></i>
+                                    {{ sorteio.semana_inicio.strftime('%d/%m/%Y') }}
+                                </div>
+                            </div>
+                            <div class="historico-content">
+                                <div class="historico-loja historico-big">
+                                    <span class="bandeira-badge">BIG</span>
+                                    <span class="loja-nome-historico">{{ sorteio.loja_big.nome }}</span>
+                                </div>
+                                <div class="historico-loja historico-ultra">
+                                    <span class="bandeira-badge">ULTRA</span>
+                                    <span class="loja-nome-historico">{{ sorteio.loja_ultra.nome }}</span>
+                                </div>
+                                
+                                {% if todos_colaboradores %}
+                                    {% set colaboradores_semana = todos_colaboradores|selectattr('sorteio_semanal_id', 'equalto', sorteio.id)|list %}
+                                    {% if colaboradores_semana %}
+                                    <div class="historico-stats">
+                                        <small class="text-muted">
+                                            <i class="bi bi-people"></i> {{ colaboradores_semana|length }} colaborador{% if colaboradores_semana|length > 1 %}es{% endif %} premiado{% if colaboradores_semana|length > 1 %}s{% endif %}
+                                        </small>
+                                    </div>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<!-- Nenhum Sorteio Realizado -->
+<div class="empty-state">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="empty-card text-center">
+                <div class="empty-icon">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <h4>Primeiro Sorteio em Breve</h4>
+                <p>O sistema está pronto! O primeiro sorteio do Festival Na Praia 2025 será realizado em breve. Fique atento!</p>
+            </div>
         </div>
     </div>
 </div>

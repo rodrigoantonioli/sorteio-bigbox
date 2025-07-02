@@ -1,130 +1,1052 @@
 {% extends "base.html" %}
 
-{% block title %}Realizar Sorteio - Admin{% endblock %}
+{% block title %}Sortear Lojas - Admin{% endblock %}
 
 {% block content %}
+<style>
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.sortear-container {
+    padding: 15px 0;
+    min-height: 100vh;
+}
+
+.sortear-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.pote-container {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 12px;
+    box-shadow: 
+        0 8px 16px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.pote-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    opacity: 0.6;
+}
+
+.pote-big {
+    border-color: #8e44ad;
+    color: #8e44ad;
+}
+
+.pote-big::before {
+    background: linear-gradient(90deg, transparent, #8e44ad, transparent);
+}
+
+.pote-ultra {
+    border-color: #00a651;
+    color: #00a651;
+}
+
+.pote-ultra::before {
+    background: linear-gradient(90deg, transparent, #00a651, transparent);
+}
+
+.pote-title {
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.contador-lojas {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
+    padding: 4px 10px;
+    margin: 5px auto;
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #495057;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.secao-lojas {
+    margin-bottom: 10px;
+}
+
+.secao-titulo {
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.loja-item {
+    display: inline-block;
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 3px 8px;
+    margin: 2px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: default;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    line-height: 1.2;
+}
+
+.loja-disponivel {
+    background: linear-gradient(145deg, #d4edda, #c3e6cb);
+    border-color: #28a745;
+    color: #155724;
+}
+
+.loja-disponivel:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+}
+
+.loja-sorteada {
+    background: linear-gradient(145deg, #f8d7da, #f5c6cb);
+    border-color: #dc3545;
+    color: #721c24;
+    opacity: 0.8;
+    position: relative;
+}
+
+.loja-sorteada::after {
+    content: '🏆';
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    font-size: 0.6rem;
+}
+
+.btn-chacoalhar {
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(238, 90, 36, 0.3);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.btn-chacoalhar:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(238, 90, 36, 0.4);
+    background: linear-gradient(45deg, #ee5a24, #ff6b6b);
+}
+
+.btn-sortear-final {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: 100%;
+}
+
+.btn-sortear-final:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-sortear-final:disabled, .btn-chacoalhar:disabled {
+    background: linear-gradient(45deg, #6c757d, #5a6268);
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none !important;
+    box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
+}
+
+.tremor {
+    animation: shake 0.5s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.resultado-existente {
+    background: linear-gradient(45deg, #ffeaa7, #fdcb6e);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(253, 203, 110, 0.3);
+}
+
+.ganhador-nome {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin: 10px 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.ganhador-big {
+    color: #8e44ad;
+}
+
+.ganhador-ultra {
+    color: #00a651;
+}
+
+.btn-discreto {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(108, 117, 125, 0.8);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.btn-discreto:hover {
+    background: rgba(108, 117, 125, 1);
+    transform: scale(1.1);
+}
+
+.festival-header {
+    text-align: center;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.festival-header h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    margin-bottom: 8px;
+}
+
+.festival-header .subtitle {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.embaralhar {
+    animation: spin 0.5s ease-in-out;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+.botoes-container {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.compacto {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.compacto::-webkit-scrollbar {
+    width: 4px;
+}
+
+.compacto::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
+.compacto::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+}
+
+.status-icon {
+    font-size: 1rem;
+    margin-right: 3px;
+}
+
+.alert {
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+.alert small {
+    font-size: 0.8rem;
+}
+</style>
+
+<div class="sortear-container">
 <div class="container-fluid">
+        <!-- Header do Festival -->
+        <div class="festival-header">
+            <h1>🎲 SORTEIO SEMANAL</h1>
+            <div class="subtitle">Festival Na Praia 2025 • BigBox & UltraBox</div>
+        </div>
+
+        <!-- Layout Compacto: Data + Potes + Botões na mesma tela -->
     <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 mb-0">🎲 Realizar Sorteio Semanal</h1>
-                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left"></i> Voltar
-                </a>
+            <!-- Coluna da Esquerda: Data e Botões -->
+            <div class="col-lg-3">
+                <div class="sortear-card mb-2">
+                    <div class="card-body p-3">
+                        <form id="sorteioForm">
+                            {{ form.hidden_tag() }}
+                            <div class="text-center mb-2">
+                                <h6>📅 Semana do Sorteio</h6>
+                            </div>
+                            
+                            <div class="mb-2">
+                                {{ form.semana_inicio(class="form-control form-control-sm text-center", id="semanaInicio") }}
+                                <div class="form-text text-center small">
+                                    Terça-feira da semana
+                                </div>
+                            </div>
+                            
+                            <!-- Botões sempre na mesma posição -->
+                            <div class="botoes-container">
+                                <button type="button" class="btn btn-chacoalhar" id="btnChacoalhar" disabled>
+                                    🎲 Chacoalhar Potes
+                                </button>
+                                
+                                <button type="button" class="btn btn-sortear-final" id="btnSortearFinal" disabled>
+                                    🎯 Realizar Sorteio
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Status do Sorteio -->
+                <div id="statusSorteio" class="alert alert-info text-center">
+                    <small id="statusTexto">Inicializando sistema...</small>
+                </div>
             </div>
+
+            <!-- Coluna da Direita: Potes das Lojas -->
+            <div class="col-lg-9">
+                <!-- Resultado de Sorteio Existente será inserido aqui via JS -->
+                <div id="resultadoExistente" style="display: none;"></div>
+
+                <!-- Potes de Lojas Compactos -->
+                <div id="potesContainer">
+                    <!-- Pote BIG -->
+                    <div class="pote-container pote-big compacto">
+                        <div class="pote-title">
+                            🏢 POTE BIG
+                            <div class="contador-lojas">
+                                <span id="contadorBig">{{ lojas_big|length }}</span> disponíveis
         </div>
     </div>
 
-    <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-dice"></i> Novo Sorteio
-                    </h5>
+                        <div class="secao-lojas">
+                            <div class="secao-titulo">
+                                <span class="status-icon">🟢</span>Disponíveis
+                            </div>
+                            <div id="lojasBigDisponiveis">
+                                {% for loja in lojas_big %}
+                                <span class="loja-item loja-disponivel" data-id="{{ loja.id }}">
+                                    {{ loja.nome }}
+                                </span>
+                                {% endfor %}
+                            </div>
                 </div>
-                <div class="card-body">
-                    <form method="POST" id="sorteioForm">
-                        {{ form.hidden_tag() }}
                         
-                        <div class="mb-3">
-                            {{ form.semana_inicio.label(class="form-label") }}
-                            {{ form.semana_inicio(class="form-control") }}
-                            {% if form.semana_inicio.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {% for error in form.semana_inicio.errors %}
-                                        <div>{{ error }}</div>
+                        {% if lojas_big_sorteadas %}
+                        <div class="secao-lojas">
+                            <div class="secao-titulo">
+                                <span class="status-icon">🏆</span>Já Sorteadas
+                            </div>
+                            <div>
+                                {% for loja in lojas_big_sorteadas %}
+                                <span class="loja-item loja-sorteada">
+                                    {{ loja.nome }}
+                                </span>
                                     {% endfor %}
+                            </div>
                                 </div>
                             {% endif %}
-                            <div class="form-text">
-                                <i class="fas fa-info-circle"></i> 
-                                Selecione a terça-feira da semana que será sorteada
+                    </div>
+
+                    <!-- Pote ULTRA -->
+                    <div class="pote-container pote-ultra compacto">
+                        <div class="pote-title">
+                            🏬 POTE ULTRA
+                            <div class="contador-lojas">
+                                <span id="contadorUltra">{{ lojas_ultra|length }}</span> disponíveis
                             </div>
                         </div>
 
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i>
-                            <strong>Como funciona:</strong>
-                            <ul class="mb-0 mt-2">
-                                <li>O sistema sorteará 1 loja BIG e 1 loja ULTRA automaticamente</li>
-                                <li>Apenas lojas ativas que <strong>ainda não foram sorteadas</strong> participam</li>
-                                <li>Lojas disponíveis: <strong>{{ lojas_big|length }} BIG</strong> e <strong>{{ lojas_ultra|length }} ULTRA</strong></li>
-                                <li>Não é possível sortear duas vezes a mesma semana</li>
-                            </ul>
+                        <div class="secao-lojas">
+                            <div class="secao-titulo">
+                                <span class="status-icon">🟢</span>Disponíveis
+                            </div>
+                            <div id="lojasUltraDisponiveis">
+                                {% for loja in lojas_ultra %}
+                                <span class="loja-item loja-disponivel" data-id="{{ loja.id }}">
+                                    {{ loja.nome }}
+                                </span>
+                                {% endfor %}
+                            </div>
                         </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="button" class="btn btn-sortear btn-lg" id="btnSortear">
-                                <i class="fas fa-dice"></i> 🎲 Realizar Sorteio Animado
-                            </button>
-                            <button type="submit" class="btn btn-outline-primary" id="btnSortearSimples">
-                                <i class="fas fa-list"></i> Sorteio Simples (sem animação)
-                            </button>
+                        {% if lojas_ultra_sorteadas %}
+                        <div class="secao-lojas">
+                            <div class="secao-titulo">
+                                <span class="status-icon">🏆</span>Já Sorteadas
+                            </div>
+                            <div>
+                                {% for loja in lojas_ultra_sorteadas %}
+                                <span class="loja-item loja-sorteada">
+                                    {{ loja.nome }}
+                                </span>
+                                {% endfor %}
+                            </div>
                         </div>
-                    </form>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Botão Discreto para Dashboard -->
+<a href="{{ url_for('admin.dashboard') }}" class="btn btn-discreto">
+    ← Dashboard
+</a>
+
 <script>
+// ==========================================
+//         SISTEMA DE SORTEIO V1.1
+//    DEBUG COMPLETO E CORREÇÕES CRÍTICAS
+// ==========================================
+
+// Aguarda carregamento completo do DOM e do script.js
 document.addEventListener('DOMContentLoaded', function() {
-    const btnSortear = document.getElementById('btnSortear');
-    const form = document.getElementById('sorteioForm');
+    console.log('🔄 DOM carregado, aguardando script.js...');
     
-    // Dados das lojas (passados do backend)
+    // Aguarda mais tempo para garantir que script.js carregou
+    setTimeout(function() {
+        initializeSorteioPaget();
+    }, 1500); // Aumentado para 1.5s
+});
+
+function initializeSorteioPaget() {
+    console.log('🚀 === INICIALIZANDO SISTEMA DE SORTEIO ===');
+    
+    // ===== SEÇÃO 1: VERIFICAÇÃO DE ELEMENTOS =====
+    const form = document.getElementById('sorteioForm');
+    const btnChacoalhar = document.getElementById('btnChacoalhar');
+    const btnSortearFinal = document.getElementById('btnSortearFinal');
+    const potesContainer = document.getElementById('potesContainer');
+    const resultadoExistente = document.getElementById('resultadoExistente');
+    const semanaInicio = document.getElementById('semanaInicio');
+    const statusSorteio = document.getElementById('statusSorteio');
+    const statusTexto = document.getElementById('statusTexto');
+    
+    console.log('🔍 Verificando elementos DOM:');
+    console.log('  - Form:', !!form);
+    console.log('  - BtnChacoalhar:', !!btnChacoalhar);
+    console.log('  - BtnSortearFinal:', !!btnSortearFinal);
+    console.log('  - PotesContainer:', !!potesContainer);
+    console.log('  - SemanaInicio:', !!semanaInicio);
+    console.log('  - StatusSorteio:', !!statusSorteio);
+    console.log('  - StatusTexto:', !!statusTexto);
+    
+    // Verifica se elementos críticos existem
+    if (!form || !btnChacoalhar || !btnSortearFinal) {
+        console.error('❌ ERRO CRÍTICO: Elementos não encontrados!');
+        console.error('  - form:', form);
+        console.error('  - btnChacoalhar:', btnChacoalhar);
+        console.error('  - btnSortearFinal:', btnSortearFinal);
+        return;
+    }
+    
+    // ===== SEÇÃO 2: VERIFICAÇÃO DO SORTEIOANIMADO =====
+    console.log('🔍 Verificando SorteioAnimado:');
+    console.log('  - window.sorteioAnimado:', !!window.sorteioAnimado);
+    console.log('  - Tipo:', typeof window.sorteioAnimado);
+    
+    if (!window.sorteioAnimado) {
+        console.error('❌ ERRO CRÍTICO: SorteioAnimado não encontrado!');
+        
+        // Aguarda mais tempo e tenta novamente
+        console.log('⏳ Tentando aguardar mais tempo...');
+        setTimeout(() => {
+            console.log('🔄 Segunda tentativa de verificação...');
+            if (window.sorteioAnimado) {
+                console.log('✅ SorteioAnimado encontrado na segunda tentativa!');
+                initializeSorteioPaget();
+                return;
+            } else {
+                console.error('❌ SorteioAnimado ainda não encontrado após segunda tentativa');
+                statusTexto.textContent = 'ERRO: Sistema não carregado. Recarregue a página.';
+                statusSorteio.className = 'alert alert-danger text-center';
+            }
+        }, 2000);
+        return;
+    }
+    
+    console.log('✅ SorteioAnimado encontrado!');
+    
+    // ===== SEÇÃO 3: DADOS DAS LOJAS =====
     const lojasBig = JSON.parse('{{ lojas_big | tojson | safe }}');
     const lojasUltra = JSON.parse('{{ lojas_ultra | tojson | safe }}');
     
-    btnSortear.addEventListener('click', function() {
-        // Valida se a data foi selecionada
-        const semanaInicio = document.querySelector('input[name="semana_inicio"]').value;
-        if (!semanaInicio) {
-            alert('Por favor, selecione a data da semana antes de realizar o sorteio.');
-            return;
+    console.log('📊 Dados das lojas:');
+    console.log('  - Lojas BIG:', lojasBig.length, lojasBig);
+    console.log('  - Lojas ULTRA:', lojasUltra.length, lojasUltra);
+    
+    // ===== SEÇÃO 4: VARIÁVEIS DE CONTROLE =====
+    let poteChacoalhado = false;
+    let seedRandom = Date.now();
+    let sorteioJaRealizado = false;
+    
+    console.log('🎲 Variáveis inicializadas:');
+    console.log('  - poteChacoalhado:', poteChacoalhado);
+    console.log('  - seedRandom:', seedRandom);
+    console.log('  - sorteioJaRealizado:', sorteioJaRealizado);
+    
+    // Inicialização automática com a data pré-selecionada
+    setTimeout(() => {
+        if (semanaInicio.value) {
+            statusTexto.textContent = 'Data pré-selecionada. Verificando...';
+            verificarSorteioExistente(semanaInicio.value);
+        } else {
+            statusTexto.textContent = 'Selecione uma data para começar';
+            statusSorteio.className = 'alert alert-info text-center';
         }
-        
-        // Verifica se há lojas suficientes
-        if (lojasBig.length === 0) {
-            alert('Não há lojas BIG ativas para sortear.');
-            return;
+    }, 500);
+    
+    // Verifica sorteio existente quando data muda
+    semanaInicio.addEventListener('change', function() {
+        if (this.value) {
+            verificarSorteioExistente(this.value);
+        } else {
+            resetarInterface();
         }
-        
-        if (lojasUltra.length === 0) {
-            alert('Não há lojas ULTRA ativas para sortear.');
-            return;
-        }
-        
-        // Inicia o sorteio animado
-        iniciarSorteioLojas(lojasBig, lojasUltra);
     });
     
-    // Sobrescreve a função de submissão para incluir os resultados
-    window.sorteioAnimado.submitarFormulario = function(resultados) {
-        // Cria campos hidden com os resultados
+    // Função para verificar se já existe sorteio
+    function verificarSorteioExistente(data) {
+        statusTexto.textContent = 'Verificando sorteio existente...';
+        statusSorteio.className = 'alert alert-info text-center';
+        
+        fetch('/admin/sortear/verificar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': form.querySelector('input[name="csrf_token"]').value
+            },
+            body: JSON.stringify({ semana_inicio: data })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.existe) {
+                // Sorteio já existe - mostra resultado e desabilita botões
+                mostrarSorteioExistente(result.data);
+                sorteioJaRealizado = true;
+            } else {
+                // Liberado para novo sorteio
+                liberarParaNovoSorteio();
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao verificar sorteio:', error);
+            statusTexto.textContent = 'Erro ao verificar sorteio. Tente novamente.';
+            statusSorteio.className = 'alert alert-danger text-center';
+        });
+    }
+    
+    // Libera interface para novo sorteio
+    function liberarParaNovoSorteio() {
+        sorteioJaRealizado = false;
+        potesContainer.style.display = 'block';
+        resultadoExistente.style.display = 'none';
+        
+        // Verifica se há lojas suficientes
+        if (lojasBig.length === 0 || lojasUltra.length === 0) {
+            statusTexto.textContent = '⚠️ Não há lojas suficientes para sortear!';
+            statusSorteio.className = 'alert alert-warning text-center';
+            btnChacoalhar.disabled = true;
+            btnSortearFinal.disabled = true;
+        } else {
+            btnChacoalhar.disabled = false;
+            statusTexto.textContent = 'Pronto! Chacoalhe os potes para começar';
+            statusSorteio.className = 'alert alert-success text-center';
+        }
+    }
+    
+    // Mostra sorteio já existente
+    function mostrarSorteioExistente(dados) {
+        potesContainer.style.display = 'none';
+        resultadoExistente.style.display = 'block';
+        
+        // Título e ícone baseado no tipo de bloqueio
+        const titulo = dados.bloqueio_semanal ? 
+            '🚫 Semana Bloqueada para Sorteios' : 
+            '✅ Sorteio Já Realizado';
+        
+        // Mensagem explicativa
+        const explicacao = dados.bloqueio_semanal ? 
+            `<p class="text-warning mb-3"><strong>⚠️ ${dados.motivo_bloqueio}</strong></p>
+             <p class="text-muted small">Os sorteios são realizados semanalmente (terça-feira) e bloqueiam toda a semana de segunda a domingo.</p>` :
+            `<p class="mt-3"><small>Sorteio realizado em: ${dados.data_sorteio}</small></p>`;
+        
+        resultadoExistente.innerHTML = `
+            <div class="resultado-existente">
+                <h4>${titulo}</h4>
+                ${dados.bloqueio_semanal ? `<div class="alert alert-warning mb-3">
+                    <i class="bi bi-calendar-x"></i> <strong>Semana:</strong> ${dados.semana_completa}
+                </div>` : ''}
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>🏢 Loja BIG</h5>
+                        <div class="ganhador-nome ganhador-big">
+                            ${dados.loja_big.nome}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>🏬 Loja ULTRA</h5>
+                        <div class="ganhador-nome ganhador-ultra">
+                            ${dados.loja_ultra.nome}
+                        </div>
+                    </div>
+                </div>
+                ${explicacao}
+            </div>
+        `;
+        
+        // Status mais informativo
+        const statusMsg = dados.bloqueio_semanal ?
+            `<strong>🚫 Semana bloqueada!</strong><br/>
+             Já existe sorteio de <strong>${dados.loja_big.nome}</strong> (BIG) e <strong>${dados.loja_ultra.nome}</strong> (ULTRA)<br/>
+             <small class="text-muted">Motivo: ${dados.motivo_bloqueio}</small>` :
+            `<strong>⚠️ Sorteio já realizado para esta semana!</strong><br/>
+             BIG: <strong>${dados.loja_big.nome}</strong> | ULTRA: <strong>${dados.loja_ultra.nome}</strong>`;
+             
+        statusTexto.innerHTML = statusMsg;
+        statusSorteio.className = 'alert alert-warning text-center';
+        
+        // Desabilita todos os botões
+        btnChacoalhar.disabled = true;
+        btnSortearFinal.disabled = true;
+        btnChacoalhar.textContent = dados.bloqueio_semanal ? '🚫 SEMANA BLOQUEADA' : '❌ JÁ SORTEADO';
+        btnSortearFinal.textContent = dados.bloqueio_semanal ? '🚫 BLOQUEADO' : '❌ JÁ REALIZADO';
+    }
+    
+    // Função chacoalhar
+    btnChacoalhar.addEventListener('click', function() {
+        console.log('🎲 Botão chacoalhar clicado!');
+        
+        if (sorteioJaRealizado) {
+            alert('⚠️ Sorteio já foi realizado para esta semana!');
+            return;
+        }
+        
+        if (lojasBig.length === 0 || lojasUltra.length === 0) {
+            alert('⚠️ Não há lojas suficientes para sortear!');
+            return;
+        }
+        
+        // Atualiza seed com horário atual
+        seedRandom = Date.now();
+        
+        // Efeito visual de tremor
+        potesContainer.classList.add('tremor');
+        btnChacoalhar.disabled = true;
+        btnChacoalhar.innerHTML = '🌪️ CHACOALHANDO...';
+        
+        statusTexto.textContent = 'Chacoalhando os potes...';
+        statusSorteio.className = 'alert alert-info text-center';
+        
+        // Embaralha as lojas visualmente
+        embaralharLojas();
+        
+        setTimeout(() => {
+            potesContainer.classList.remove('tremor');
+            btnChacoalhar.disabled = false;
+            btnChacoalhar.innerHTML = '✅ POTES CHACOALHADOS';
+            btnChacoalhar.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
+            
+            // Habilita botão de sorteio
+            btnSortearFinal.disabled = false;
+            poteChacoalhado = true;
+            
+            statusTexto.textContent = 'Potes chacoalhados! Clique em "Realizar Sorteio"';
+            statusSorteio.className = 'alert alert-primary text-center';
+        }, 2000);
+    });
+    
+    // Função para embaralhar lojas visualmente
+    function embaralharLojas() {
+        const intervalos = [];
+        
+        // Embaralha BIG
+        const containerBig = document.getElementById('lojasBigDisponiveis');
+        if (containerBig) {
+            intervalos.push(setInterval(() => {
+                embaralharElementos(containerBig);
+            }, 100));
+        }
+        
+        // Embaralha ULTRA  
+        const containerUltra = document.getElementById('lojasUltraDisponiveis');
+        if (containerUltra) {
+            intervalos.push(setInterval(() => {
+                embaralharElementos(containerUltra);
+            }, 100));
+        }
+        
+        // Para o embaralhamento após 1.5s
+        setTimeout(() => {
+            intervalos.forEach(interval => clearInterval(interval));
+        }, 1500);
+    }
+    
+    // Embaralha elementos DOM
+    function embaralharElementos(container) {
+        const elementos = Array.from(container.children);
+        elementos.forEach(el => el.classList.add('embaralhar'));
+        
+        // Reordena elementos
+        for (let i = elementos.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            container.appendChild(elementos[j]);
+        }
+        
+        setTimeout(() => {
+            elementos.forEach(el => el.classList.remove('embaralhar'));
+        }, 300);
+    }
+    
+    // ===== SEÇÃO 8: EVENT LISTENER BOTÃO SORTEAR - CORRIGIDO! =====
+    console.log('🎯 Configurando event listener do botão Realizar Sorteio...');
+    
+    // Remove listeners anteriores (caso existam)
+    btnSortearFinal.removeEventListener('click', handleSortearClick);
+    
+    // Função separada para o click handler
+    function handleSortearClick(event) {
+        console.log('🎯 === BOTÃO REALIZAR SORTEIO CLICADO ===');
+        console.log('  - Event:', event);
+        console.log('  - Target:', event.target);
+        console.log('  - Botão disabled:', btnSortearFinal.disabled);
+        
+        // Previne comportamento padrão
+        event.preventDefault();
+        event.stopPropagation();
+        
+        // ===== VALIDAÇÕES CRÍTICAS =====
+        console.log('🔍 Executando validações:');
+        
+        // 1. Verifica se sorteio já foi realizado
+        if (sorteioJaRealizado) {
+            console.warn('⚠️ Validação falhou: Sorteio já realizado');
+            alert('⚠️ Sorteio já foi realizado para esta semana!');
+            return;
+        }
+        console.log('  ✅ Sorteio não foi realizado ainda');
+        
+        // 2. Verifica se pote foi chacoalhado
+        if (!poteChacoalhado) {
+            console.warn('⚠️ Validação falhou: Potes não chacoalhados');
+            alert('⚠️ Você precisa chacoalhar os potes primeiro!');
+            return;
+        }
+        console.log('  ✅ Potes foram chacoalhados');
+        
+        // 3. Verifica se o objeto sorteioAnimado existe
+        if (!window.sorteioAnimado) {
+            console.error('❌ Validação falhou: SorteioAnimado não encontrado!');
+            alert('❌ Erro: Sistema de sorteio não carregado. Recarregue a página.');
+            return;
+        }
+        console.log('  ✅ SorteioAnimado disponível');
+        
+        // 4. Verifica se há lojas suficientes
+        if (lojasBig.length === 0 || lojasUltra.length === 0) {
+            console.error('❌ Validação falhou: Lojas insuficientes');
+            alert('❌ Erro: Não há lojas suficientes para sortear!');
+            return;
+        }
+        console.log('  ✅ Lojas suficientes disponíveis');
+        
+        // ===== INÍCIO DO SORTEIO =====
+        console.log('🚀 Todas as validações passaram! Iniciando sorteio...');
+        
+        // Usa a seed gerada no chacoalhar para determinismo
+        try {
+            console.log('🎲 Configurando seed determinística:', seedRandom);
+            
+            // Usa nossa implementação simples e confiável
+            if (typeof Math.customRandom === 'function') {
+                window.customRandomGenerator = Math.customRandom(seedRandom);
+                console.log('✅ Seed personalizada configurada com sucesso');
+                
+                // Sobrescreve Math.random temporariamente para usar nossa seed
+                const originalRandom = Math.random;
+                Math.random = window.customRandomGenerator;
+                
+                // Restaura Math.random após o sorteio (será feito no modal)
+                window.restoreOriginalRandom = function() {
+                    Math.random = originalRandom;
+                    console.log('🔄 Math.random restaurado ao padrão');
+                };
+            } else {
+                console.warn('⚠️ CustomRandom não disponível, usando random padrão');
+            }
+        } catch (error) {
+            console.warn('⚠️ Erro na configuração da seed, usando random padrão:', error.message);
+            // Continua sem seed - não quebra o fluxo
+        }
+        
+        // Atualiza interface
+        statusTexto.textContent = 'Iniciando sorteio cinematográfico...';
+        statusSorteio.className = 'alert alert-warning text-center';
+        
+        // Desabilita botão temporariamente
+        btnSortearFinal.disabled = true;
+        btnSortearFinal.textContent = '🎬 SORTEANDO...';
+        
+        console.log('🎬 Dados do sorteio:');
+        console.log('  - Lojas BIG:', lojasBig.length, 'disponíveis');
+        console.log('  - Lojas ULTRA:', lojasUltra.length, 'disponíveis');
+        console.log('  - Seed:', seedRandom);
+        console.log('  - Timestamp:', new Date().toISOString());
+        
+        // ===== CHAMADA DO SORTEIO =====
+        try {
+            console.log('🎯 Chamando window.sorteioAnimado.iniciarSorteioLojas...');
+            window.sorteioAnimado.iniciarSorteioLojas(lojasBig, lojasUltra);
+            console.log('✅ Sorteio iniciado com sucesso!');
+        } catch (error) {
+            console.error('❌ ERRO CRÍTICO ao iniciar sorteio:', error);
+            console.error('  - Message:', error.message);
+            console.error('  - Stack:', error.stack);
+            alert('❌ Erro crítico ao iniciar sorteio: ' + error.message);
+            
+            // Restaura botão em caso de erro
+            btnSortearFinal.disabled = false;
+            btnSortearFinal.textContent = '🎯 Realizar Sorteio';
+        }
+    }
+    
+    // Anexa o event listener
+    btnSortearFinal.addEventListener('click', handleSortearClick);
+    console.log('✅ Event listener anexado ao botão Realizar Sorteio!');
+    
+    // Teste adicional: verifica se o botão responde a clique
+    btnSortearFinal.addEventListener('mousedown', function() {
+        console.log('🖱️ Mousedown detectado no botão Realizar Sorteio');
+    });
+    
+    btnSortearFinal.addEventListener('mouseup', function() {
+        console.log('🖱️ Mouseup detectado no botão Realizar Sorteio');
+    });
+    
+
+    
+    // Resetar interface
+    function resetarInterface() {
+        poteChacoalhado = false;
+        sorteioJaRealizado = false;
+        btnChacoalhar.innerHTML = '🎲 Chacoalhar Potes';
+        btnChacoalhar.style.background = 'linear-gradient(45deg, #ff6b6b, #ee5a24)';
+        btnChacoalhar.disabled = true;
+        btnSortearFinal.disabled = true;
+        btnSortearFinal.textContent = '🎯 Realizar Sorteio';
+        potesContainer.style.display = 'block';
+        resultadoExistente.style.display = 'none';
+        statusTexto.textContent = 'Selecione uma data para começar';
+        statusSorteio.className = 'alert alert-info text-center';
+    }
+    
+    // Sobrescreve função AJAX do sorteio
+    window.sorteioAnimado.submitarFormularioAjax = function(resultados) {
+        console.log('💾 Salvando resultados:', resultados);
+        
+        // Restaura Math.random ao padrão após o sorteio
+        if (typeof window.restoreOriginalRandom === 'function') {
+            window.restoreOriginalRandom();
+        }
+        
         const lojaBig = resultados.find(r => r.tipo === 'Loja BIG');
         const lojaUltra = resultados.find(r => r.tipo === 'Loja ULTRA');
         
-        if (lojaBig && lojaUltra) {
-            // Adiciona campos hidden ao formulário
-            const inputBig = document.createElement('input');
-            inputBig.type = 'hidden';
-            inputBig.name = 'loja_big_id';
-            inputBig.value = lojaBig.vencedor.id;
-            form.appendChild(inputBig);
-            
-            const inputUltra = document.createElement('input');
-            inputUltra.type = 'hidden';
-            inputUltra.name = 'loja_ultra_id';
-            inputUltra.value = lojaUltra.vencedor.id;
-            form.appendChild(inputUltra);
-            
-            // Submete o formulário
-            form.submit();
+        if (!lojaBig || !lojaUltra) {
+            window.sorteioAnimado.exibirErro('Erro nos resultados do sorteio');
+            return;
         }
+        
+        const dados = {
+            semana_inicio: semanaInicio.value,
+            loja_big_id: lojaBig.vencedor.id,
+            loja_ultra_id: lojaUltra.vencedor.id
+        };
+        
+        fetch('/admin/sortear/ajax', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': form.querySelector('input[name="csrf_token"]').value
+            },
+            body: JSON.stringify(dados)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Personaliza mensagem de sucesso
+                const mensagemParabens = `
+                    🎉 PARABÉNS AOS GANHADORES! 🎉<br/>
+                    <strong>${lojaBig.vencedor.nome}</strong> (BIG) e <strong>${lojaUltra.vencedor.nome}</strong> (ULTRA)<br/>
+                    Vocês foram sorteados para a semana de ${data.data.semana}!
+                `;
+                window.sorteioAnimado.exibirSucesso(mensagemParabens);
+            } else {
+                window.sorteioAnimado.exibirErro(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('❌ Erro AJAX:', error);
+            window.sorteioAnimado.exibirErro('Erro de comunicação com o servidor');
+        });
     };
-});
+    
+    // ===== SEÇÃO 9: FINALIZAÇÃO E TESTE =====
+    console.log('🏁 === FINALIZAÇÃO DA INICIALIZAÇÃO ===');
+    console.log('✅ Todos os componentes inicializados com sucesso!');
+    console.log('📊 Resumo do sistema:');
+    console.log('  - Elementos DOM: OK');
+    console.log('  - SorteioAnimado: OK');
+    console.log('  - Event Listeners: OK');
+    console.log('  - Dados das lojas: OK');
+    console.log('  - Funções AJAX: OK');
+    console.log('');
+    console.log('🎯 Sistema pronto para uso!');
+    console.log('⚡ Para testar manualmente, digite: testSorteio()');
+    
+    // Função de teste global
+    window.testSorteio = function() {
+        console.log('🧪 === TESTE MANUAL DO SISTEMA ===');
+        console.log('1. Testando elementos DOM...');
+        console.log('  - btnSortearFinal existe:', !!btnSortearFinal);
+        console.log('  - btnSortearFinal disabled:', btnSortearFinal.disabled);
+        console.log('  - btnSortearFinal texto:', btnSortearFinal.textContent);
+        
+        console.log('2. Testando variáveis...');
+        console.log('  - poteChacoalhado:', poteChacoalhado);
+        console.log('  - sorteioJaRealizado:', sorteioJaRealizado);
+        
+        console.log('3. Testando SorteioAnimado...');
+        console.log('  - window.sorteioAnimado:', !!window.sorteioAnimado);
+        console.log('  - Métodos disponíveis:', Object.getOwnPropertyNames(Object.getPrototypeOf(window.sorteioAnimado)));
+        
+        console.log('4. Testando dados...');
+        console.log('  - Lojas BIG:', lojasBig.length);
+        console.log('  - Lojas ULTRA:', lojasUltra.length);
+        
+        if (btnSortearFinal.disabled) {
+            console.log('⚠️ Botão está desabilitado. Possíveis causas:');
+            console.log('  - Potes não foram chacoalhados ainda');
+            console.log('  - Sorteio já foi realizado');
+            console.log('  - Erro na inicialização');
+        } else {
+            console.log('✅ Botão está habilitado e pronto para uso!');
+        }
+        
+        console.log('🧪 Teste concluído!');
+    };
+    
+    // Atualiza status final
+    if (statusTexto && statusSorteio) {
+        // Verifica se deve fazer inicialização automática
+        if (semanaInicio.value && semanaInicio.value.trim() !== '') {
+            console.log('📅 Data pré-selecionada encontrada:', semanaInicio.value);
+            statusTexto.textContent = 'Data pré-selecionada. Verificando...';
+            verificarSorteioExistente(semanaInicio.value);
+        } else {
+            console.log('📅 Nenhuma data pré-selecionada');
+            statusTexto.textContent = 'Sistema carregado! Selecione uma data para começar.';
+            statusSorteio.className = 'alert alert-info text-center';
+        }
+    }
+    
+    console.log('✅ INICIALIZAÇÃO COMPLETA!');
+}
+
+// Sistema de Random Simples e Confiável
+// Substitui a biblioteca seedrandom problemática por implementação própria
+function simpleSeededRandom(seed) {
+    // Implementação simples de LCG (Linear Congruential Generator)
+    var m = 0x80000000; // 2**31
+    var a = 1103515245;
+    var c = 12345;
+    var state = seed ? seed : Math.floor(Math.random() * (m - 1));
+    
+    return function() {
+        state = (a * state + c) % m;
+        return state / (m - 1);
+    };
+}
+
+// Substitui Math.seedrandom por nossa implementação
+Math.customRandom = simpleSeededRandom;
 </script>
 {% endblock %} 
