@@ -100,61 +100,83 @@
             </div>
         </div>
 
-        <!-- Cards de Ações -->
+        <!-- Ações Rápidas -->
         <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-users fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">Colaboradores</h5>
-                        <p class="card-text">Gerencie a lista de colaboradores da sua loja</p>
-                        <p class="text-muted">
-                            <strong>{{ total_colaboradores }}</strong> colaboradores aptos
-                        </p>
-                        <a href="{{ url_for('manager.colaboradores') }}" class="btn btn-primary">
-                            <i class="fas fa-users"></i> Gerenciar
-                        </a>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-rocket"></i> Ações Rápidas
+                        </h5>
                     </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-upload fa-3x text-success mb-3"></i>
-                        <h5 class="card-title">Upload de Planilha</h5>
-                        <p class="card-text">Faça upload da lista de colaboradores via Excel</p>
-                        <p class="text-muted">
-                            <small>Substitui todos os colaboradores atuais</small>
-                        </p>
-                        <a href="{{ url_for('manager.upload_colaboradores') }}" class="btn btn-success">
-                            <i class="fas fa-upload"></i> Upload
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        {% if loja_sorteada %}
-                            <i class="fas fa-dice fa-3x text-warning mb-3"></i>
-                            <h5 class="card-title">Sorteio de Colaboradores</h5>
-                            <p class="card-text">Realize o sorteio dos colaboradores contemplados</p>
-                            <p class="text-muted">
-                                <small>{{ colaboradores_sorteados|length }} já sorteados</small>
-                            </p>
-                            <a href="{{ url_for('manager.sortear_colaboradores') }}" class="btn btn-warning">
-                                <i class="fas fa-dice"></i> Sortear
-                            </a>
-                        {% else %}
-                            <i class="fas fa-dice fa-3x text-muted mb-3"></i>
-                            <h5 class="card-title text-muted">Sorteio de Colaboradores</h5>
-                            <p class="card-text text-muted">Disponível apenas quando sua loja for sorteada</p>
-                            <button class="btn btn-secondary" disabled>
-                                <i class="fas fa-lock"></i> Bloqueado
-                            </button>
-                        {% endif %}
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-primary h-100">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                                        <h6 class="card-title">Colaboradores</h6>
+                                        <p class="card-text small">Gerenciar colaboradores da loja</p>
+                                        <p class="text-muted">
+                                            <strong>{{ total_colaboradores }}</strong> colaboradores aptos
+                                        </p>
+                                        <a href="{{ url_for('manager.colaboradores') }}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-arrow-right"></i> Gerenciar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-success h-100">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-file-excel fa-3x text-success mb-3"></i>
+                                        <h6 class="card-title">Upload Excel</h6>
+                                        <p class="card-text small">Importar colaboradores via planilha</p>
+                                        <p class="text-muted">
+                                            <small>Substitui todos os atuais</small>
+                                        </p>
+                                        <a href="{{ url_for('manager.upload_colaboradores') }}" class="btn btn-success btn-sm">
+                                            <i class="fas fa-arrow-right"></i> Upload
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if loja_sorteada %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-warning h-100">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-dice fa-3x text-warning mb-3"></i>
+                                        <h6 class="card-title">Sortear Colaborador</h6>
+                                        <p class="card-text small">Realizar sorteios para prêmios</p>
+                                        <p class="text-muted">
+                                            <small>{{ colaboradores_sorteados|length }} já sorteados</small>
+                                        </p>
+                                        <a href="{{ url_for('manager.sortear') }}" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-arrow-right"></i> Sortear
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-secondary h-100">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-clock fa-3x text-muted mb-3"></i>
+                                        <h6 class="card-title">Sorteio Indisponível</h6>
+                                        <p class="card-text small">Loja não foi sorteada esta semana</p>
+                                        <p class="text-muted">
+                                            <small>Aguarde próximo sorteio</small>
+                                        </p>
+                                        <button class="btn btn-secondary btn-sm" disabled>
+                                            <i class="fas fa-ban"></i> Indisponível
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>

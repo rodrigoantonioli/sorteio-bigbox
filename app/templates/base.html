@@ -93,13 +93,23 @@
                                     </li>
                                     <li>
                                         <a class="dropdown-item" href="{{ url_for('admin.sorteios') }}">
-                                            <i class="bi bi-clock-history"></i> Histórico de Sorteios
+                                            <i class="bi bi-gear"></i> Gerenciar Sorteios
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('admin.configuracoes') }}">
+                                            <i class="bi bi-gear-fill"></i> Configurações
                                         </a>
                                     </li>
                                 {% else %}
                                     <li>
                                         <a class="dropdown-item" href="{{ url_for('manager.colaboradores') }}">
                                             <i class="bi bi-people"></i> Colaboradores
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('manager.upload_colaboradores') }}">
+                                            <i class="bi bi-file-excel"></i> Upload Colaboradores
                                         </a>
                                     </li>
                                 {% endif %}

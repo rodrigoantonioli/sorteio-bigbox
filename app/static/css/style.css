@@ -2118,3 +2118,35 @@ main {
     transform: scale(1.05);
     text-decoration: none;
 }
+
+/* ==========================================
+   CORES PERSONALIZADAS AÇÕES RÁPIDAS
+   ========================================== */
+
+.border-purple {
+    border-color: #6f42c1 !important;
+}
+
+.text-purple {
+    color: #6f42c1 !important;
+}
+
+.btn-purple {
+    color: #fff;
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+}
+
+.btn-purple:hover {
+    color: #fff;
+    background-color: #5a359e;
+    border-color: #5a359e;
+}
+
+.btn-purple:focus,
+.btn-purple.focus {
+    color: #fff;
+    background-color: #5a359e;
+    border-color: #5a359e;
+    box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.5);
+}
