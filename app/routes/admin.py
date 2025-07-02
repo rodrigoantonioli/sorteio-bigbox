@@ -863,7 +863,9 @@ def upload_colaboradores():
             if loja_especifica_id:
                 loja_especifica = Loja.query.get(loja_especifica_id)
                 if loja_especifica:
-                    lojas_map = {loja_especifica.codigo: loja_especifica.id}
+                    # Mantém mapeamento completo para identificar todas as lojas da planilha
+                    # mas processa apenas a loja selecionada
+                    pass
                 else:
                     flash('Loja específica não encontrada!', 'danger')
                     # Limpa recursos e retorna
@@ -894,16 +896,16 @@ def upload_colaboradores():
                         erros.append(f"Linha {row_num}: Dados incompletos")
                         continue
                     
-                    # Verifica se a loja existe no mapeamento (filtrado ou completo)
+                    # Verifica se a loja existe no mapeamento (sempre completo)
                     if codigo_loja not in lojas_map:
-                        if loja_especifica_id:
-                            # Se filtro por loja específica, pula linhas de outras lojas
-                            continue
-                        else:
-                            erros.append(f"Linha {row_num}: Loja '{codigo_loja}' não encontrada")
-                            continue
+                        erros.append(f"Linha {row_num}: Loja '{codigo_loja}' não encontrada")
+                        continue
                     
                     loja_id = lojas_map[codigo_loja]
+                    
+                    # Se filtro por loja específica, pula linhas de outras lojas
+                    if loja_especifica_id and loja_id != loja_especifica_id:
+                        continue
                     
                     # Verifica se colaborador já existe
                     colaborador_existente = Colaborador.query.filter_by(
