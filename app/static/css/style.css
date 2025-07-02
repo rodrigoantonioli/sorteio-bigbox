@@ -2092,3 +2092,177 @@ main {
         max-height: 320px;
     }
 }
+
+/* ========================================
+   RESULTADO COLABORADOR COMPACTO v1.1
+======================================== */
+
+/* Container principal mais compacto */
+.resultado-colaborador-elegante {
+    text-align: center;
+    padding: 0.75rem;
+    position: relative;
+    max-width: 95vw;
+    margin: 0 auto;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+/* Parabéns mais compacto */
+.parabens-compacto {
+    font-size: 1.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    margin-bottom: 1rem;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+}
+
+/* Container do resultado mais compacto */
+.resultado-compacto-container {
+    background: white;
+    border-radius: 15px;
+    padding: 1.25rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border: 2px solid #28a745;
+    position: relative;
+    animation: celebracaoCompacta 2s ease-in-out infinite;
+    max-width: 100%;
+}
+
+/* Layout flexível mais compacto */
+.resultado-detalhes-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Seções mais compactas */
+.loja-compacta,
+.ganhador-compacto,
+.premio-compacto {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+}
+
+/* Textos menores e mais compactos */
+.loja-compacta .loja-bandeira {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 0.25rem 0.6rem;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.3rem;
+    display: inline-block;
+}
+
+.loja-compacta .loja-nome {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.1rem;
+    line-height: 1.1;
+}
+
+.loja-compacta .loja-codigo {
+    font-size: 0.7rem;
+    color: #6c757d;
+    opacity: 0.8;
+}
+
+/* Ganhador compacto */
+.ganhador-compacto .colaborador-avatar {
+    font-size: 2.5rem;
+    color: #28a745;
+    margin-bottom: 0.3rem;
+}
+
+.ganhador-compacto .colaborador-nome {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #2c3e50;
+    margin-bottom: 0.2rem;
+    line-height: 1.1;
+}
+
+.ganhador-compacto .colaborador-setor {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Prêmio compacto */
+.premio-compacto .premio-icone {
+    font-size: 2rem;
+    margin-bottom: 0.3rem;
+    animation: premioFloat 2s ease-in-out infinite;
+}
+
+.premio-compacto .premio-nome {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.1rem;
+    line-height: 1.1;
+}
+
+.premio-compacto .premio-data {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Responsividade extrema para mobile */
+@media (max-width: 768px) {
+    .resultado-detalhes-flex {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .loja-compacta,
+    .ganhador-compacta,
+    .premio-compacto {
+        flex: none;
+        width: 100%;
+    }
+    
+    .parabens-compacto {
+        font-size: 1.2rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .resultado-compacto-container {
+        padding: 1rem;
+    }
+    
+    .ganhador-compacto .colaborador-nome {
+        font-size: 1.1rem;
+    }
+}
+
+/* Mensagem de sucesso compacta */
+.mensagem-sucesso-discreta {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+    z-index: 9999;
+    animation: sucessoSlideIn 0.5s ease-out;
+}

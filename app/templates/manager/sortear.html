@@ -441,11 +441,7 @@ function initializeSorteioColaboradores() {
                     window.sorteioAnimado.criarConfettiCelebracao();
                 }, 500);
 
-                // Recarrega a página após 5 segundos para atualizar estados
-                setTimeout(() => {
-                    console.log('🔄 Recarregando página para atualizar estado dos prêmios...');
-                    window.location.reload();
-                }, 5000);
+                // MANTÉM RESULTADO NA TELA PARA FILMAGEM - SEM RELOAD AUTOMÁTICO
             } else {
                 window.sorteioAnimado.exibirErro(data.message);
             }
