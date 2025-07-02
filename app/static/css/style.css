@@ -2266,3 +2266,135 @@ main {
     z-index: 9999;
     animation: sucessoSlideIn 0.5s ease-out;
 }
+
+/* ========================================
+   MELHORIAS LAYOUT RESULTADO FINAL v1.1
+======================================== */
+
+/* Animação de celebração melhorada */
+@keyframes celebracaoCompacta {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+    }
+    50% { 
+        transform: scale(1.01);
+        box-shadow: 0 20px 60px rgba(40, 167, 69, 0.15);
+    }
+}
+
+/* Melhoria no parabéns */
+.parabens-compacto {
+    text-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    animation: parabensPulse 3s ease-in-out infinite;
+}
+
+@keyframes parabensPulse {
+    0%, 100% { 
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    50% { 
+        transform: scale(1.02);
+        filter: brightness(1.1);
+    }
+}
+
+/* Melhorias nos ícones */
+.ganhador-compacto .colaborador-avatar {
+    animation: avatarFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 4px 8px rgba(40, 167, 69, 0.2));
+}
+
+@keyframes avatarFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+/* Border gradient animado */
+.resultado-compacto-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.resultado-compacto-container::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+        #28a745, #20c997, #17a2b8, #6f42c1, #e83e8c, #fd7e14, #ffc107, #28a745);
+    background-size: 300% 300%;
+    border-radius: 17px;
+    z-index: -1;
+    animation: gradientShift 4s ease infinite;
+    opacity: 0.3;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Hover effect no resultado */
+.resultado-compacto-container:hover {
+    transform: translateY(-2px);
+    transition: transform 0.3s ease;
+}
+
+/* Melhorias na tipografia */
+.ganhador-compacto .colaborador-nome {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+}
+
+/* Prêmio com destaque */
+.premio-compacto {
+    position: relative;
+}
+
+.premio-compacto::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 1.2rem;
+    animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+    0%, 100% { 
+        opacity: 0.7;
+        transform: rotate(0deg) scale(1);
+    }
+    50% { 
+        opacity: 1;
+        transform: rotate(180deg) scale(1.1);
+    }
+}
+
+/* Responsividade aprimorada */
+@media (max-width: 480px) {
+    .parabens-compacto {
+        font-size: 1rem;
+        line-height: 1.1;
+    }
+    
+    .resultado-compacto-container {
+        padding: 0.75rem;
+    }
+    
+    .ganhador-compacto .colaborador-avatar {
+        font-size: 2rem;
+    }
+    
+    .ganhador-compacto .colaborador-nome {
+        font-size: 1rem;
+    }
+}

@@ -383,11 +383,6 @@ function initializeSorteioColaboradores() {
                         <!-- Confetes dinâmicos -->
                         <div class="confetti-celebration" id="confettiCelebration"></div>
 
-                        <!-- Mensagem de Sucesso Discreta (Canto Superior Direito) -->
-                        <div class="mensagem-sucesso-discreta" id="status-sorteio-colaborador" style="display: none;">
-                            <i class="fas fa-check-circle me-2"></i>Resultado salvo!
-                        </div>
-
                         <!-- Parabéns Compacto -->
                         <div class="parabens-compacto mb-4">
                             🎉 PARABÉNS AO GANHADOR! 🎉
@@ -424,24 +419,26 @@ function initializeSorteioColaboradores() {
                 `;
                 window.sorteioAnimado.exibirSucesso(mensagemParabens);
                 
-                // Exibe mensagem de sucesso discreta no canto superior direito
-                setTimeout(() => {
-                    const mensagemSucesso = document.getElementById('status-sorteio-colaborador');
-                    if (mensagemSucesso) {
-                        mensagemSucesso.style.display = 'block';
-                        // Remove a mensagem após 4 segundos
-                        setTimeout(() => {
-                            mensagemSucesso.style.display = 'none';
-                        }, 4000);
-                    }
-                }, 1000);
+                // Marca sorteio como realizado com sucesso
+                window.sorteioRealizadoComSucesso = true;
+                
+                // Desabilita botões para evitar repetição
+                btnChacoalhar.disabled = true;
+                btnSortearFinal.disabled = true;
+                btnChacoalhar.innerHTML = '✅ SORTEIO REALIZADO';
+                btnSortearFinal.innerHTML = '🎯 SORTEIO CONCLUÍDO';
+                
+                // Atualiza status
+                statusTexto.textContent = 'Sorteio realizado com sucesso! Resultado salvo.';
+                statusSorteio.className = 'alert alert-success text-center';
                 
                 // Ativa confetes dinâmicos
                 setTimeout(() => {
                     window.sorteioAnimado.criarConfettiCelebracao();
                 }, 500);
 
-                // MANTÉM RESULTADO NA TELA PARA FILMAGEM - SEM RELOAD AUTOMÁTICO
+                // Configura atualização quando modal for fechado
+                configurarAtualizacaoAoFecharModal();
             } else {
                 window.sorteioAnimado.exibirErro(data.message);
             }
@@ -452,6 +449,78 @@ function initializeSorteioColaboradores() {
         });
     };
     
+    // Função para configurar atualização ao fechar modal
+    function configurarAtualizacaoAoFecharModal() {
+        // Listener para detectar quando modal é fechado
+        const modal = document.getElementById('sorteioModal');
+        if (modal) {
+            modal.addEventListener('hidden.bs.modal', function () {
+                if (window.sorteioRealizadoComSucesso) {
+                    console.log('🔄 Modal fechado após sorteio bem-sucedido - atualizando página...');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300);
+                }
+            });
+        }
+        
+        // Listener para clique fora do modal (backdrop)
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal-backdrop') && window.sorteioRealizadoComSucesso) {
+                console.log('🔄 Clicou fora do modal após sorteio - atualizando página...');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
+            }
+        });
+        
+        // Listener para tecla ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && window.sorteioRealizadoComSucesso) {
+                console.log('🔄 ESC pressionado após sorteio - atualizando página...');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
+            }
+        });
+    }
+    
+    
+    // Fun��o para configurar atualiza��o ao fechar modal
+    function configurarAtualizacaoAoFecharModal() {
+        // Listener para detectar quando modal � fechado
+        const modal = document.getElementById('sorteioModal');
+        if (modal) {
+            modal.addEventListener('hidden.bs.modal', function () {
+                if (window.sorteioRealizadoComSucesso) {
+                    console.log(' Modal fechado ap�s sorteio bem-sucedido - atualizando p�gina...');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300);
+                }
+            });
+        }
+        
+        // Listener para clique fora do modal (backdrop)
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal-backdrop') && window.sorteioRealizadoComSucesso) {
+                console.log(' Clicou fora do modal ap�s sorteio - atualizando p�gina...');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
+            }
+        });
+        
+        // Listener para tecla ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && window.sorteioRealizadoComSucesso) {
+                console.log(' ESC pressionado ap�s sorteio - atualizando p�gina...');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
+            }
+        });
+    }
     // Inicialização
     verificarFormulario();
     
