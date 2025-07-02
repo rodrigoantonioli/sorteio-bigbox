@@ -697,7 +697,7 @@ main {
 
 @keyframes confettiCelebrationFall {
     0% {
-        transform: translateY(-100vh) rotate(0deg) scale(0);
+        transform: translateY(-100vh) rotate(0deg);
         opacity: 1;
     }
     10% {
@@ -1887,10 +1887,10 @@ main {
     box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.5);
 }
 /* ========================================
-   MELHORIAS DASHBOARD NAVEGA«√O v1.1
+   MELHORIAS DASHBOARD NAVEGAÔøΩÔøΩO v1.1
 ======================================== */
 
-/* Dashboard melhorado na navegaÁ„o */
+/* Dashboard melhorado na navegaÔøΩÔøΩo */
 .navbar-nav .nav-link {
     padding: 0.75rem 1rem !important;
     border-radius: 8px !important;
@@ -2108,7 +2108,7 @@ main {
     overflow-y: auto;
 }
 
-/* ParabÈns mais compacto */
+/* ParabÔøΩns mais compacto */
 .parabens-compacto {
     font-size: 1.5rem;
     font-weight: 900;
@@ -2134,7 +2134,7 @@ main {
     max-width: 100%;
 }
 
-/* Layout flexÌvel mais compacto */
+/* Layout flexÔøΩvel mais compacto */
 .resultado-detalhes-flex {
     display: flex;
     align-items: center;
@@ -2143,7 +2143,7 @@ main {
     flex-wrap: wrap;
 }
 
-/* SeÁıes mais compactas */
+/* SeÔøΩÔøΩes mais compactas */
 .loja-compacta,
 .ganhador-compacto,
 .premio-compacto {
@@ -2202,7 +2202,7 @@ main {
     letter-spacing: 0.3px;
 }
 
-/* PrÍmio compacto */
+/* PrÔøΩmio compacto */
 .premio-compacto .premio-icone {
     font-size: 2rem;
     margin-bottom: 0.3rem;
@@ -2271,7 +2271,7 @@ main {
    MELHORIAS LAYOUT RESULTADO FINAL v1.1
 ======================================== */
 
-/* AnimaÁ„o de celebraÁ„o melhorada */
+/* AnimaÔøΩÔøΩo de celebraÔøΩÔøΩo melhorada */
 @keyframes celebracaoCompacta {
     0%, 100% { 
         transform: scale(1);
@@ -2283,7 +2283,7 @@ main {
     }
 }
 
-/* Melhoria no parabÈns */
+/* Melhoria no parabÔøΩns */
 .parabens-compacto {
     text-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
     animation: parabensPulse 3s ease-in-out infinite;
@@ -2300,7 +2300,7 @@ main {
     }
 }
 
-/* Melhorias nos Ìcones */
+/* Melhorias nos ÔøΩcones */
 .ganhador-compacto .colaborador-avatar {
     animation: avatarFloat 3s ease-in-out infinite;
     filter: drop-shadow(0 4px 8px rgba(40, 167, 69, 0.2));
@@ -2354,7 +2354,7 @@ main {
     text-shadow: none;
 }
 
-/* PrÍmio com destaque */
+/* PrÔøΩmio com destaque */
 .premio-compacto {
     position: relative;
 }
@@ -2396,5 +2396,379 @@ main {
     
     .ganhador-compacto .colaborador-nome {
         font-size: 1rem;
+    }
+}
+
+/* ========================================
+   RESULTADO SORTEIO LOJAS ELEGANTE v1.1
+======================================== */
+
+/* Container principal do resultado das lojas */
+.resultado-lojas-elegante {
+    text-align: center;
+    padding: 1.5rem;
+    position: relative;
+    max-width: 95vw;
+    margin: 0 auto;
+    animation: resultadoEntrada 0.8s ease-out;
+}
+
+@keyframes resultadoEntrada {
+    0% { 
+        opacity: 0; 
+        transform: translateY(20px) scale(0.95); 
+    }
+    100% { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+/* T√≠tulo compacto e elegante */
+.titulo-resultado-compacto {
+    font-size: 1.8rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.5px;
+    animation: tituloShine 3s ease-in-out infinite;
+}
+
+@keyframes tituloShine {
+    0%, 100% { 
+        filter: brightness(1); 
+        transform: scale(1); 
+    }
+    50% { 
+        filter: brightness(1.1); 
+        transform: scale(1.02); 
+    }
+}
+
+/* Data discreta */
+.data-discreta {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+    opacity: 0.8;
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.3px;
+}
+
+/* Container das lojas ganhadoras */
+.lojas-ganhadoras-compacto {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    max-width: 600px;
+    margin: 0 auto;
+    animation: lojasEntrada 1s ease-out 0.3s both;
+}
+
+@keyframes lojasEntrada {
+    0% { 
+        opacity: 0; 
+        transform: translateY(30px); 
+    }
+    100% { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* Card individual da loja ganhadora */
+.loja-ganhadora-compacta {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+    animation: cardFloat 4s ease-in-out infinite;
+}
+
+@keyframes cardFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+/* Estilos espec√≠ficos para BIG */
+.loja-big-elegante {
+    border-color: rgba(138, 43, 226, 0.2);
+    background: linear-gradient(135deg, 
+        rgba(138, 43, 226, 0.02), 
+        rgba(147, 112, 219, 0.02), 
+        white);
+}
+
+.loja-big-elegante:hover {
+    border-color: #8A2BE2;
+    box-shadow: 0 15px 50px rgba(138, 43, 226, 0.25);
+    transform: translateY(-5px);
+}
+
+/* Estilos espec√≠ficos para ULTRA */
+.loja-ultra-elegante {
+    border-color: rgba(0, 166, 81, 0.2);
+    background: linear-gradient(135deg, 
+        rgba(0, 166, 81, 0.02), 
+        rgba(32, 201, 151, 0.02), 
+        white);
+}
+
+.loja-ultra-elegante:hover {
+    border-color: #00a651;
+    box-shadow: 0 15px 50px rgba(0, 166, 81, 0.25);
+    transform: translateY(-5px);
+}
+
+/* Badge da bandeira */
+.loja-badge-compacto {
+    font-size: 0.8rem;
+    font-weight: 800;
+    padding: 0.4rem 1rem;
+    border-radius: 15px;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.75rem;
+    display: inline-block;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+}
+
+.loja-big-elegante .loja-badge-compacto {
+    background: linear-gradient(135deg, #8A2BE2, #9370DB);
+    color: white;
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+}
+
+.loja-ultra-elegante .loja-badge-compacto {
+    background: linear-gradient(135deg, #00a651, #20c997);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 166, 81, 0.3);
+}
+
+/* √çcone da loja */
+.loja-icone-compacto {
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+    animation: iconeFloat 3s ease-in-out infinite;
+}
+
+.loja-big-elegante .loja-icone-compacto {
+    color: #8A2BE2;
+    filter: drop-shadow(0 4px 12px rgba(138, 43, 226, 0.3));
+}
+
+.loja-ultra-elegante .loja-icone-compacto {
+    color: #00a651;
+    filter: drop-shadow(0 4px 12px rgba(0, 166, 81, 0.3));
+}
+
+@keyframes iconeFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-5px) rotate(5deg); }
+}
+
+/* Nome da loja */
+.loja-nome-compacto {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+    letter-spacing: 0.3px;
+    position: relative;
+}
+
+.loja-big-elegante .loja-nome-compacto {
+    background: linear-gradient(135deg, #8A2BE2, #9370DB);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.loja-ultra-elegante .loja-nome-compacto {
+    background: linear-gradient(135deg, #00a651, #20c997);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* C√≥digo da loja */
+.loja-codigo-compacto {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    opacity: 0.8;
+}
+
+/* Border animado para as lojas */
+.loja-ganhadora-compacta::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 22px;
+    padding: 2px;
+    background: linear-gradient(45deg, transparent, transparent);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: exclude;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.loja-big-elegante::before {
+    background: linear-gradient(45deg, 
+        #8A2BE2, #9370DB, #DDA0DD, #8A2BE2);
+    background-size: 300% 300%;
+    animation: borderGradientBig 3s ease infinite;
+}
+
+.loja-ultra-elegante::before {
+    background: linear-gradient(45deg, 
+        #00a651, #20c997, #7FFFD4, #00a651);
+    background-size: 300% 300%;
+    animation: borderGradientUltra 3s ease infinite;
+}
+
+.loja-ganhadora-compacta:hover::before {
+    opacity: 1;
+}
+
+@keyframes borderGradientBig {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes borderGradientUltra {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Sparkle effects */
+.loja-ganhadora-compacta::after {
+    content: '‚ú®';
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.2rem;
+    animation: sparkleRotate 4s ease-in-out infinite;
+    opacity: 0.6;
+}
+
+@keyframes sparkleRotate {
+    0%, 100% { 
+        transform: rotate(0deg) scale(1);
+        opacity: 0.6;
+    }
+    50% { 
+        transform: rotate(180deg) scale(1.2);
+        opacity: 1;
+    }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .lojas-ganhadoras-compacto {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 0 0.5rem;
+    }
+    
+    .loja-ganhadora-compacta {
+        padding: 1rem;
+    }
+    
+    .titulo-resultado-compacto {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .loja-nome-compacto {
+        font-size: 1.2rem;
+    }
+    
+    .loja-icone-compacto {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .resultado-lojas-elegante {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .titulo-resultado-compacto {
+        font-size: 1.3rem;
+    }
+    
+    .loja-nome-compacto {
+        font-size: 1.1rem;
+    }
+    
+    .loja-icone-compacto {
+        font-size: 2.2rem;
+    }
+    
+    .loja-ganhadora-compacta {
+        padding: 0.75rem;
+    }
+}
+
+/* Container final com altura m√≠nima e m√°xima para evitar cortes */
+.resultado-final-compacto {
+    min-height: 280px;
+    max-height: 85vh;
+    overflow-y: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+/* Confetti celebration styles para as lojas */
+.confetti-celebration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.confetti-celebration-piece {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #ff6b6b;
+    animation: confettiCelebrationFall 3s linear infinite;
+}
+
+@keyframes confettiCelebrationFall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
     }
 }

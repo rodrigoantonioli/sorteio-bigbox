@@ -337,7 +337,7 @@ def sortear_lojas_ajax():
 @admin_bp.route('/sortear/verificar', methods=['POST'])
 @admin_required
 def verificar_sorteio_existente():
-    """Verifica se já existe sorteio para uma data específica"""
+    """Verifica se já existe sorteio para uma data específica ou semana corrente"""
     try:
         data = request.get_json()
         semana_inicio_str = data.get('semana_inicio')
@@ -346,25 +346,41 @@ def verificar_sorteio_existente():
             return jsonify({'success': False, 'message': 'Data não fornecida'}), 400
         
         # Converte data
-        semana_inicio = datetime.strptime(semana_inicio_str, '%Y-%m-%d').date()
+        data_selecionada = datetime.strptime(semana_inicio_str, '%Y-%m-%d').date()
         
-        # Verifica se já existe sorteio
-        sorteio_existente = SorteioSemanal.query.filter_by(semana_inicio=semana_inicio).first()
+        # CORREÇÃO: Calcula o intervalo da semana (segunda a domingo)
+        # Descobre que dia da semana é a data selecionada
+        dia_semana = data_selecionada.weekday()  # 0=segunda, 1=terça, ..., 6=domingo
         
-        if sorteio_existente:
+        # Calcula segunda-feira da semana da data selecionada
+        segunda_feira = data_selecionada - timedelta(days=dia_semana)
+        # Calcula domingo da mesma semana
+        domingo = segunda_feira + timedelta(days=6)
+        
+        # Verifica se JÁ EXISTE qualquer sorteio na semana corrente (segunda a domingo)
+        sorteio_na_semana = SorteioSemanal.query.filter(
+            SorteioSemanal.semana_inicio >= segunda_feira,
+            SorteioSemanal.semana_inicio <= domingo
+        ).first()
+        
+        if sorteio_na_semana:
             return jsonify({
                 'existe': True,
+                'bloqueio_semanal': True,  # Flag para indicar bloqueio por semana
                 'data': {
-                    'semana': semana_inicio.strftime('%d/%m/%Y'),
+                    'semana': sorteio_na_semana.semana_inicio.strftime('%d/%m/%Y'),
+                    'semana_completa': f"{segunda_feira.strftime('%d/%m')} a {domingo.strftime('%d/%m/%Y')}",
                     'loja_big': {
-                        'nome': sorteio_existente.loja_big.nome,
-                        'codigo': sorteio_existente.loja_big.codigo
+                        'nome': sorteio_na_semana.loja_big.nome,
+                        'codigo': sorteio_na_semana.loja_big.codigo
                     },
                     'loja_ultra': {
-                        'nome': sorteio_existente.loja_ultra.nome, 
-                        'codigo': sorteio_existente.loja_ultra.codigo
+                        'nome': sorteio_na_semana.loja_ultra.nome, 
+                        'codigo': sorteio_na_semana.loja_ultra.codigo
                     },
-                    'data_sorteio': sorteio_existente.data_sorteio.strftime('%d/%m/%Y %H:%M')
+                    'data_sorteio': sorteio_na_semana.data_sorteio.strftime('%d/%m/%Y %H:%M'),
+                    'motivo_bloqueio': f'Já existe sorteio na semana de {segunda_feira.strftime("%d/%m")} a {domingo.strftime("%d/%m/%Y")}' + 
+                                     f' (realizado na terça-feira {sorteio_na_semana.semana_inicio.strftime("%d/%m/%Y")})'
                 }
             })
         else:

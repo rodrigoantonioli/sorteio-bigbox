@@ -1,161 +1,163 @@
-# 🎬 Sistema de Sorteios BigBox & UltraBox v1.7
-## Festival Na Praia 2025 - Edição Cinematográfica
+# 🎬 Sistema de Sorteios Festival Na Praia 2025 - v1.1
 
-![Sistema de Sorteios](https://img.shields.io/badge/Versão-1.7%20Final-success?style=for-the-badge)
-![Framework](https://img.shields.io/badge/Flask-2.3.3-blue?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Pronto%20para%20Produção-green?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Produção-brightgreen)
+![Versão](https://img.shields.io/badge/Versão-1.1-blue)
+![Festival](https://img.shields.io/badge/Festival-Na%20Praia%202025-orange)
 
----
+Sistema web completo para gerenciamento de sorteios de lojas e colaboradores do **Festival Na Praia 2025**, desenvolvido com Flask, interface cinematográfica e otimizado para filmagem profissional.
 
-## 🎯 **O QUE É**
+## 🚀 Novidades da Versão 1.1
 
-Sistema web completo para gerenciar sorteios de ingressos do **Festival Na Praia 2025**, desenvolvido com interface cinematográfica premium para filmagem dos sorteios.
+### 🎬 Interface Cinematográfica
+- **Resultado compacto** para filmagem profissional
+- **Layout responsivo** cabe em qualquer resolução
+- **Animações elegantes** com gradientes e efeitos visuais
+- **Mensagens discretas** que não poluem a gravação
 
-### **✨ Funcionalidades Principais**
-- 🏆 **Sorteio Semanal de Lojas** (1 BIG + 1 ULTRA)
-- 🎲 **Sorteio de Colaboradores** com interface cinematográfica
-- 👤 **Gestão de Assistentes** das lojas
-- 📊 **Dashboards Intuitivos** para admin e assistentes
-- 🎨 **Design Premium** otimizado para filmagem
-- 📱 **100% Responsivo** (mobile, tablet, desktop)
+### 🔄 Atualização Inteligente
+- **Resultado permanece na tela** durante toda a filmagem
+- **Página atualiza automaticamente** ao fechar modal
+- **Botões desabilitados** após sorteio para evitar repetições
+- **Estados sempre sincronizados**
 
----
+### 📊 Interface Polida
+- **Singular/plural correto** em todas as contagens
+- **Terminologia assistente** ao invés de "usuário"
+- **Dashboard inteligente** com ações contextuais
+- **Navegação premium** com hover effects
 
-## ⚡ **INÍCIO RÁPIDO**
+### 🖼️ Visual Premium
+- **Imagens reais dos prêmios** nos resultados
+- **Pote de colaboradores compacto** com grid responsivo
+- **Cards elegantes** com bordas coloridas
+- **CSS otimizado** para todos os dispositivos
 
+## 📋 Funcionalidades Principais
+
+### 👨‍💼 **Admin (Administrador)**
+- 🎲 Sorteio semanal de lojas (BIG e ULTRA)
+- 🏆 Gestão completa de prêmios com imagens
+- 👥 Gerenciamento de assistentes das lojas
+- 📊 Dashboard com estatísticas em tempo real
+- ⚙️ Configurações avançadas do sistema
+
+### 🎯 **Assistente (Loja)**
+- 🎲 Sorteio de colaboradores para prêmios
+- 👤 Gestão de colaboradores da loja
+- 📂 Upload em massa via Excel
+- 📊 Dashboard com status da loja
+- 🏆 Visualização de colaboradores sorteados
+
+## 🎨 Interface Destacada
+
+### 🎬 **Experiência Cinematográfica**
+- Modais compactos que cabem em qualquer tela
+- Resultado permanece visível para filmagem
+- Animações suaves e profissionais
+- Zero interrupções durante gravação
+
+### 📱 **Responsividade Total**
+- Mobile: Layout single column otimizado
+- Tablet: Grid adaptativo inteligente
+- Desktop: Múltiplas colunas elegantes
+- Todos dispositivos suportados
+
+## 🛠️ Tecnologias
+
+- **Backend**: Python 3.8+ | Flask 2.3+
+- **Frontend**: Bootstrap 5 | CSS3 Animado | JavaScript ES6
+- **Banco**: SQLite (desenvolvimento) | PostgreSQL (produção)
+- **Deploy**: Render.com ready
+- **Upload**: Excel/XLSX suportado
+
+## ⚡ Instalação Rápida
+
+1. **Clone o repositório**
 ```bash
-# 1. Clonar e instalar
-git clone https://github.com/seu-usuario/sorteioBigbox.git
+git clone https://github.com/rodrigoantonioli/sorteioBigbox.git
 cd sorteioBigbox
+```
+
+2. **Configure ambiente**
+```bash
 python -m venv venv
-venv\Scripts\activate
+venv\Scripts\activate  # Windows
 pip install -r requirements.txt
+```
 
-# 2. Inicializar banco
-python -c "from run import create_app; app = create_app(); app.cli.main(['init-db'], standalone_mode=False)"
+3. **Configure variáveis**
+```bash
+# Crie arquivo .env
+ADMIN_EMAIL=admin@festival.com
+ADMIN_PASSWORD=suasenha123
+FLASK_ENV=development
+```
 
-# 3. Executar
+4. **Inicialize banco**
+```bash
+flask init-db
+```
+
+5. **Execute sistema**
+```bash
 python run.py
 ```
 
-**🌐 Acesse:** http://localhost:5000  
-**👨‍💼 Admin:** admin@bigbox.com / admin123
+## 🌐 URLs Principais
 
----
+- **Dashboard Admin**: `/admin/dashboard`
+- **Dashboard Assistente**: `/assistente/dashboard`
+- **Sorteio Lojas**: `/admin/sortear`
+- **Sorteio Colaboradores**: `/assistente/sortear`
+- **Festival**: `/festival`
 
-## 📋 **DOCUMENTAÇÃO COMPLETA**
+## 📸 Recursos Visuais
 
-**📖 Leia:** [`DOCUMENTACAO.md`](./DOCUMENTACAO.md)
+### 🎬 **Para Filmagem**
+- Resultado do sorteio permanece na tela
+- Layout compacto cabe em qualquer resolução
+- Animações profissionais e suaves
+- Imagens reais dos prêmios
 
-A documentação única contém:
-- 🛠️ **Instalação e Configuração Detalhada**
-- 🚀 **Guia de Deploy em Produção (Render)**
-- 👥 **Manual Completo do Usuário (Admin + Assistente)**
-- 💻 **Manual Técnico (Arquitetura + APIs)**
-- 🧪 **Testes e Checklist de Funcionalidades**
-- 📞 **Suporte e Solução de Problemas**
+### 🎨 **Design Premium**
+- Cards com gradientes animados
+- Hover effects elegantes
+- Border gradient no resultado
+- Sparkle effects nos prêmios
 
----
-
-## 🎬 **NOVIDADES DA v1.7**
-
-### **🏆 Interface Cinematográfica**
-- **Design Compacto**: Resultado otimizado para filmagem
-- **Elementos Limpos**: Removidas mensagens desnecessárias
-- **Confetti Premium**: 240 peças animadas em 3 ondas
-- **Backdrop Filter**: Fundo elegante com blur
-
-### **🔧 Correções Técnicas**
-- **Rotas AJAX**: Endpoints funcionando (Status 200)
-- **Reload Automático**: Atualização silenciosa pós-sorteio
-- **Validações**: Formulários robustos sem loops
-- **Responsividade**: Perfeita em todos dispositivos
-
-### **👥 UX Melhorada**
-- **Terminologia**: "Assistentes" em todo sistema
-- **Senhas Inteligentes**: Gerador automático + interface protegida
-- **Layout Harmonioso**: Grid responsivo e cards elegantes
-- **Performance**: Carregamento rápido e animações suaves
-
----
-
-## 🧪 **STATUS DOS TESTES**
-
-### **✅ Sistema 100% Funcional**
-- ✅ **Rotas**: Todas principais funcionando (200/302)
-- ✅ **Banco**: 46 lojas ativas + dados consistentes
-- ✅ **Sorteios**: Lojas e colaboradores operacionais
-- ✅ **Autenticação**: Admin e assistentes funcionando
-- ✅ **Responsividade**: Mobile, tablet, desktop
-- ✅ **Cross-browser**: Chrome, Firefox, Safari, Edge
-
-### **🔍 Funcionalidades Testadas**
-- 🏆 Sorteio de lojas com resultado compacto
-- 🎲 Sorteio de colaboradores cinematográfico
-- 👤 Gestão de assistentes com senha inteligente
-- 📁 Upload de colaboradores via Excel
-- 🔄 Reload automático silencioso
-- 📱 Interface responsiva premium
-
----
-
-## 🚀 **DEPLOY RÁPIDO**
-
-### **Production no Render:**
-1. Push para GitHub
-2. Conectar repositório no [Render](https://render.com)
-3. Configurar PostgreSQL
-4. Deploy automático via `render.yaml`
-5. Executar `flask init-db` no shell
-
-**Ver guia completo:** [`DOCUMENTACAO.md#deploy`](./DOCUMENTACAO.md#deploy)
-
----
-
-## 🏗️ **ARQUITETURA**
+## 🔧 Estrutura do Projeto
 
 ```
-sorteioBigBox/
+sorteioBigbox/
 ├── app/
-│   ├── routes/          # admin.py, auth.py, manager.py, main.py
-│   ├── templates/       # HTML organizados por módulo
-│   ├── static/          # CSS (2000+ linhas), JS, imagens
-│   ├── forms/           # WTForms para validação
-│   ├── models.py        # SQLAlchemy models
-│   └── utils.py         # Utilitários
-├── config.py            # Configurações
-├── run.py              # Ponto de entrada + Gunicorn
-├── requirements.txt     # Dependências
-├── render.yaml         # Deploy automático
-└── DOCUMENTACAO.md     # Documentação completa
+│   ├── forms/          # Formulários WTForms
+│   ├── models.py       # Modelos SQLAlchemy
+│   ├── routes/         # Rotas organizadas
+│   ├── static/         # CSS, JS, Imagens
+│   └── templates/      # Templates Jinja2
+├── instance/           # Banco SQLite
+├── tests/             # Testes automatizados
+├── run.py             # Script principal
+└── requirements.txt   # Dependências
 ```
 
----
+## 🎯 Próximos Passos
 
-## 📞 **SUPORTE**
+Para desenvolvimento futuro:
+- [ ] API REST para mobile
+- [ ] Relatórios avançados PDF
+- [ ] Notificações em tempo real
+- [ ] Backup automático
+- [ ] Multi-tenancy
 
-### **🚨 Problemas Comuns:**
-- **Reset do sistema**: `.\reset_to_v1.ps1`
-- **Upload Excel**: Colunas C=Matrícula, D=Nome, E=Setor
-- **Senha assistente**: Campo vazio mantém atual
+## 🏆 Créditos
 
-### **🔗 Links Úteis:**
-- **📖 Documentação:** [`DOCUMENTACAO.md`](./DOCUMENTACAO.md)
-- **🐛 Issues:** [GitHub Issues](https://github.com/seu-usuario/sorteioBigbox/issues)
-- **🚀 Deploy:** [Render.com](https://render.com)
+Desenvolvido especialmente para o **Festival Na Praia 2025** com interface cinematográfica otimizada para filmagem profissional.
 
----
-
-## 🎉 **TECNOLOGIAS**
-
-- **Backend:** Flask 2.3.3, SQLAlchemy, WTForms
-- **Frontend:** Bootstrap 5, Vanilla JS, CSS3 Animations
-- **Database:** SQLite (dev) / PostgreSQL (prod)
-- **Deploy:** Render.com, Gunicorn
-- **Compatibilidade:** Chrome, Firefox, Safari, Edge
+**Versão**: 1.1  
+**Status**: Produção  
+**Última atualização**: Janeiro 2025
 
 ---
 
-**🏆 Sistema v1.7 Completo - Pronto para o Festival Na Praia 2025!**
-
-*Desenvolvido com ❤️ para criar momentos inesquecíveis*
+🎬 **Sistema pronto para filmagem do Festival Na Praia 2025!** 🏆
