@@ -60,7 +60,7 @@ class Config:
     
     # Configurações de Admin
     ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@example.com')
-    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
+    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD') or 'default-dev-password'
 
 class DevelopmentConfig(Config):
     """Configurações de desenvolvimento"""
