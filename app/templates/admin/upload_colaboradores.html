@@ -19,114 +19,61 @@
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <!-- Instruções -->
-            <div class="card mb-4">
-                <div class="card-header bg-info text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-info-circle"></i> Como Usar
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <h6>📋 Formato da Planilha Excel:</h6>
-                    <div class="table-responsive">
-                        <table class="table table-sm table-bordered">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Coluna A</th>
-                                    <th>Coluna B</th>
-                                    <th>Coluna C</th>
-                                    <th>Coluna D</th>
-                                    <th>Coluna E</th>
-                                    <th>Coluna F</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Filial</td>
-                                    <td><strong>Código da Loja</strong></td>
-                                    <td>Bandeira</td>
-                                    <td><strong>Matrícula</strong></td>
-                                    <td><strong>Nome</strong></td>
-                                    <td><strong>Setor</strong></td>
-                                </tr>
-                                <tr class="table-light">
-                                    <td>20202</td>
-                                    <td>BIG02 - 402 NORTE</td>
-                                    <td>BIG</td>
-                                    <td>12345</td>
-                                    <td>JOÃO DA SILVA</td>
-                                    <td>VENDAS</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="alert alert-warning mt-3">
-                        <h6><i class="fas fa-exclamation-triangle"></i> Importante:</h6>
+        <div class="col-lg-10 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+
+                    <div class="alert alert-info alert-permanent">
+                        <h5 class="alert-heading">Instruções de Upload</h5>
                         <ul class="mb-0">
-                            <li><strong>Colunas obrigatórias:</strong> B (Código da Loja), D (Matrícula), E (Nome), F (Setor)</li>
-                            <li><strong>Primeira linha:</strong> Deve conter cabeçalhos (será ignorada)</li>
-                            <li><strong>Código da Loja:</strong> Deve corresponder exatamente aos códigos cadastrados</li>
-                            <li><strong>Comportamento:</strong> Colaboradores existentes serão atualizados, novos serão criados</li>
+                            <li>O sistema detecta automaticamente o formato da planilha (cabeçalho da primeira linha é ignorado).</li>
+                            <li>A planilha deve conter as colunas: <strong>Código da Loja, Matrícula, Nome, Setor</strong>.</li>
+                            <li>Você pode fazer o upload para todas as lojas de uma vez ou selecionar uma loja específica.</li>
+                            <li>Colaboradores existentes serão atualizados; novos serão criados.</li>
                         </ul>
                     </div>
-                </div>
-            </div>
 
-            <!-- Formulário de Upload -->
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-upload"></i> Fazer Upload
-                    </h5>
-                </div>
-                <div class="card-body">
                     <form method="POST" enctype="multipart/form-data">
-                        <div class="mb-4">
-                            <label for="loja_especifica" class="form-label">Atualizar colaboradores de:</label>
-                            <select id="loja_especifica" name="loja_especifica" class="form-select" title="Escolha se deseja atualizar todas as lojas ou apenas uma específica">
-                                <option value="">🌐 Todas as lojas (padrão)</option>
-                                {% for loja in lojas %}
-                                    <option value="{{ loja.id }}">
-                                        🏪 {{ loja.codigo }} - {{ loja.nome }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                            <div class="form-text">
-                                <i class="fas fa-info-circle text-info"></i> 
-                                <strong>Todas as lojas:</strong> Processa todos os colaboradores da planilha<br>
-                                <i class="fas fa-info-circle text-warning"></i> 
-                                <strong>Loja específica:</strong> Processa apenas colaboradores da loja selecionada
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="loja_especifica" class="form-label">Atualizar colaboradores de:</label>
+                                <select id="loja_especifica" name="loja_especifica" class="form-select" title="Escolha se deseja atualizar todas as lojas ou apenas uma específica">
+                                    <option value="">🌐 Todas as lojas (padrão)</option>
+                                    {% for loja in lojas %}
+                                        <option value="{{ loja.id }}">
+                                            🏪 {{ loja.codigo }} - {{ loja.nome }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle text-info"></i> 
+                                    <strong>Todas as lojas:</strong> Processa todos os colaboradores da planilha<br>
+                                    <i class="fas fa-info-circle text-warning"></i> 
+                                    <strong>Loja específica:</strong> Processa apenas colaboradores da loja selecionada
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="arquivo" class="form-label">Selecione o arquivo Excel:</label>
+                                <input type="file" 
+                                       class="form-control" 
+                                       id="arquivo" 
+                                       name="arquivo" 
+                                       accept=".xlsx,.xls"
+                                       required
+                                       title="Selecione um arquivo Excel (.xlsx ou .xls)">
+                                <div class="form-text">
+                                    <i class="fas fa-file-excel text-success"></i> 
+                                    Apenas arquivos Excel (.xlsx, .xls) são aceitos
+                                </div>
                             </div>
                         </div>
 
-                        <div class="mb-4">
-                            <label for="arquivo" class="form-label">Selecione o arquivo Excel:</label>
-                            <input type="file" 
-                                   class="form-control" 
-                                   id="arquivo" 
-                                   name="arquivo" 
-                                   accept=".xlsx,.xls"
-                                   required
-                                   title="Selecione um arquivo Excel (.xlsx ou .xls)">
-                            <div class="form-text">
-                                <i class="fas fa-file-excel text-success"></i> 
-                                Apenas arquivos Excel (.xlsx, .xls) são aceitos
-                            </div>
+                        <div class="alert alert-warning alert-permanent mt-3">
+                            <strong>Nota:</strong> Colaboradores com histórico de sorteios não são removidos ou alterados para garantir a integridade dos dados.
                         </div>
 
-                        <div class="alert alert-info">
-                            <h6><i class="fas fa-cogs"></i> O que acontecerá:</h6>
-                            <ul class="mb-0">
-                                <li>✅ Sistema verificará se as lojas existem</li>
-                                <li>🔄 Colaboradores existentes (mesma matrícula + loja) serão atualizados</li>
-                                <li>🆕 Novos colaboradores serão criados como "Aptos"</li>
-                                <li>📊 Relatório detalhado será exibido ao final</li>
-                            </ul>
-                        </div>
-
-                        <div class="d-grid gap-2">
+                        <div class="d-grid mt-4">
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="fas fa-upload"></i> Processar Planilha
                             </button>

@@ -34,18 +34,13 @@
                     <form method="POST" enctype="multipart/form-data">
                         {{ form.hidden_tag() }}
                         
-                        <div class="mb-4">
-                            <div class="alert alert-success alert-permanent">
-                                <i class="fas fa-magic"></i>
-                                <strong>✨ Detecção Automática de Formato!</strong>
-                                <p class="mb-2 mt-2">O sistema detecta automaticamente o formato da sua planilha e processa corretamente:</p>
-                                <ul class="mb-0">
-                                    <li><strong>Formato 1:</strong> A=Unidade, B=Bandeira, C=Matrícula, D=Nome, E=Setor</li>
-                                    <li><strong>Formato 2:</strong> A=Filial, B=Unidade, C=Bandeira, D=Matrícula, E=Nome, F=Setor</li>
-                                    <li><strong>Primeira linha:</strong> Cabeçalho (será ignorada)</li>
-                                    <li><strong>Arquivos:</strong> .xlsx ou .xls</li>
-                                </ul>
-                            </div>
+                        <div class="alert alert-info alert-permanent">
+                            <h5 class="alert-heading">Como funciona o upload</h5>
+                            <ul class="mb-0">
+                                <li>A planilha deve conter as colunas: <strong>Matrícula, Nome, Setor</strong>.</li>
+                                <li>Por padrão, a opção <strong>"Substituir TODOS"</strong> irá apagar todos os colaboradores da sua loja e inserir os da planilha.</li>
+                                <li>Desmarque a opção para apenas adicionar novos e atualizar existentes.</li>
+                            </ul>
                         </div>
 
                         <div class="mb-3">
@@ -64,22 +59,10 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <div class="alert alert-warning">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <strong>ATENÇÃO:</strong> O upload irá <strong>SUBSTITUIR TODOS</strong> os colaboradores da sua loja!
-                                <ul class="mb-0 mt-2">
-                                    <li>Colaboradores não listados na planilha serão <strong>removidos</strong></li>
-                                    <li>Colaboradores com histórico de sorteios serão mantidos</li>
-                                    <li>Esta ação não pode ser desfeita</li>
-                                </ul>
-                            </div>
-                            <div class="form-check">
-                                {{ form.substituir_todos(class="form-check-input", checked="checked", disabled="disabled") }}
-                                {{ form.substituir_todos.label(class="form-check-label") }}
-                            </div>
+                        <div class="alert alert-warning alert-permanent">
+                            <strong>Atenção:</strong> A opção "Substituir TODOS" é uma ação destrutiva e não pode ser desfeita.
                         </div>
-
+                        
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-success btn-lg">
                                 <i class="fas fa-upload"></i> Fazer Upload
