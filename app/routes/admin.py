@@ -633,17 +633,16 @@ def atribuir_premio(id):
     
     form = AtribuirPremioForm()
     
-    # Popula apenas lojas ganhadoras (que foram sorteadas)
+    # Popula apenas com as lojas ganhadoras da semana atual
     lojas_ganhadoras = []
-    sorteios_ativos = SorteioSemanal.query.order_by(SorteioSemanal.semana_inicio.desc()).all()
-    for sorteio in sorteios_ativos:
-        if sorteio.loja_big.id not in [l[0] for l in lojas_ganhadoras]:
-            lojas_ganhadoras.append((sorteio.loja_big.id, f"{sorteio.loja_big.codigo} - {sorteio.loja_big.nome} (BIG)"))
-        if sorteio.loja_ultra.id not in [l[0] for l in lojas_ganhadoras]:
-            lojas_ganhadoras.append((sorteio.loja_ultra.id, f"{sorteio.loja_ultra.codigo} - {sorteio.loja_ultra.nome} (ULTRA)"))
+    sorteio_atual = SorteioSemanal.query.order_by(SorteioSemanal.semana_inicio.desc()).first()
+    
+    if sorteio_atual:
+        lojas_ganhadoras.append((sorteio_atual.loja_big.id, f"{sorteio_atual.loja_big.codigo} - {sorteio_atual.loja_big.nome} (BIG)"))
+        lojas_ganhadoras.append((sorteio_atual.loja_ultra.id, f"{sorteio_atual.loja_ultra.codigo} - {sorteio_atual.loja_ultra.nome} (ULTRA)"))
     
     if not lojas_ganhadoras:
-        flash('❌ Não há lojas ganhadoras disponíveis! Realize sorteios semanais primeiro.', 'warning')
+        flash('❌ Não há um sorteio semanal ativo! Realize um sorteio primeiro.', 'warning')
         return redirect(url_for('admin.premios'))
     
     form.loja_id.choices = lojas_ganhadoras

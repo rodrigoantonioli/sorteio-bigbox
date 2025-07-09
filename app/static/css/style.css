@@ -263,8 +263,16 @@ main {
         transform: translateY(-100vh) rotate(0deg);
         opacity: 1;
     }
+    10% {
+        transform: translateY(-80vh) rotate(180deg) scale(1);
+        opacity: 1;
+    }
+    90% {
+        transform: translateY(80vh) rotate(1080deg) scale(1);
+        opacity: 1;
+    }
     100% {
-        transform: translateY(100vh) rotate(720deg);
+        transform: translateY(100vh) rotate(1260deg) scale(0);
         opacity: 0;
     }
 }
@@ -2771,4 +2779,40 @@ main {
         transform: translateY(100vh) rotate(360deg);
         opacity: 0;
     }
+}
+
+/* Estilos para a página de gerenciamento de prêmios */
+.card-img-fixed-height {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-img-winner {
+    filter: brightness(0.8);
+}
+
+.card-header {
+    font-weight: 600;
+}
+
+.badge {
+    font-size: 0.85em;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+
+.btn-group-sm .btn {
+    font-size: 0.875rem;
+}
+
+.card-img-top {
+    transition: transform 0.2s;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.02);
 }
