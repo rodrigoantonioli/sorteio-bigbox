@@ -3,28 +3,31 @@ from flask_login import current_user
 from app.models import SorteioSemanal, SorteioColaborador, Loja, Colaborador
 from datetime import datetime, timedelta
 from sqlalchemy import desc
-import locale
-
-# Garante que as datas fiquem em português
-try:
-    locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
-except locale.Error:
-    try:
-        locale.setlocale(locale.LC_TIME, 'Portuguese_Brazil.1252')
-    except locale.Error:
-        print("Aviso: Locale 'pt_BR.UTF-8' ou 'Portuguese_Brazil.1252' não encontrado. Usando o padrão do sistema.")
 
 main_bp = Blueprint('main', __name__)
+
+def format_date_pt_br(d):
+    """Formata uma data para o padrão brasileiro, ex: '07 de Julho de 2025'."""
+    meses = [
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ]
+    return f"{d.day:02d} de {meses[d.month - 1]} de {d.year}"
 
 def formatar_intervalo_semana(data_base):
     """Calcula e formata o intervalo da semana (seg-dom) de uma data."""
     inicio_semana = data_base - timedelta(days=data_base.weekday())
     fim_semana = inicio_semana + timedelta(days=6)
     
+    meses = [
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ]
+    
     if inicio_semana.month == fim_semana.month:
-        return f"{inicio_semana.strftime('%d')} a {fim_semana.strftime('%d de %B de %Y')}"
+        return f"{inicio_semana.day:02d} a {fim_semana.day:02d} de {meses[fim_semana.month - 1]} de {fim_semana.year}"
     else:
-        return f"{inicio_semana.strftime('%d de %B')} a {fim_semana.strftime('%d de %B de %Y')}"
+        return f"{inicio_semana.day:02d} de {meses[inicio_semana.month - 1]} a {fim_semana.day:02d} de {meses[fim_semana.month - 1]} de {fim_semana.year}"
 
 @main_bp.route('/')
 def index():
