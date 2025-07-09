@@ -2934,3 +2934,62 @@ main {
 .loja-historico-ultra .vencedor-premio i {
     color: #00a651;
 }
+
+/* Layout Compacto da Página Principal */
+.hero-card-compact {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 25px;
+    padding: 2rem;
+    color: white;
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.25);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.hero-title-compact {
+    font-size: 2.5rem;
+    font-weight: 900;
+}
+
+.hero-subtitle-compact {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    flex-grow: 1;
+}
+
+.info-box-compact {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.info-box-compact h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.semana-destaque-card {
+    background-color: #ffffff;
+    border-radius: 25px;
+    padding: 2rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    height: 100%;
+}
+
+.section-header-compact .section-title {
+    font-size: 2rem;
+}
+
+.empty-state-compact {
+    background-color: #f8f9fa;
+    border-radius: 25px;
+    padding: 3rem;
+    text-align: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
