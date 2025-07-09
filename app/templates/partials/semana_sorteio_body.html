@@ -9,25 +9,23 @@
                 <div class="loja-historico-nome">{{ sorteio_da_semana.loja_big.nome }}</div>
                 <div class="loja-historico-codigo">{{ sorteio_da_semana.loja_big.codigo }}</div>
             </div>
-            {% if sorteio_da_semana.vencedores_big %}
-                <div class="vencedores-header">Vencedores da Loja</div>
-                <ul class="list-group list-group-flush">
-                    {% for sorteio in sorteio_da_semana.vencedores_big %}
-                        <li class="list-group-item vencedor-item">
-                            <div class="vencedor-nome">
-                                <i class="bi bi-person-check-fill"></i>
-                                {{ sorteio.colaborador.nome }}
-                            </div>
-                            <div class="vencedor-premio">
-                                <i class="bi bi-gift-fill"></i>
-                                {{ sorteio.premio.nome }}
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <div class="vencedores-header text-muted">Aguardando sorteio de colaboradores...</div>
-            {% endif %}
+            <div class="vencedores-header">
+                {% if sorteio_da_semana.vencedores_big %}Vencedores da Loja{% else %}Aguardando sorteio...{% endif %}
+            </div>
+            <div class="list-group list-group-flush">
+                {% for sorteio in sorteio_da_semana.vencedores_big %}
+                    <div class="list-group-item vencedor-item">
+                        <div class="vencedor-nome">
+                            <i class="bi bi-person-check-fill"></i>
+                            {{ sorteio.colaborador.nome }}
+                        </div>
+                        <div class="vencedor-premio">
+                            <i class="bi bi-gift-fill"></i>
+                            {{ sorteio.premio.nome }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
@@ -41,25 +39,23 @@
                 <div class="loja-historico-nome">{{ sorteio_da_semana.loja_ultra.nome }}</div>
                 <div class="loja-historico-codigo">{{ sorteio_da_semana.loja_ultra.codigo }}</div>
             </div>
-            {% if sorteio_da_semana.vencedores_ultra %}
-                <div class="vencedores-header">Vencedores da Loja</div>
-                <ul class="list-group list-group-flush">
-                    {% for sorteio in sorteio_da_semana.vencedores_ultra %}
-                        <li class="list-group-item vencedor-item">
-                            <div class="vencedor-nome">
-                                <i class="bi bi-person-check-fill"></i>
-                                {{ sorteio.colaborador.nome }}
-                            </div>
-                            <div class="vencedor-premio">
-                                <i class="bi bi-gift-fill"></i>
-                                {{ sorteio.premio.nome }}
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                 <div class="vencedores-header text-muted">Aguardando sorteio de colaboradores...</div>
-            {% endif %}
+            <div class="vencedores-header">
+                {% if sorteio_da_semana.vencedores_ultra %}Vencedores da Loja{% else %}Aguardando sorteio...{% endif %}
+            </div>
+            <div class="list-group list-group-flush">
+                {% for sorteio in sorteio_da_semana.vencedores_ultra %}
+                    <div class="list-group-item vencedor-item">
+                        <div class="vencedor-nome">
+                            <i class="bi bi-person-check-fill"></i>
+                            {{ sorteio.colaborador.nome }}
+                        </div>
+                        <div class="vencedor-premio">
+                            <i class="bi bi-gift-fill"></i>
+                            {{ sorteio.premio.nome }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div> 

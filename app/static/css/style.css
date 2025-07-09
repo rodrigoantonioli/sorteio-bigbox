@@ -485,8 +485,8 @@ main {
     font-weight: 900;
     background: linear-gradient(45deg, #FF6B6B, #4ECDC4, #45B7D1, #F9CA24);
     background-size: 400% 400%;
-    background-clip: text;
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: gradientAnimation 3s ease infinite;
     text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
