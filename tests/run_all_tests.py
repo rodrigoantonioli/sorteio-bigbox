@@ -8,8 +8,9 @@ import sys
 import os
 from io import StringIO
 
-# Adiciona o diretório raiz ao path
+# Adiciona o diretório raiz e o diretório de testes ao sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 def run_all_tests():
     """Executa todos os testes e gera relatório"""

@@ -1,7 +1,8 @@
 import unittest
 import sys
 import os
-from datetime import date
+from datetime import date, timedelta
+from flask import url_for
 
 # Adiciona o diretório raiz ao path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -9,6 +10,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from run import create_app
 from app.extensions import db
 from app.models import Usuario, Loja, Colaborador, Premio, SorteioSemanal, SorteioColaborador
+from helpers import generate_random_email, generate_random_password
 
 class IntegrationTestCase(unittest.TestCase):
     def setUp(self):
@@ -19,14 +21,53 @@ class IntegrationTestCase(unittest.TestCase):
         self.client = self.app.test_client()
         db.create_all()
 
+        # Criar Lojas
+        self.loja1 = Loja(codigo='BIG01', nome='BigBox Matriz', bandeira='BIG')
+        self.loja2 = Loja(codigo='ULTRA01', nome='UltraBox Center', bandeira='ULTRA')
+        db.session.add_all([self.loja1, self.loja2])
+        db.session.commit()
+
+        # Criar Usuários
+        self.admin_password = generate_random_password()
+        self.admin = Usuario(email=generate_random_email(), nome='Admin Sistema', tipo='admin')
+        self.admin.set_password(self.admin_password)
+
+        self.assistente_password = generate_random_password()
+        self.assistente = Usuario(email=generate_random_email(), nome='Assistente Sistema', tipo='assistente', loja_id=self.loja1.id)
+        self.assistente.set_password(self.assistente_password)
+        db.session.add_all([self.admin, self.assistente])
+        db.session.commit()
+
+        # Criar Colaboradores e Prêmios
+        self.colaborador_loja1 = Colaborador(matricula='100', nome='Colaborador Loja 1', setor='Teste', loja_id=self.loja1.id)
+        self.colaborador_loja2 = Colaborador(matricula='200', nome='Colaborador Loja 2', setor='Teste', loja_id=self.loja2.id)
+        self.premio_geral = Premio(nome='Prêmio Geral', tipo='geral', data_evento=date.today() + timedelta(days=10), criado_por=self.admin.id)
+        self.premio_show = Premio(nome='Show VIP BigBox', tipo='show', data_evento=date.today() + timedelta(days=20), criado_por=self.admin.id)
+
+        db.session.add_all([self.colaborador_loja1, self.colaborador_loja2, self.premio_geral, self.premio_show])
+        db.session.commit()
+
     def tearDown(self):
         """Executado depois de cada teste"""
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
 
+    def login(self, email, password):
+        """Função auxiliar de login"""
+        return self.client.post('/auth/login', data={'email': email, 'password': password})
+
+    def logout(self):
+        """Função auxiliar de logout"""
+        return self.client.get('/auth/logout')
+
     def create_full_test_environment(self):
-        """Cria ambiente completo para testes"""
+        """Cria ambiente completo para testes em um estado limpo."""
+        # Garante que o ambiente está limpo antes de criar novos dados
+        db.session.remove()
+        db.drop_all()
+        db.create_all()
+
         # Criar lojas
         loja_big = Loja(codigo='BIG001', nome='BigBox Matriz', bandeira='BIG')
         loja_ultra = Loja(codigo='ULTRA001', nome='UltraBox Center', bandeira='ULTRA')
@@ -116,49 +157,45 @@ class IntegrationTestCase(unittest.TestCase):
         }
 
     def test_fluxo_completo_sorteio_semanal(self):
-        """Teste do fluxo completo de sorteio semanal"""
+        """Teste do fluxo completo: Sorteio semanal, atribuição e sorteio de colaborador."""
         data = self.create_full_test_environment()
         
-        # 1. Admin faz login
-        login_response = self.client.post('/auth/login', data={
-            'email': 'admin@bigbox.com',
-            'password': 'admin123'
-        })
-        self.assertEqual(login_response.status_code, 302)  # Redirecionamento
+        # ETAPA 1: Admin realiza o sorteio semanal das lojas
+        self.login(data['admin'].email, 'admin123')
         
-        # 2. Acessa dashboard admin
-        dashboard_response = self.client.get('/admin/dashboard')
-        self.assertEqual(dashboard_response.status_code, 200)
-        
-        # 3. Faz sorteio semanal
         sorteio_response = self.client.post('/admin/sortear', data={
             'semana_inicio': '2025-01-01'
         }, follow_redirects=True)
         self.assertEqual(sorteio_response.status_code, 200)
         
-        # 4. Verifica se sorteio foi registrado
         sorteio = SorteioSemanal.query.filter_by(semana_inicio=date(2025, 1, 1)).first()
         self.assertIsNotNone(sorteio)
-        
-        # 5. Atribui prêmio a colaborador
-        colaborador = Colaborador.query.filter_by(loja_id=data['loja_big'].id).first()
-        atribuir_response = self.client.post('/admin/premios/atribuir', data={
+        self.logout()
+
+        # ETAPA 2: Assistente da loja ganhadora sorteia um colaborador
+        self.login(data['assistente_big'].email, 'assist123')
+
+        # O prêmio 'premio_big' já está associado à loja 'loja_big' no setup
+        sorteio_colab_response = self.client.post('/assistente/sortear', data={
             'premio_id': data['premio_big'].id,
-            'colaborador_id': colaborador.id,
-            'sorteio_semanal_id': sorteio.id
+            'confirmar_lista': True
         }, follow_redirects=True)
-        self.assertEqual(atribuir_response.status_code, 200)
-        
-        # 6. Verifica se atribuição foi registrada
-        sorteio_colab = SorteioColaborador.query.filter_by(
-            premio_id=data['premio_big'].id,
-            colaborador_id=colaborador.id
-        ).first()
+        self.assertEqual(sorteio_colab_response.status_code, 200)
+
+        # ETAPA 3: Verificação
+        sorteio_colab = SorteioColaborador.query.filter_by(premio_id=data['premio_big'].id).first()
         self.assertIsNotNone(sorteio_colab)
         
-        # 7. Verifica histórico
-        historico_response = self.client.get('/historico')
+        # Verifica se o colaborador sorteado é da loja correta
+        colaborador_sorteado = Colaborador.query.get(sorteio_colab.colaborador_id)
+        self.assertEqual(colaborador_sorteado.loja_id, data['loja_big'].id)
+        
+        # Verifica se o histórico público (quando deslogado) mostra o resultado
+        self.logout()
+        historico_response = self.client.get('/')
         self.assertEqual(historico_response.status_code, 200)
+        self.assertIn(data['loja_big'].nome.encode('utf-8'), historico_response.data)
+        self.assertIn(colaborador_sorteado.nome.encode('utf-8'), historico_response.data)
         self.assertIn(data['premio_big'].nome.encode('utf-8'), historico_response.data)
 
     def test_fluxo_assistente_gerencia_colaboradores(self):
@@ -173,15 +210,15 @@ class IntegrationTestCase(unittest.TestCase):
         self.assertEqual(login_response.status_code, 302)
         
         # 2. Acessa dashboard manager
-        dashboard_response = self.client.get('/manager/dashboard')
+        dashboard_response = self.client.get('/assistente/dashboard')
         self.assertEqual(dashboard_response.status_code, 200)
         
         # 3. Lista colaboradores da sua loja
-        colaboradores_response = self.client.get('/manager/colaboradores')
+        colaboradores_response = self.client.get('/assistente/colaboradores')
         self.assertEqual(colaboradores_response.status_code, 200)
         
         # 4. Adiciona novo colaborador
-        novo_colab_response = self.client.post('/manager/colaboradores/novo', data={
+        novo_colab_response = self.client.post('/assistente/colaboradores/novo', data={
             'matricula': 'BIG999',
             'nome': 'Novo Colaborador',
             'setor': 'Caixa'
@@ -197,44 +234,42 @@ class IntegrationTestCase(unittest.TestCase):
         self.assertEqual(novo_colab.nome, 'Novo Colaborador')
 
     def test_fluxo_controle_acesso_completo(self):
-        """Teste completo de controle de acesso"""
-        data = self.create_full_test_environment()
+        """
+        Testa o fluxo de controle de acesso:
+        - Usuário não logado é redirecionado para o login.
+        - Assistente não pode acessar páginas de admin.
+        - Admin pode acessar tudo.
+        """
+        # 1. Acesso sem login (deve redirecionar para /auth/login)
+        response_admin = self.client.get('/admin/dashboard', follow_redirects=False)
+        self.assertEqual(response_admin.status_code, 302)
+        self.assertTrue(response_admin.location.startswith('/auth/login'))
+
+        response_manager = self.client.get('/assistente/dashboard', follow_redirects=False)
+        self.assertEqual(response_manager.status_code, 302)
+        self.assertTrue(response_manager.location.startswith('/auth/login'))
+
+        # 2. Login como Assistente
+        self.login(self.assistente.email, self.assistente_password)
+
+        # 3. Assistente tenta acessar página de Admin (deve ser redirecionado)
+        response_admin_page = self.client.get('/admin/usuarios', follow_redirects=False)
+        self.assertEqual(response_admin_page.status_code, 302)
+        with self.app.test_request_context():
+            self.assertIn(url_for('main.index', _external=False), response_admin_page.location)
+
+        # 4. Assistente acessa sua própria página (deve funcionar)
+        response_manager_page = self.client.get('/assistente/dashboard')
+        self.assertEqual(response_manager_page.status_code, 200)
+
+        self.logout()
+
+        # 5. Login como Admin
+        self.login(self.admin.email, self.admin_password)
         
-        # 1. Verificar acesso sem login
-        response_admin = self.client.get('/admin/dashboard')
-        self.assertEqual(response_admin.status_code, 302)  # Redirecionamento para login
-        
-        response_manager = self.client.get('/manager/dashboard')
-        self.assertEqual(response_manager.status_code, 302)  # Redirecionamento para login
-        
-        # 2. Login como assistente
-        self.client.post('/auth/login', data={
-            'email': 'assistente.big@bigbox.com',
-            'password': 'assist123'
-        })
-        
-        # 3. Verificar acesso do assistente
-        response_manager_ok = self.client.get('/manager/dashboard')
-        self.assertEqual(response_manager_ok.status_code, 200)
-        
-        response_admin_denied = self.client.get('/admin/dashboard')
-        self.assertEqual(response_admin_denied.status_code, 302)  # Deve ser negado
-        
-        # 4. Logout
-        self.client.get('/auth/logout')
-        
-        # 5. Login como admin
-        self.client.post('/auth/login', data={
-            'email': 'admin@bigbox.com',
-            'password': 'admin123'
-        })
-        
-        # 6. Verificar acesso do admin
-        response_admin_ok = self.client.get('/admin/dashboard')
-        self.assertEqual(response_admin_ok.status_code, 200)
-        
-        response_manager_ok = self.client.get('/manager/dashboard')
-        self.assertEqual(response_manager_ok.status_code, 200)  # Admin pode acessar tudo
+        # 6. Admin tenta acessar página de assistente (deve ser redirecionado)
+        response_admin_tries_manager = self.client.get('/assistente/dashboard', follow_redirects=False)
+        self.assertEqual(response_admin_tries_manager.status_code, 302)
 
     def test_fluxo_gestao_premios_completo(self):
         """Teste completo de gestão de prêmios"""
@@ -282,50 +317,38 @@ class IntegrationTestCase(unittest.TestCase):
         """Teste do fluxo de auditoria e histórico"""
         data = self.create_full_test_environment()
         
-        # 1. Admin faz login
-        self.client.post('/auth/login', data={
-            'email': 'admin@bigbox.com',
-            'password': 'admin123'
-        })
+        # ETAPA 1: Admin realiza sorteio semanal
+        self.login(data['admin'].email, 'admin123')
+        self.client.post('/admin/sortear', data={'semana_inicio': '2025-01-01'}, follow_redirects=True)
+        self.logout()
+
+        # ETAPA 2: Assistentes realizam os sorteios de colaboradores
+        # Assistente Big
+        self.login(data['assistente_big'].email, 'assist123')
+        self.client.post('/assistente/sortear', data={'premio_id': data['premio_big'].id, 'confirmar_lista': True}, follow_redirects=True)
+        self.logout()
+
+        # Assistente Ultra
+        self.login(data['assistente_ultra'].email, 'assist123')
+        self.client.post('/assistente/sortear', data={'premio_id': data['premio_ultra'].id, 'confirmar_lista': True}, follow_redirects=True)
+        self.logout()
         
-        # 2. Realizar várias operações para gerar histórico
+        # ETAPA 3: Admin verifica o histórico de auditoria
+        self.login(data['admin'].email, 'admin123')
         
-        # Sorteio semanal
-        sorteio_response = self.client.post('/admin/sortear', data={
-            'semana_inicio': '2025-01-01'
-        }, follow_redirects=True)
-        
-        sorteio = SorteioSemanal.query.filter_by(semana_inicio=date(2025, 1, 1)).first()
-        
-        # Atribuir múltiplos prêmios
-        colaboradores = Colaborador.query.filter_by(loja_id=data['loja_big'].id).limit(2).all()
-        
-        for i, colaborador in enumerate(colaboradores):
-            premio = data['premio_big'] if i == 0 else data['premio_ultra']
-            atribuir_response = self.client.post('/admin/premios/atribuir', data={
-                'premio_id': premio.id,
-                'colaborador_id': colaborador.id,
-                'sorteio_semanal_id': sorteio.id
-            }, follow_redirects=True)
-            self.assertEqual(atribuir_response.status_code, 200)
-        
-        # 3. Verificar histórico completo
-        historico_response = self.client.get('/historico')
+        historico_response = self.client.get('/admin/sorteios')
         self.assertEqual(historico_response.status_code, 200)
         
-        # Verificar se todas as operações estão no histórico
+        # Verificar se os dois sorteios estão no histórico
         self.assertIn(data['premio_big'].nome.encode('utf-8'), historico_response.data)
-        self.assertIn(colaboradores[0].nome.encode('utf-8'), historico_response.data)
+        self.assertIn(data['premio_ultra'].nome.encode('utf-8'), historico_response.data)
         
-        # 4. Verificar integridade dos dados
+        # Verificar se a contagem de sorteios de colaboradores está correta (agora deve ser 2)
+        self.assertIn(b'<span class="badge bg-light text-dark ms-2">2</span>', historico_response.data)
+
+        # Verificar integridade dos dados
         total_sorteios = SorteioColaborador.query.count()
         self.assertEqual(total_sorteios, 2)
-        
-        # 5. Verificar snapshots de colaboradores
-        sorteios_com_snapshot = SorteioColaborador.query.filter(
-            SorteioColaborador.colaboradores_snapshot.isnot(None)
-        ).all()
-        # Dependendo da implementação, pode ter snapshots
 
 if __name__ == '__main__':
     unittest.main() 

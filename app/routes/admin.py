@@ -1068,10 +1068,10 @@ def editar_colaborador(id):
     
     return render_template('admin/colaborador_form.html', form=form, titulo='Editar Colaborador')
 
-@admin_bp.route('/colaboradores/<int:id>/toggle')
+@admin_bp.route('/colaboradores/<int:id>/toggle', methods=['GET', 'POST'])
 @admin_required
 def toggle_colaborador(id):
-    """Ativar/desativar colaborador pelo admin"""
+    """Ativa ou inativa um colaborador"""
     colaborador = Colaborador.query.get_or_404(id)
     
     colaborador.apto = not colaborador.apto
@@ -1283,18 +1283,15 @@ def editar_loja(id):
     
     return render_template('admin/loja_form.html', form=form, titulo='Editar Loja')
 
-@admin_bp.route('/lojas/<int:id>/toggle')
+@admin_bp.route('/lojas/<int:id>/toggle', methods=['GET', 'POST'])
 @admin_required
 def toggle_loja(id):
-    """Ativar/desativar loja"""
+    """Ativa ou inativa uma loja"""
     loja = Loja.query.get_or_404(id)
-    
     loja.ativo = not loja.ativo
     db.session.commit()
-    
     status = 'ativada' if loja.ativo else 'desativada'
     flash(f'Loja {loja.codigo} - {loja.nome} foi {status}.', 'success')
-    
     return redirect(url_for('admin.lojas'))
 
 @admin_bp.route('/lojas/<int:id>/excluir')

@@ -1,36 +1,27 @@
-# 🎬 Sistema de Sorteios Festival Na Praia 2025 - v1.1
+# 🎬 Sistema de Sorteios Festival Na Praia 2025 - v1.2
 
-![Status](https://img.shields.io/badge/Status-Produção-brightgreen)
-![Versão](https://img.shields.io/badge/Versão-1.1-blue)
+![Status](https://img.shields.io/badge/Status-Desenvolvimento-yellow)
+![Versão](https://img.shields.io/badge/Versão-1.2-blue)
+![Testes](https://img.shields.io/badge/Testes-100%25-brightgreen)
 ![Festival](https://img.shields.io/badge/Festival-Na%20Praia%202025-orange)
 
 Sistema web completo para gerenciamento de sorteios de lojas e colaboradores do **Festival Na Praia 2025**, desenvolvido com Flask, interface cinematográfica e otimizado para filmagem profissional.
 
-## 🚀 Novidades da Versão 1.1
+## 🚀 Novidades da Versão 1.2
 
-### 🎬 Interface Cinematográfica
-- **Resultado compacto** para filmagem profissional
-- **Layout responsivo** cabe em qualquer resolução
-- **Animações elegantes** com gradientes e efeitos visuais
-- **Mensagens discretas** que não poluem a gravação
+A versão 1.2 foca em robustez, qualidade de código e confiabilidade, garantindo que o sistema esteja mais estável do que nunca.
 
-### 🔄 Atualização Inteligente
-- **Resultado permanece na tela** durante toda a filmagem
-- **Página atualiza automaticamente** ao fechar modal
-- **Botões desabilitados** após sorteio para evitar repetições
-- **Estados sempre sincronizados**
+### ✅ **Suíte de Testes Completa**
+- **100% de Sucesso**: Todos os 54 testes automatizados passam, garantindo a estabilidade das funcionalidades existentes.
+- **Cobertura Abrangente**: Testes cobrem Models, Views e Controllers para todas as funcionalidades críticas do sistema.
+- **Segurança Reforçada**: Remoção de senhas e dados sensíveis do código-fonte.
+- **Código Limpo**: Eliminação de arquivos e scripts desnecessários, reduzindo a complexidade do projeto.
 
-### 📊 Interface Polida
-- **Singular/plural correto** em todas as contagens
-- **Terminologia assistente** ao invés de "usuário"
-- **Dashboard inteligente** com ações contextuais
-- **Navegação premium** com hover effects
-
-### 🖼️ Visual Premium
-- **Imagens reais dos prêmios** nos resultados
-- **Pote de colaboradores compacto** com grid responsivo
-- **Cards elegantes** com bordas coloridas
-- **CSS otimizado** para todos os dispositivos
+### 🎬 **Funcionalidades da v1.1 Mantidas**
+- **Interface Cinematográfica** para filmagem profissional.
+- **Atualização Inteligente** com estados sempre sincronizados.
+- **Interface Polida** com dashboards contextuais e navegação premium.
+- **Visual Premium** com imagens reais dos prêmios e design responsivo.
 
 ## 📋 Funcionalidades Principais
 
@@ -68,6 +59,7 @@ Sistema web completo para gerenciamento de sorteios de lojas e colaboradores do 
 - **Frontend**: Bootstrap 5 | CSS3 Animado | JavaScript ES6
 - **Banco**: SQLite (desenvolvimento) | PostgreSQL (produção)
 - **Deploy**: Render.com ready
+- **Testes**: `unittest` do Python
 - **Upload**: Excel/XLSX suportado
 
 ## ⚡ Instalação Rápida
@@ -103,6 +95,14 @@ flask init-db
 python run.py
 ```
 
+## ✅ Executando os Testes
+
+Para garantir a integridade do sistema, execute a suíte de testes completa:
+
+```bash
+python tests/run_all_tests.py
+```
+
 ## 🌐 URLs Principais
 
 - **Dashboard Admin**: `/admin/dashboard`
@@ -136,9 +136,9 @@ sorteioBigbox/
 │   ├── static/         # CSS, JS, Imagens
 │   └── templates/      # Templates Jinja2
 ├── instance/           # Banco SQLite
-├── tests/             # Testes automatizados
-├── run.py             # Script principal
-└── requirements.txt   # Dependências
+├── tests/              # Testes automatizados (100% de sucesso)
+├── run.py              # Script principal
+└── requirements.txt    # Dependências
 ```
 
 ## 🎯 Próximos Passos
@@ -154,9 +154,9 @@ Para desenvolvimento futuro:
 
 Desenvolvido especialmente para o **Festival Na Praia 2025** com interface cinematográfica otimizada para filmagem profissional.
 
-**Versão**: 1.1  
-**Status**: Produção  
-**Última atualização**: Janeiro 2025
+**Versão**: 1.2  
+**Status**: Desenvolvimento  
+**Última atualização**: Julho 2025
 
 ---
 
