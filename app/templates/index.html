@@ -159,65 +159,92 @@
 {% endif %}
 
 <!-- Histórico Completo de Sorteios -->
-{% if todos_sorteios %}
-<div class="historico-section">
+{% if historico_semanal %}
+<div class="container mt-5">
     <div class="row">
         <div class="col-12">
-            <div class="section-header text-center mb-4">
-                <h3 class="section-title">
-                    <i class="bi bi-clock-history"></i> 
-                    {% if sorteio_atual %}Histórico de Sorteios{% else %}Sorteios Realizados{% endif %}
-                </h3>
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title">
+                    <i class="bi bi-clock-history"></i> Histórico de Sorteios
+                </h2>
                 <p class="section-subtitle">
-                    {% if todos_sorteios|length > 1 %}
-                        {{ todos_sorteios|length }} sorteios realizados no total
-                    {% else %}
-                        Primeiro sorteio do festival
-                    {% endif %}
+                    Confira as lojas e os colaboradores premiados a cada semana do festival.
                 </p>
             </div>
-            
-            <div class="historico-grid">
-                <div class="row">
-                    {% for sorteio in todos_sorteios %}
-                    {% if not sorteio_atual or sorteio.id != sorteio_atual.id %}
-                    <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="historico-card">
-                            <div class="historico-header">
-                                <div class="historico-data">
-                                    <i class="bi bi-calendar-week"></i>
-                                    {{ sorteio.semana_inicio.strftime('%d/%m/%Y') }}
-                                </div>
-                            </div>
-                            <div class="historico-content">
-                                <div class="historico-loja historico-big">
-                                    <span class="bandeira-badge">BIG</span>
-                                    <span class="loja-nome-historico">{{ sorteio.loja_big.nome }}</span>
-                                </div>
-                                <div class="historico-loja historico-ultra">
-                                    <span class="bandeira-badge">ULTRA</span>
-                                    <span class="loja-nome-historico">{{ sorteio.loja_ultra.nome }}</span>
-                                </div>
-                                
-                                {% if todos_colaboradores %}
-                                    {% set colaboradores_semana = todos_colaboradores|selectattr('sorteio_semanal_id', 'equalto', sorteio.id)|list %}
-                                    {% if colaboradores_semana %}
-                                    <div class="historico-stats">
-                                        <small class="text-muted">
-                                            <i class="bi bi-people"></i> {{ colaboradores_semana|length }} colaborador{% if colaboradores_semana|length > 1 %}es{% endif %} premiado{% if colaboradores_semana|length > 1 %}s{% endif %}
-                                        </small>
-                                    </div>
-                                    {% endif %}
-                                {% endif %}
-                            </div>
+        </div>
+    </div>
+
+    {% for semana in historico_semanal %}
+    <div class="semana-sorteio-card mb-5">
+        <div class="semana-header">
+            <i class="bi bi-calendar2-week-fill"></i>
+            Semana de {{ semana.semana_inicio.strftime('%d de %B de %Y') }}
+        </div>
+        <div class="semana-body">
+            <div class="row">
+                <!-- Loja BIG -->
+                <div class="col-md-6 mb-4">
+                    <div class="loja-historico-card loja-historico-big">
+                        <div class="loja-historico-header">
+                            <h3><i class="bi bi-building"></i> BIG BOX</h3>
                         </div>
+                        <div class="loja-historico-content">
+                            <div class="loja-historico-nome">{{ semana.loja_big.nome }}</div>
+                            <div class="loja-historico-codigo">{{ semana.loja_big.codigo }}</div>
+                        </div>
+                        {% if semana.vencedores_big %}
+                        <div class="vencedores-header">Vencedores da Loja</div>
+                        <ul class="list-group list-group-flush">
+                            {% for sorteio in semana.vencedores_big %}
+                            <li class="list-group-item vencedor-item">
+                                <div class="vencedor-nome">
+                                    <i class="bi bi-person-check-fill"></i>
+                                    {{ sorteio.colaborador.nome }}
+                                </div>
+                                <div class="vencedor-premio">
+                                    <i class="bi bi-gift-fill"></i>
+                                    {{ sorteio.premio.nome }}
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
                     </div>
-                    {% endif %}
-                    {% endfor %}
+                </div>
+
+                <!-- Loja ULTRA -->
+                <div class="col-md-6 mb-4">
+                    <div class="loja-historico-card loja-historico-ultra">
+                        <div class="loja-historico-header">
+                            <h3><i class="bi bi-building"></i> ULTRABOX</h3>
+                        </div>
+                        <div class="loja-historico-content">
+                            <div class="loja-historico-nome">{{ semana.loja_ultra.nome }}</div>
+                            <div class="loja-historico-codigo">{{ semana.loja_ultra.codigo }}</div>
+                        </div>
+                        {% if semana.vencedores_ultra %}
+                        <div class="vencedores-header">Vencedores da Loja</div>
+                        <ul class="list-group list-group-flush">
+                            {% for sorteio in semana.vencedores_ultra %}
+                            <li class="list-group-item vencedor-item">
+                                <div class="vencedor-nome">
+                                    <i class="bi bi-person-check-fill"></i>
+                                    {{ sorteio.colaborador.nome }}
+                                </div>
+                                <div class="vencedor-premio">
+                                    <i class="bi bi-gift-fill"></i>
+                                    {{ sorteio.premio.nome }}
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    {% endfor %}
 </div>
 {% else %}
 <!-- Nenhum Sorteio Realizado -->
