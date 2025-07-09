@@ -139,67 +139,63 @@
                     <div class="alert alert-danger alert-permanent" role="alert">
                         <strong>Cuidado:</strong> As ações nesta seção são irreversíveis e podem levar à perda de dados importantes.
                     </div>
-                    <ul class="list-group">
+                    <div class="list-group">
                         <!-- Resetar Pote de Lojas -->
-                        <li class="list-group-item">
-                            <div>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h6 class="mb-1"><i class="fas fa-redo"></i> Resetar Pote de Lojas</h6>
-                                    <small class="text-muted">Seguro</small>
-                                </div>
-                                <p class="mb-1 mt-2">
-                                    <strong>Remove todos os sorteios</strong> e permite que todas as lojas participem novamente dos sorteios semanais.
-                                </p>
-                                <p class="text-muted mb-3">
-                                    <small>
-                                        <strong>Será removido:</strong><br>
-                                        • {{ total_sorteios }} sorteios semanais<br>
-                                        • {{ total_sorteios_colaboradores }} sorteios de colaboradores
-                                    </small>
-                                </p>
-                                <form method="POST" action="{{ url_for('admin.resetar_pote_lojas') }}" 
-                                      onsubmit="return confirm('⚠️ CONFIRMAÇÃO NECESSÁRIA ⚠️\n\nEsta operação irá REMOVER TODOS OS SORTEIOS do sistema!\n\nTodos os sorteios semanais e de colaboradores serão perdidos permanentemente.\n\nTem certeza ABSOLUTA que deseja continuar?')">
-                                    <button type="submit" class="btn btn-warning">
-                                        <i class="fas fa-redo"></i> Resetar Pote
-                                    </button>
-                                </form>
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-1"><i class="fas fa-redo"></i> Resetar Pote de Lojas</h6>
+                                <small class="text-muted">Seguro</small>
                             </div>
-                        </li>
+                            <p class="mb-1 mt-2">
+                                <strong>Remove todos os sorteios</strong> e permite que todas as lojas participem novamente dos sorteios semanais.
+                            </p>
+                            <p class="text-muted mb-3">
+                                <small>
+                                    <strong>Será removido:</strong><br>
+                                    • {{ total_sorteios }} sorteios semanais<br>
+                                    • {{ total_sorteios_colaboradores }} sorteios de colaboradores
+                                </small>
+                            </p>
+                            <form method="POST" action="{{ url_for('admin.resetar_pote_lojas') }}" 
+                                  onsubmit="return confirm('⚠️ CONFIRMAÇÃO NECESSÁRIA ⚠️\n\nEsta operação irá REMOVER TODOS OS SORTEIOS do sistema!\n\nTodos os sorteios semanais e de colaboradores serão perdidos permanentemente.\n\nTem certeza ABSOLUTA que deseja continuar?')">
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-redo"></i> Resetar Pote
+                                </button>
+                            </form>
+                        </div>
 
                         <!-- Reset Completo -->
-                        <li class="list-group-item">
-                            <div>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h6 class="mb-1"><i class="fas fa-nuclear"></i> Reset Completo do Sistema</h6>
-                                    <small class="text-muted">Perigoso</small>
-                                </div>
-                                <p class="mb-1 mt-2">
-                                    <strong>OPERAÇÃO EXTREMAMENTE PERIGOSA!</strong> Remove TODOS os dados exceto lojas e administrador.
-                                </p>
-                                <p class="text-muted mb-3">
-                                    <small>
-                                        <strong>Sistema Atual:</strong><br>
-                                        • {{ total_lojas }} lojas ativas<br>
-                                        • {{ total_colaboradores }} colaboradores<br>
-                                        • {{ total_usuarios }} assistentes<br>
-                                        • {{ total_premios }} prêmios ativos<br>
-                                        • {{ total_sorteios }} sorteios realizados<br><br>
-                                        <strong>Configuração Inicial:</strong><br>
-                                        • Administrador principal<br>
-                                    </small>
-                                </p>
-                                <p class="text-muted">
-                                    <small><strong>Dica:</strong> Você pode reconstruir o sistema importando colaboradores e criando novos assistentes através das opções normais do sistema.</p>
-                                </p>
-                                <form method="POST" action="{{ url_for('admin.reset_completo') }}" 
-                                      onsubmit="return confirm('🚨 OPERAÇÃO ULTRA PERIGOSA 🚨\n\nVocê está prestes a DESTRUIR TODOS OS DADOS do sistema!\n\nISSO INCLUI:\n- Todos os sorteios\n- Todos os colaboradores\n- Todos os assistentes\n- Todos os prêmios\n\nAPENAS AS LOJAS E O ADMIN SERÃO MANTIDOS!\n\nEsta operação é IRREVERSÍVEL!\n\nTem certeza ABSOLUTA?')">
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="fas fa-nuclear"></i> DESTRUIR TUDO
-                                    </button>
-                                </form>
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-1"><i class="fas fa-nuclear"></i> Reset Completo do Sistema</h6>
+                                <small class="text-muted">Perigoso</small>
                             </div>
-                        </li>
-                    </ul>
+                            <p class="mb-1 mt-2">
+                                <strong>OPERAÇÃO EXTREMAMENTE PERIGOSA!</strong> Remove TODOS os dados exceto lojas e administrador.
+                            </p>
+                            <p class="text-muted mb-3">
+                                <small>
+                                    <strong>Sistema Atual:</strong><br>
+                                    • {{ total_lojas }} lojas ativas<br>
+                                    • {{ total_colaboradores }} colaboradores<br>
+                                    • {{ total_usuarios }} assistentes<br>
+                                    • {{ total_premios }} prêmios ativos<br>
+                                    • {{ total_sorteios }} sorteios realizados<br><br>
+                                    <strong>Configuração Inicial:</strong><br>
+                                    • Administrador principal<br>
+                                </small>
+                            </p>
+                            <p class="text-muted">
+                                <small><strong>Dica:</strong> Você pode reconstruir o sistema importando colaboradores e criando novos assistentes através das opções normais do sistema.</p>
+                            </p>
+                            <form method="POST" action="{{ url_for('admin.reset_completo') }}" 
+                                  onsubmit="return confirm('🚨 OPERAÇÃO ULTRA PERIGOSA 🚨\n\nVocê está prestes a DESTRUIR TODOS OS DADOS do sistema!\n\nISSO INCLUI:\n- Todos os sorteios\n- Todos os colaboradores\n- Todos os assistentes\n- Todos os prêmios\n\nAPENAS AS LOJAS E O ADMIN SERÃO MANTIDOS!\n\nEsta operação é IRREVERSÍVEL!\n\nTem certeza ABSOLUTA?')">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-nuclear"></i> DESTRUIR TUDO
+                                </button>
+                            </form>
+                        </div>
+                    </div>
 
                     <div class="alert alert-info alert-permanent mt-3" role="alert">
                         <h6><i class="fas fa-info-circle"></i> Informação</h6>
