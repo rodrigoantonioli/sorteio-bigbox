@@ -78,7 +78,7 @@
                             {% if 'Editar' in titulo and usuario %}
                                 <!-- Modo Edição: Mostrar senha atual ou campo para nova -->
                                 <div id="senhaAtualDiv" class="mb-2">
-                                    <div class="alert alert-info d-flex align-items-center">
+                                    <div class="alert alert-info d-flex align-items-center alert-permanent">
                                         <i class="bi bi-shield-lock me-2"></i>
                                         <div class="flex-grow-1">
                                             <strong>Senha atual definida</strong>
@@ -118,7 +118,7 @@
                             {% endif %}
                             
                             <!-- Alert para senha gerada -->
-                            <div id="senhaGeradaAlert" class="alert alert-success mt-2" style="display: none;">
+                            <div id="senhaGeradaAlert" class="alert alert-success mt-2 d-none">
                                 <div class="d-flex align-items-center">
                                     <i class="bi bi-check-circle me-2"></i>
                                     <div class="flex-grow-1">
@@ -126,7 +126,7 @@
                                         <div class="mt-1">
                                             <small>Copie e envie esta senha para o assistente:</small>
                                             <div class="input-group input-group-sm mt-1">
-                                                <input type="text" id="senhaParaCopiar" class="form-control" readonly>
+                                                <input type="text" id="senhaParaCopiar" class="form-control" readonly aria-label="Senha gerada">
                                                 <button type="button" class="btn btn-outline-primary" id="copiarSenha" title="Copiar senha">
                                                     <i class="bi bi-clipboard"></i>
                                                 </button>
@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function() {
         senhaParaCopiar.value = senhaGerada;
         
         // Mostra o alert de senha gerada
-        senhaGeradaAlert.style.display = 'block';
+        senhaGeradaAlert.classList.remove('d-none');
         
         // Adiciona efeito visual de sucesso no botão
         gerarSenhaButton.innerHTML = '<i class="bi bi-check"></i> Gerada!';
@@ -264,8 +264,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Esconde o alert quando o usuário digita no campo de senha
     passwordField.addEventListener('input', function() {
-        if (senhaGeradaAlert.style.display === 'block' && passwordField.value !== senhaParaCopiar.value) {
-            senhaGeradaAlert.style.display = 'none';
+        if (!senhaGeradaAlert.classList.contains('d-none') && passwordField.value !== senhaParaCopiar.value) {
+            senhaGeradaAlert.classList.add('d-none');
         }
     });
 });

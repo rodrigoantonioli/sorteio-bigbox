@@ -633,17 +633,16 @@ def atribuir_premio(id):
     
     form = AtribuirPremioForm()
     
-    # Popula apenas lojas ganhadoras (que foram sorteadas)
+    # Popula apenas com as lojas ganhadoras da semana atual
     lojas_ganhadoras = []
-    sorteios_ativos = SorteioSemanal.query.order_by(SorteioSemanal.semana_inicio.desc()).all()
-    for sorteio in sorteios_ativos:
-        if sorteio.loja_big.id not in [l[0] for l in lojas_ganhadoras]:
-            lojas_ganhadoras.append((sorteio.loja_big.id, f"{sorteio.loja_big.codigo} - {sorteio.loja_big.nome} (BIG)"))
-        if sorteio.loja_ultra.id not in [l[0] for l in lojas_ganhadoras]:
-            lojas_ganhadoras.append((sorteio.loja_ultra.id, f"{sorteio.loja_ultra.codigo} - {sorteio.loja_ultra.nome} (ULTRA)"))
+    sorteio_atual = SorteioSemanal.query.order_by(SorteioSemanal.semana_inicio.desc()).first()
+    
+    if sorteio_atual:
+        lojas_ganhadoras.append((sorteio_atual.loja_big.id, f"{sorteio_atual.loja_big.codigo} - {sorteio_atual.loja_big.nome} (BIG)"))
+        lojas_ganhadoras.append((sorteio_atual.loja_ultra.id, f"{sorteio_atual.loja_ultra.codigo} - {sorteio_atual.loja_ultra.nome} (ULTRA)"))
     
     if not lojas_ganhadoras:
-        flash('❌ Não há lojas ganhadoras disponíveis! Realize sorteios semanais primeiro.', 'warning')
+        flash('❌ Não há um sorteio semanal ativo! Realize um sorteio primeiro.', 'warning')
         return redirect(url_for('admin.premios'))
     
     form.loja_id.choices = lojas_ganhadoras
@@ -677,6 +676,31 @@ def desatribuir_premio(id):
     db.session.commit()
     
     flash(f'✅ Prêmio "{premio.nome}" removido da loja {loja_nome} e voltou para o pool geral.', 'success')
+    return redirect(url_for('admin.premios'))
+
+@admin_bp.route('/premios/<int:id>/excluir', methods=['POST'])
+@admin_required
+def excluir_premio(id):
+    """Excluir prêmio (apenas se não foi atribuído nem sorteado)"""
+    premio = Premio.query.get_or_404(id)
+
+    # Verifica se já foi sorteado
+    sorteio_existente = SorteioColaborador.query.filter_by(premio_id=id).first()
+    if sorteio_existente:
+        flash('❌ Não é possível excluir um prêmio que já foi sorteado!', 'danger')
+        return redirect(url_for('admin.premios'))
+
+    # Verifica se está atribuído a uma loja
+    if premio.loja_id:
+        flash('❌ Não é possível excluir um prêmio que está atribuído a uma loja!', 'danger')
+        return redirect(url_for('admin.premios'))
+
+    # Se passou nas verificações, exclui
+    nome_premio = premio.nome
+    db.session.delete(premio)
+    db.session.commit()
+
+    flash(f'✅ Prêmio "{nome_premio}" foi excluído com sucesso.', 'success')
     return redirect(url_for('admin.premios'))
 
 @admin_bp.route('/sorteios')
@@ -1068,10 +1092,10 @@ def editar_colaborador(id):
     
     return render_template('admin/colaborador_form.html', form=form, titulo='Editar Colaborador')
 
-@admin_bp.route('/colaboradores/<int:id>/toggle')
+@admin_bp.route('/colaboradores/<int:id>/toggle', methods=['GET', 'POST'])
 @admin_required
 def toggle_colaborador(id):
-    """Ativar/desativar colaborador pelo admin"""
+    """Ativa ou inativa um colaborador"""
     colaborador = Colaborador.query.get_or_404(id)
     
     colaborador.apto = not colaborador.apto
@@ -1283,18 +1307,15 @@ def editar_loja(id):
     
     return render_template('admin/loja_form.html', form=form, titulo='Editar Loja')
 
-@admin_bp.route('/lojas/<int:id>/toggle')
+@admin_bp.route('/lojas/<int:id>/toggle', methods=['GET', 'POST'])
 @admin_required
 def toggle_loja(id):
-    """Ativar/desativar loja"""
+    """Ativa ou inativa uma loja"""
     loja = Loja.query.get_or_404(id)
-    
     loja.ativo = not loja.ativo
     db.session.commit()
-    
     status = 'ativada' if loja.ativo else 'desativada'
     flash(f'Loja {loja.codigo} - {loja.nome} foi {status}.', 'success')
-    
     return redirect(url_for('admin.lojas'))
 
 @admin_bp.route('/lojas/<int:id>/excluir')

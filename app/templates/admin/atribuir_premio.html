@@ -19,7 +19,7 @@
                 </div>
                 <div class="card-body">
                     <!-- Informações do Prêmio -->
-                    <div class="alert alert-info" role="alert">
+                    <div class="alert alert-info alert-permanent" role="alert">
                         <h6><i class="fas fa-gift"></i> <strong>Prêmio Selecionado:</strong></h6>
                         <p class="mb-2"><strong>{{ premio.nome }}</strong></p>
                         {% if premio.descricao %}
@@ -46,17 +46,15 @@
                         <div class="mb-4">
                             {{ form.loja_id.label(class="form-label") }}
                             {{ form.loja_id(class="form-select form-select-lg") }}
-                            <div class="form-text">
-                                <i class="fas fa-info-circle"></i> Apenas lojas que foram sorteadas semanalmente aparecem nesta lista.
-                            </div>
+                            <small class="form-text text-muted">Apenas lojas que foram sorteadas semanalmente aparecem nesta lista.</small>
                         </div>
 
-                        <div class="alert alert-warning" role="alert">
-                            <h6><i class="fas fa-exclamation-triangle"></i> <strong>Importante:</strong></h6>
-                            <ul class="mb-0">
-                                <li>Após atribuir, apenas o assistente da loja selecionada poderá sortear este prêmio</li>
-                                <li>O prêmio ficará disponível no painel do assistente da loja</li>
-                                <li>Você pode remover a atribuição a qualquer momento (até ser sorteado)</li>
+                        <div class="alert alert-warning alert-permanent">
+                            <h5 class="alert-heading">Importante:</h5>
+                            <ul>
+                                <li>Após atribuir, apenas o assistente da loja selecionada poderá sortear este prêmio.</li>
+                                <li>O prêmio ficará disponível no painel do assistente da loja.</li>
+                                <li>Você pode remover a atribuição a qualquer momento (até ser sorteado).</li>
                             </ul>
                         </div>
 
@@ -72,19 +70,4 @@
         </div>
     </div>
 </div>
-
-<style>
-.alert h6 {
-    color: inherit;
-    margin-bottom: 0.5rem;
-}
-.form-select-lg {
-    font-size: 1.1rem;
-    padding: 0.75rem 1rem;
-}
-.btn-lg {
-    font-size: 1.1rem;
-    padding: 0.75rem 1.5rem;
-}
-</style>
 {% endblock %} 

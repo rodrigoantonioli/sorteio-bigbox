@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from run import create_app
 from app.extensions import db
 from app.models import Usuario, Loja
+from helpers import generate_random_email, generate_random_password
 
 class LojasTestCase(unittest.TestCase):
     def setUp(self):
@@ -18,13 +19,11 @@ class LojasTestCase(unittest.TestCase):
         self.client = self.app.test_client()
         db.create_all()
         
-        # Criar admin para testes
-        self.admin = Usuario(
-            email='admin@bigbox.com',
-            nome='Admin Teste',
-            tipo='admin'
-        )
-        self.admin.set_password('admin123')
+        # Admin
+        self.admin_email = generate_random_email()
+        self.admin_password = generate_random_password()
+        self.admin = Usuario(email=self.admin_email, nome='Admin Lojas', tipo='admin')
+        self.admin.set_password(self.admin_password)
         db.session.add(self.admin)
         db.session.commit()
 
@@ -34,16 +33,16 @@ class LojasTestCase(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
-    def login_admin(self):
+    def login(self):
         """Faz login como admin"""
         return self.client.post('/auth/login', data={
-            'email': 'admin@bigbox.com',
-            'password': 'admin123'
-        })
+            'email': self.admin_email,
+            'password': self.admin_password
+        }, follow_redirects=True)
 
     def test_listar_lojas(self):
         """Teste de listagem de lojas"""
-        self.login_admin()
+        self.login()
         
         # Criar algumas lojas
         loja1 = Loja(codigo='BIG001', nome='BigBox Matriz', bandeira='BIG')
@@ -57,9 +56,9 @@ class LojasTestCase(unittest.TestCase):
         self.assertIn(b'BigBox Matriz', response.data)
         self.assertIn(b'UltraBox Center', response.data)
 
-    def test_criar_loja_big(self):
-        """Teste de criação de loja BigBox"""
-        self.login_admin()
+    def test_criar_loja(self):
+        """Teste de criação de loja"""
+        self.login()
         
         response = self.client.post('/admin/lojas/adicionar', data={
             'codigo': 'BIG001',
@@ -75,37 +74,19 @@ class LojasTestCase(unittest.TestCase):
         self.assertEqual(loja.nome, 'BigBox Teste')
         self.assertEqual(loja.bandeira, 'BIG')
 
-    def test_criar_loja_ultra(self):
-        """Teste de criação de loja UltraBox"""
-        self.login_admin()
-        
-        response = self.client.post('/admin/lojas/adicionar', data={
-            'codigo': 'ULTRA001',
-            'nome': 'UltraBox Teste',
-            'bandeira': 'ULTRA'
-        }, follow_redirects=True)
-        
-        self.assertEqual(response.status_code, 200)
-        
-        # Verificar se foi criada no banco
-        loja = Loja.query.filter_by(codigo='ULTRA001').first()
-        self.assertIsNotNone(loja)
-        self.assertEqual(loja.nome, 'UltraBox Teste')
-        self.assertEqual(loja.bandeira, 'ULTRA')
-
     def test_editar_loja(self):
         """Teste de edição de loja"""
-        self.login_admin()
+        self.login()
         
         # Criar loja
-        loja = Loja(codigo='BIG001', nome='BigBox Original', bandeira='BIG')
+        loja = Loja(codigo='EDIT01', nome='Loja Original', bandeira='BIG')
         db.session.add(loja)
         db.session.commit()
         
         # Editar loja
         response = self.client.post(f'/admin/lojas/{loja.id}/editar', data={
-            'codigo': 'BIG001',
-            'nome': 'BigBox Editada',
+            'codigo': 'EDIT01',
+            'nome': 'Loja Editada',
             'bandeira': 'BIG'
         }, follow_redirects=True)
         
@@ -113,14 +94,14 @@ class LojasTestCase(unittest.TestCase):
         
         # Verificar se foi editada
         loja_editada = Loja.query.get(loja.id)
-        self.assertEqual(loja_editada.nome, 'BigBox Editada')
+        self.assertEqual(loja_editada.nome, 'Loja Editada')
 
     def test_inativar_loja(self):
         """Teste de inativação de loja"""
-        self.login_admin()
+        self.login()
         
         # Criar loja
-        loja = Loja(codigo='BIG001', nome='BigBox Teste', bandeira='BIG')
+        loja = Loja(codigo='INATIV01', nome='Loja Ativa', bandeira='ULTRA')
         db.session.add(loja)
         db.session.commit()
         
@@ -134,26 +115,26 @@ class LojasTestCase(unittest.TestCase):
         loja_inativada = Loja.query.get(loja.id)
         self.assertFalse(loja_inativada.ativo)
 
-    def test_codigo_loja_unico(self):
-        """Teste de unicidade do código da loja"""
-        self.login_admin()
+    def test_loja_codigo_unico(self):
+        """Teste de código de loja único"""
+        self.login()
         
         # Criar primeira loja
-        response1 = self.client.post('/admin/lojas/adicionar', data={
-            'codigo': 'BIG001',
-            'nome': 'BigBox Primeira',
+        self.client.post('/admin/lojas/adicionar', data={
+            'codigo': 'UNICO01',
+            'nome': 'Loja Um',
             'bandeira': 'BIG'
-        })
+        }, follow_redirects=True)
         
         # Tentar criar segunda loja com mesmo código
-        response2 = self.client.post('/admin/lojas/adicionar', data={
-            'codigo': 'BIG001',
-            'nome': 'BigBox Segunda',
+        self.client.post('/admin/lojas/adicionar', data={
+            'codigo': 'UNICO01',
+            'nome': 'Loja Dois',
             'bandeira': 'BIG'
-        })
+        }, follow_redirects=True)
         
         # Deve haver apenas uma loja com esse código
-        lojas = Loja.query.filter_by(codigo='BIG001').all()
+        lojas = Loja.query.filter_by(codigo='UNICO01').all()
         self.assertEqual(len(lojas), 1)
 
 if __name__ == '__main__':

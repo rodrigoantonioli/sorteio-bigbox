@@ -263,8 +263,16 @@ main {
         transform: translateY(-100vh) rotate(0deg);
         opacity: 1;
     }
+    10% {
+        transform: translateY(-80vh) rotate(180deg) scale(1);
+        opacity: 1;
+    }
+    90% {
+        transform: translateY(80vh) rotate(1080deg) scale(1);
+        opacity: 1;
+    }
     100% {
-        transform: translateY(100vh) rotate(720deg);
+        transform: translateY(100vh) rotate(1260deg) scale(0);
         opacity: 0;
     }
 }
@@ -477,8 +485,8 @@ main {
     font-weight: 900;
     background: linear-gradient(45deg, #FF6B6B, #4ECDC4, #45B7D1, #F9CA24);
     background-size: 400% 400%;
-    background-clip: text;
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: gradientAnimation 3s ease infinite;
     text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
@@ -2771,4 +2779,217 @@ main {
         transform: translateY(100vh) rotate(360deg);
         opacity: 0;
     }
+}
+
+/* Estilos para a página de gerenciamento de prêmios */
+.card-img-fixed-height {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-img-winner {
+    filter: brightness(0.8);
+}
+
+.card-header {
+    font-weight: 600;
+}
+
+.badge {
+    font-size: 0.85em;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+
+.btn-group-sm .btn {
+    font-size: 0.875rem;
+}
+
+.card-img-top {
+    transition: transform 0.2s;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.02);
+}
+
+/* ========================================
+   HISTÓRICO DE SORTEIOS PÚBLICO
+======================================== */
+.semana-sorteio-card {
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.semana-header {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+    padding: 1rem 1.5rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.semana-body {
+    padding: 2rem;
+}
+
+.loja-historico-card {
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    background-color: #f8f9fa;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.loja-historico-header {
+    padding: 1.25rem;
+    text-align: center;
+    color: white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px 15px 0 0;
+}
+
+.loja-historico-big .loja-historico-header {
+    background: linear-gradient(135deg, #8e44ad, #9b59b6);
+}
+
+.loja-historico-ultra .loja-historico-header {
+    background: linear-gradient(135deg, #00a651, #27ae60);
+}
+
+.loja-historico-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.loja-historico-content {
+    padding: 1.5rem;
+    text-align: center;
+    flex-grow: 1;
+}
+
+.loja-historico-nome {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #2c3e50;
+}
+
+.loja-historico-codigo {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.vencedores-header {
+    font-weight: 700;
+    color: #495057;
+    padding: 0.75rem 1.25rem;
+    background-color: #e9ecef;
+    border-top: 1px solid #dee2e6;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.vencedor-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+}
+
+.vencedor-nome {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.vencedor-premio {
+    font-weight: 500;
+    color: #6c757d;
+    text-align: right;
+}
+
+.vencedor-nome i,
+.vencedor-premio i {
+    margin-right: 0.5rem;
+    color: #667eea;
+}
+
+.loja-historico-ultra .vencedor-nome i,
+.loja-historico-ultra .vencedor-premio i {
+    color: #00a651;
+}
+
+/* Layout Compacto da Página Principal */
+.hero-card-compact {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 25px;
+    padding: 2rem;
+    color: white;
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.25);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.hero-title-compact {
+    font-size: 2.5rem;
+    font-weight: 900;
+}
+
+.hero-subtitle-compact {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    flex-grow: 1;
+}
+
+.info-box-compact {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.info-box-compact h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.semana-destaque-card {
+    background-color: #ffffff;
+    border-radius: 25px;
+    padding: 2rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    height: 100%;
+}
+
+.section-header-compact .section-title {
+    font-size: 2rem;
+}
+
+.empty-state-compact {
+    background-color: #f8f9fa;
+    border-radius: 25px;
+    padding: 3rem;
+    text-align: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }

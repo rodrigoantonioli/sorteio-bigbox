@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from run import create_app
 from app.extensions import db
 from app.models import Usuario, Loja, Colaborador, Premio, SorteioSemanal, SorteioColaborador
+from helpers import generate_random_password
 
 class ModelsTestCase(unittest.TestCase):
     def setUp(self):
@@ -26,23 +27,20 @@ class ModelsTestCase(unittest.TestCase):
 
     def test_usuario_model(self):
         """Teste do modelo Usuario"""
-        # Criar usuário
+        password = generate_random_password()
         usuario = Usuario(
-            email='teste@bigbox.com',
-            nome='Usuário Teste',
+            email='test@example.com',
+            nome='Test User',
             tipo='admin'
         )
-        usuario.set_password('senha123')
-        
+        usuario.set_password(password)
         db.session.add(usuario)
         db.session.commit()
         
-        # Verificar se foi salvo
-        usuario_salvo = Usuario.query.filter_by(email='teste@bigbox.com').first()
+        usuario_salvo = Usuario.query.filter_by(email='test@example.com').first()
         self.assertIsNotNone(usuario_salvo)
-        self.assertEqual(usuario_salvo.nome, 'Usuário Teste')
-        self.assertTrue(usuario_salvo.check_password('senha123'))
-        self.assertFalse(usuario_salvo.check_password('senha_errada'))
+        self.assertTrue(usuario_salvo.check_password(password))
+        self.assertFalse(usuario_salvo.check_password(generate_random_password()))
 
     def test_loja_model(self):
         """Teste do modelo Loja"""

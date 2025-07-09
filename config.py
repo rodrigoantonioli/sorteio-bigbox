@@ -58,9 +58,9 @@ class Config:
     # Paginação
     ITEMS_PER_PAGE = 20
     
-    # Admin padrão
-    ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@bigbox.com')
-    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'BigBox2025!')
+    # Configurações de Admin
+    ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@example.com')
+    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD') or 'default-dev-password'
 
 class DevelopmentConfig(Config):
     """Configurações de desenvolvimento"""

@@ -73,8 +73,7 @@
                                 <div class="position-relative">
                                     <img src="{{ premio.get_imagem_url() }}" 
                                          alt="{{ premio.nome }}" 
-                                         class="card-img-top" 
-                                         style="height: 200px; object-fit: cover;">
+                                         class="card-img-top card-img-fixed-height">
                                     <span class="badge bg-{{ 'info' if premio.tipo == 'show' else 'warning' }} position-absolute top-0 end-0 m-2">
                                         {{ 'Show' if premio.tipo == 'show' else 'Day Use' }}
                                     </span>
@@ -97,6 +96,11 @@
                                                class="btn btn-outline-secondary btn-sm">
                                                 <i class="fas fa-edit"></i> Editar
                                             </a>
+                                            <form method="POST" action="{{ url_for('admin.excluir_premio', id=premio.id) }}" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir este prêmio permanentemente?');">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                    <i class="fas fa-trash"></i> Excluir
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -129,8 +133,7 @@
                                 <div class="position-relative">
                                     <img src="{{ premio.get_imagem_url() }}" 
                                          alt="{{ premio.nome }}" 
-                                         class="card-img-top" 
-                                         style="height: 200px; object-fit: cover;">
+                                         class="card-img-top card-img-fixed-height">
                                     <span class="badge bg-{{ 'info' if premio.tipo == 'show' else 'warning' }} position-absolute top-0 start-0 m-2">
                                         {{ 'Show' if premio.tipo == 'show' else 'Day Use' }}
                                     </span>
@@ -192,8 +195,7 @@
                                 <div class="position-relative">
                                     <img src="{{ item.premio.get_imagem_url() }}" 
                                          alt="{{ item.premio.nome }}" 
-                                         class="card-img-top" 
-                                         style="height: 200px; object-fit: cover; filter: brightness(0.8);">
+                                         class="card-img-top card-img-fixed-height card-img-winner">
                                     <div class="position-absolute top-0 start-0 end-0 bottom-0 d-flex align-items-center justify-content-center">
                                         <div class="bg-success text-white px-3 py-2 rounded shadow">
                                             <i class="fas fa-trophy"></i> SORTEADO
@@ -251,27 +253,4 @@
     </div>
     {% endif %}
 </div>
-
-<style>
-.card-header {
-    font-weight: 600;
-}
-.badge {
-    font-size: 0.85em;
-}
-.table th {
-    border-top: none;
-    font-weight: 600;
-    color: #495057;
-}
-.btn-group-sm .btn {
-    font-size: 0.875rem;
-}
-.card-img-top {
-    transition: transform 0.2s;
-}
-.card:hover .card-img-top {
-    transform: scale(1.02);
-}
-</style>
 {% endblock %} 
