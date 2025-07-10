@@ -1545,22 +1545,52 @@ def instagram_editar(id):
     form = SorteioInstagramForm()
 
     if form.validate_on_submit():
+        # Lógica para reprocessar participantes se o texto for alterado
+        if sorteio.texto_original != form.texto_original.data and sorteio.status != 'sorteado':
+            flash('Texto do post alterado. Os comentários serão reprocessados.', 'info')
+            
+            # 1. Apaga os participantes antigos
+            ParticipanteInstagram.query.filter_by(sorteio_id=id).delete()
+            
+            # 2. Atualiza o texto e o status
+            sorteio.texto_original = form.texto_original.data
+            sorteio.status = 'processando'
+            db.session.commit() # Salva a alteração do texto antes de processar
+            
+            # 3. Processa os novos comentários
+            try:
+                participantes_data = parse_instagram_comments(
+                    sorteio.texto_original,
+                    palavra_chave=sorteio.palavra_chave,
+                    tickets_maximos=sorteio.tickets_maximos
+                )
+                
+                for username, data in participantes_data.items():
+                    participante = ParticipanteInstagram(
+                        username=username,
+                        comentarios_validos=data['comentarios_validos'],
+                        tickets=data['tickets'],
+                        sorteio_id=id
+                    )
+                    db.session.add(participante)
+
+                sorteio.status = 'pronto'
+
+            except Exception as e:
+                db.session.rollback()
+                sorteio.status = 'erro'
+                flash(f'Erro ao reprocessar comentários: {str(e)}', 'danger')
+
+        # Atualiza os outros dados do sorteio
         sorteio.titulo = form.titulo.data
         sorteio.descricao = form.descricao.data
         sorteio.palavra_chave = form.palavra_chave.data.upper()
         sorteio.tickets_maximos = form.tickets_maximos.data
         sorteio.quantidade_vencedores = form.quantidade_vencedores.data
         
-        texto_original_form = form.texto_original.data
-        if sorteio.texto_original != texto_original_form and sorteio.status != 'sorteado':
-             sorteio.texto_original = texto_original_form
-             sorteio.status = 'processando'
-             ParticipanteInstagram.query.filter_by(sorteio_id=sorteio.id).delete()
-             flash('Texto do post alterado. Os comentários serão reprocessados.', 'info')
-        
         db.session.commit()
         flash('Sorteio atualizado com sucesso!', 'success')
-        return redirect(url_for('admin.instagram_lista'))
+        return redirect(url_for('admin.instagram_participantes', id=id))
     
     elif request.method == 'GET':
         form.titulo.data = sorteio.titulo
