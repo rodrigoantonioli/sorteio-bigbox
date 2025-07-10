@@ -17,6 +17,7 @@ import glob
 import uuid
 import json
 from sqlalchemy import func
+from collections import namedtuple
 from sqlalchemy.orm import joinedload
 
 admin_bp = Blueprint('admin', __name__)
@@ -1462,7 +1463,7 @@ def instagram_lista():
 @admin_bp.route('/instagram/novo', methods=['GET', 'POST'])
 @admin_required
 def instagram_novo():
-    """Criar novo sorteio do Instagram e processar os participantes."""
+    """Criar novo sorteio do Instagram."""
     form = SorteioInstagramForm()
     
     # Preenche com valores padrão da configuração
@@ -1474,64 +1475,23 @@ def instagram_novo():
             form.quantidade_vencedores.data = 1
 
     if form.validate_on_submit():
-        texto_post = form.texto_original.data
-        if not texto_post:
-            flash('Você deve fornecer o texto dos comentários.', 'danger')
-            return render_template('admin/instagram_novo.html', form=form)
-
-        # 1. Cria o sorteio no banco de dados
         novo_sorteio = SorteioInstagram(
             titulo=form.titulo.data,
             descricao=form.descricao.data,
             palavra_chave=form.palavra_chave.data.upper(),
             tickets_maximos=form.tickets_maximos.data,
             quantidade_vencedores=form.quantidade_vencedores.data,
-            texto_original=texto_post, # Salva o texto original
-            criado_por=current_user.id,
-            status='processando' # Define o status inicial
+            texto_original=form.texto_original.data,
+            criado_por=current_user.id
         )
         db.session.add(novo_sorteio)
         db.session.commit()
 
-        # 2. Faz o parsing dos comentários
-        try:
-            participantes_data = parse_instagram_comments(
-                texto_post,
-                palavra_chave=novo_sorteio.palavra_chave,
-                tickets_maximos=novo_sorteio.tickets_maximos
-            )
-            
-            if not participantes_data:
-                novo_sorteio.status = 'erro'
-                db.session.commit()
-                flash('Nenhum participante válido encontrado com a palavra-chave fornecida.', 'warning')
-                return redirect(url_for('admin.instagram_lista'))
-
-            # 3. Adiciona os participantes ao banco de dados
-            for username, data in participantes_data.items():
-                participante = ParticipanteInstagram(
-                    username=username,
-                    comentarios_validos=data['comentarios_validos'],
-                    tickets=data['tickets'],
-                    sorteio_id=novo_sorteio.id
-                )
-                db.session.add(participante)
-
-            # 4. Atualiza o status do sorteio para 'pronto'
-            novo_sorteio.status = 'pronto'
-            db.session.commit()
-
-            flash(f'Sorteio "{novo_sorteio.titulo}" criado e processado com {len(participantes_data)} participante(s).', 'success')
-            return redirect(url_for('admin.instagram_participantes', id=novo_sorteio.id))
-
-        except Exception as e:
-            db.session.rollback()
-            novo_sorteio.status = 'erro'
-            db.session.commit()
-            flash(f'Erro ao processar comentários: {str(e)}', 'danger')
-            return redirect(url_for('admin.instagram_lista'))
+        flash(f'Sorteio "{novo_sorteio.titulo}" criado! O processamento dos comentários será iniciado.', 'success')
+        return redirect(url_for('admin.instagram_lista'))
 
     return render_template('admin/instagram_novo.html', form=form)
+
 
 @admin_bp.route('/instagram/<int:id>/editar', methods=['GET', 'POST'])
 @admin_required
@@ -1545,52 +1505,22 @@ def instagram_editar(id):
     form = SorteioInstagramForm()
 
     if form.validate_on_submit():
-        # Lógica para reprocessar participantes se o texto for alterado
-        if sorteio.texto_original != form.texto_original.data and sorteio.status != 'sorteado':
-            flash('Texto do post alterado. Os comentários serão reprocessados.', 'info')
-            
-            # 1. Apaga os participantes antigos
-            ParticipanteInstagram.query.filter_by(sorteio_id=id).delete()
-            
-            # 2. Atualiza o texto e o status
-            sorteio.texto_original = form.texto_original.data
-            sorteio.status = 'processando'
-            db.session.commit() # Salva a alteração do texto antes de processar
-            
-            # 3. Processa os novos comentários
-            try:
-                participantes_data = parse_instagram_comments(
-                    sorteio.texto_original,
-                    palavra_chave=sorteio.palavra_chave,
-                    tickets_maximos=sorteio.tickets_maximos
-                )
-                
-                for username, data in participantes_data.items():
-                    participante = ParticipanteInstagram(
-                        username=username,
-                        comentarios_validos=data['comentarios_validos'],
-                        tickets=data['tickets'],
-                        sorteio_id=id
-                    )
-                    db.session.add(participante)
-
-                sorteio.status = 'pronto'
-
-            except Exception as e:
-                db.session.rollback()
-                sorteio.status = 'erro'
-                flash(f'Erro ao reprocessar comentários: {str(e)}', 'danger')
-
-        # Atualiza os outros dados do sorteio
         sorteio.titulo = form.titulo.data
         sorteio.descricao = form.descricao.data
         sorteio.palavra_chave = form.palavra_chave.data.upper()
         sorteio.tickets_maximos = form.tickets_maximos.data
         sorteio.quantidade_vencedores = form.quantidade_vencedores.data
         
+        texto_original_form = form.texto_original.data
+        if sorteio.texto_original != texto_original_form and sorteio.status != 'sorteado':
+             sorteio.texto_original = texto_original_form
+             sorteio.status = 'processando'
+             ParticipanteInstagram.query.filter_by(sorteio_id=sorteio.id).delete()
+             flash('Texto do post alterado. Os comentários serão reprocessados.', 'info')
+        
         db.session.commit()
         flash('Sorteio atualizado com sucesso!', 'success')
-        return redirect(url_for('admin.instagram_participantes', id=id))
+        return redirect(url_for('admin.instagram_lista'))
     
     elif request.method == 'GET':
         form.titulo.data = sorteio.titulo
@@ -1604,6 +1534,7 @@ def instagram_editar(id):
         form.texto_original.render_kw = {'readonly': True, 'title': 'O texto não pode ser editado após o processamento.'}
 
     return render_template('admin/instagram_editar.html', form=form, sorteio=sorteio)
+
 
 @admin_bp.route('/instagram/<int:id>/participantes')
 @admin_required

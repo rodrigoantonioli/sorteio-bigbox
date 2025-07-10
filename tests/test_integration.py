@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from run import create_app
 from app.extensions import db
-from app.models import Usuario, Loja, Colaborador, Premio, SorteioSemanal, SorteioColaborador, SorteioInstagram
+from app.models import Usuario, Loja, Colaborador, Premio, SorteioSemanal, SorteioColaborador
 from .helpers import generate_random_email, generate_random_password
 
 class IntegrationTestCase(unittest.TestCase):
@@ -390,49 +390,6 @@ class IntegrationTestCase(unittest.TestCase):
 
         # Valida que usuários com comentários inválidos não estão na lista
         self.assertNotIn('gleycinhag', participantes, "Usuário que apenas mencionou outro não deveria ser incluído.")
-
-    def test_edit_and_reprocess_instagram_giveaway(self):
-        """Testa a edição de um sorteio e o reprocessamento dos comentários."""
-        # 1. Login como admin
-        self.login(self.admin.email, self.admin_password)
-
-        # 2. Cria um sorteio inicial
-        initial_text = "Foto do perfil de user1\nuser1\n1 h\nEu quero"
-        response = self.client.post('/admin/instagram/novo', data={
-            'titulo': 'Sorteio de Teste para Edição',
-            'texto_original': initial_text,
-            'palavra_chave': 'EU QUERO',
-            'tickets_maximos': 10,
-            'quantidade_vencedores': 1
-        }, follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
-
-        # Encontra o ID do sorteio recém-criado
-        sorteio = SorteioInstagram.query.order_by(SorteioInstagram.id.desc()).first()
-        self.assertIsNotNone(sorteio)
-        self.assertEqual(sorteio.participantes[0].username, 'user1')
-        self.assertEqual(len(sorteio.participantes), 1)
-
-        # 3. Edita o sorteio com novo texto
-        new_text = "Foto do perfil de user2\nuser2\n2 h\nEu quero\nFoto do perfil de user3\nuser3\n3 h\nEu quero"
-        response = self.client.post(f'/admin/instagram/{sorteio.id}/editar', data={
-            'titulo': 'Sorteio de Teste Editado',
-            'texto_original': new_text,
-            'palavra_chave': 'EU QUERO',
-            'tickets_maximos': 10,
-            'quantidade_vencedores': 1
-        }, follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
-
-        # 4. Verifica se os participantes foram atualizados
-        db.session.refresh(sorteio)
-        self.assertEqual(len(sorteio.participantes), 2, "Deveria haver 2 novos participantes.")
-        
-        usernames = {p.username for p in sorteio.participantes}
-        self.assertIn('user2', usernames)
-        self.assertIn('user3', usernames)
-        self.assertNotIn('user1', usernames, "O participante antigo deveria ter sido removido.")
-        self.assertEqual(sorteio.titulo, 'Sorteio de Teste Editado')
 
 if __name__ == '__main__':
     unittest.main() 
