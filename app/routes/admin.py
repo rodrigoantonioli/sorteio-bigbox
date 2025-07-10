@@ -1462,7 +1462,7 @@ def instagram_lista():
 @admin_bp.route('/instagram/novo', methods=['GET', 'POST'])
 @admin_required
 def instagram_novo():
-    """Criar novo sorteio do Instagram."""
+    """Criar novo sorteio do Instagram e processar os participantes."""
     form = SorteioInstagramForm()
     
     # Preenche com valores padrão da configuração
@@ -1474,44 +1474,64 @@ def instagram_novo():
             form.quantidade_vencedores.data = 1
 
     if form.validate_on_submit():
-        texto_post = form.texto_post.data
-        arquivo = form.arquivo.data
-        
-        # Prioriza o conteúdo do arquivo se ambos forem fornecidos
-        if arquivo:
-            valido, erro = validar_arquivo_instagram(arquivo)
-            if not valido:
-                flash(erro, 'danger')
-                return render_template('admin/instagram_novo.html', form=form, is_edit=False)
-            
-            # Lê o conteúdo do arquivo
-            try:
-                texto_post = arquivo.read().decode('utf-8')
-            except UnicodeDecodeError:
-                flash('Erro ao ler o arquivo. Certifique-se de que ele está em formato UTF-8.', 'danger')
-                return render_template('admin/instagram_novo.html', form=form, is_edit=False)
-
+        texto_post = form.texto_original.data
         if not texto_post:
-            flash('Você deve fornecer o texto dos comentários ou um arquivo .txt.', 'danger')
-            return render_template('admin/instagram_novo.html', form=form, is_edit=False)
+            flash('Você deve fornecer o texto dos comentários.', 'danger')
+            return render_template('admin/instagram_novo.html', form=form)
 
+        # 1. Cria o sorteio no banco de dados
         novo_sorteio = SorteioInstagram(
             titulo=form.titulo.data,
             descricao=form.descricao.data,
             palavra_chave=form.palavra_chave.data.upper(),
             tickets_maximos=form.tickets_maximos.data,
             quantidade_vencedores=form.quantidade_vencedores.data,
-            texto_original=form.texto_original.data,
-            criado_por=current_user.id
+            texto_original=texto_post, # Salva o texto original
+            criado_por=current_user.id,
+            status='processando' # Define o status inicial
         )
         db.session.add(novo_sorteio)
         db.session.commit()
 
-        flash(f'Sorteio "{novo_sorteio.titulo}" criado! O processamento dos comentários será iniciado.', 'success')
-        return redirect(url_for('admin.instagram_lista'))
+        # 2. Faz o parsing dos comentários
+        try:
+            participantes_data = parse_instagram_comments(
+                texto_post,
+                palavra_chave=novo_sorteio.palavra_chave,
+                tickets_maximos=novo_sorteio.tickets_maximos
+            )
+            
+            if not participantes_data:
+                novo_sorteio.status = 'erro'
+                db.session.commit()
+                flash('Nenhum participante válido encontrado com a palavra-chave fornecida.', 'warning')
+                return redirect(url_for('admin.instagram_lista'))
+
+            # 3. Adiciona os participantes ao banco de dados
+            for username, data in participantes_data.items():
+                participante = ParticipanteInstagram(
+                    username=username,
+                    comentarios_validos=data['comentarios_validos'],
+                    tickets=data['tickets'],
+                    sorteio_id=novo_sorteio.id
+                )
+                db.session.add(participante)
+
+            # 4. Atualiza o status do sorteio para 'pronto'
+            novo_sorteio.status = 'pronto'
+            db.session.commit()
+
+            flash(f'Sorteio "{novo_sorteio.titulo}" criado e processado com {len(participantes_data)} participante(s).', 'success')
+            return redirect(url_for('admin.instagram_participantes', id=novo_sorteio.id))
+
+        except Exception as e:
+            db.session.rollback()
+            novo_sorteio.status = 'erro'
+            db.session.commit()
+            flash(f'Erro ao processar comentários: {str(e)}', 'danger')
+            return redirect(url_for('admin.instagram_lista'))
 
     return render_template('admin/instagram_novo.html', form=form)
-
 
 @admin_bp.route('/instagram/<int:id>/editar', methods=['GET', 'POST'])
 @admin_required
@@ -1554,7 +1574,6 @@ def instagram_editar(id):
         form.texto_original.render_kw = {'readonly': True, 'title': 'O texto não pode ser editado após o processamento.'}
 
     return render_template('admin/instagram_editar.html', form=form, sorteio=sorteio)
-
 
 @admin_bp.route('/instagram/<int:id>/participantes')
 @admin_required
