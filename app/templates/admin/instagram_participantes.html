@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_field, render_submit_button %}
+
+{% block title %}Sorteio Instagram: {{ sorteio.titulo }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+    .participante-card {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+    }
+    .participante-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    .shake {
+        animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        perspective: 1000px;
+    }
+    @keyframes shake {
+        10%, 90% { transform: translate3d(-1px, 0, 0); }
+        20%, 80% { transform: translate3d(2px, 0, 0); }
+        30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+        40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+
+    /* Estilos para o modal fullscreen */
+    .modal-fullscreen .modal-content {
+        background-color: #1a1a2e; /* Cor de fundo escura para o modal */
+        color: #e0e0e0;
+    }
+    .sorteio-modal .modal-header {
+        border-bottom: none;
+    }
+    .sorteio-modal .modal-title {
+        color: #fff;
+    }
+    .sorteio-col-animacao {
+        background-color: #2a2a4a; /* Fundo ligeiramente diferente para a animação */
+        border-right: 1px solid rgba(255,255,255,0.1);
+    }
+    .sorteio-col-ganhadores {
+        background-color: #1a1a2e;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+    .sorteio-display {
+        font-size: 4rem;
+        font-weight: bold;
+        color: #00f0b5; /* Cor vibrante para o nome sorteado */
+        text-shadow: 0 0 10px rgba(0,240,181,0.5);
+        min-height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        overflow: hidden;
+    }
+    .sorteio-display.vencedor {
+        color: #ffeb3b; /* Amarelo para o vencedor final */
+        text-shadow: 0 0 15px rgba(255,235,59,0.8);
+    }
+    .sorteio-status {
+        font-size: 1.5rem;
+        color: #bbb;
+    }
+    #listaGanhadores .list-group-item {
+        background-color: #2a2a4a;
+        color: #e0e0e0;
+        border-color: rgba(255,255,255,0.1);
+        margin-bottom: 5px;
+        border-radius: 5px;
+    }
+    #listaGanhadores .list-group-item .badge {
+        background-color: #00f0b5 !important;
+        color: #1a1a2e;
+    }
+    .confetti-celebration {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        pointer-events: none;
+    }
+    .confetti-celebration-piece {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background-color: #ffeb3b;
+        opacity: 0;
+        animation: confetti-fall linear infinite;
+    }
+    @keyframes confetti-fall {
+        0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+        10% { opacity: 1; }
+        100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Cabeçalho -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-dark font-weight-bold mb-1">Sorteio: {{ sorteio.titulo }}</h2>
+            <p class="text-muted mb-0">Gerencie os participantes e realize o sorteio.</p>
+        </div>
+        <a href="{{ url_for('admin.instagram_lista') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Voltar à Lista
+        </a>
+    </div>
+
+    <!-- Cards de Estatísticas -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-users fa-3x text-primary me-3"></i>
+                    <div>
+                        <h5 class="card-title mb-1">Participantes Únicos</h5>
+                        <p class="card-text fs-4 font-weight-bold">{{ participantes|length }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-comments fa-3x text-info me-3"></i>
+                    <div>
+                        <h5 class="card-title mb-1">Comentários Válidos</h5>
+                        <p class="card-text fs-4 font-weight-bold">{{ total_comentarios }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-ticket-alt fa-3x text-success me-3"></i>
+                    <div>
+                        <h5 class="card-title mb-1">Total de Tickets</h5>
+                        <p class="card-text fs-4 font-weight-bold">{{ total_tickets }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações do Sorteio e Ganhadores -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">{% if sorteio.status == 'sorteado' %}Resultados do Sorteio{% else %}Ações do Sorteio{% endif %}</h5>
+        </div>
+        <div class="card-body text-center">
+            {% if sorteio.status != 'sorteado' %}
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <button id="chacoalharBtn" class="btn btn-info w-100 mb-2">
+                            <i class="fas fa-random me-2"></i> Chacoalhar Participantes
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">Vencedores:</span>
+                            <input type="number" id="quantidadeVencedores" class="form-control" value="{{ sorteio.quantidade_vencedores or 1 }}" min="1" max="{{ participantes|length }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <button id="sortearBtn" class="btn btn-lg btn-success w-100 mb-2">
+                            <i class="fas fa-trophy me-2"></i> Realizar Sorteio
+                        </button>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-success">
+                    <h4 class="alert-heading">🎉 Sorteio Finalizado! 🎉</h4>
+                    <p>Este sorteio foi concluído em {{ sorteio.data_sorteio.strftime('%d/%m/%Y às %H:%M') }}.</p>
+                </div>
+                <h5 class="text-dark font-weight-bold mb-3">Ganhadores</h5>
+                <ul class="list-group text-start">
+                    {% for g in ganhadores %}
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-trophy text-warning me-3"></i>
+                            <a href="https://instagram.com/{{ g.username }}" target="_blank">@{{ g.username }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Lista de Participantes -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Lista de Participantes</h5>
+        </div>
+        <div class="card-body">
+            <div id="lista-participantes" class="row">
+                {% for p in participantes %}
+                <div class="col-md-4 mb-3 participante-item">
+                    <div class="card participante-card h-100">
+                        <div class="card-body d-flex align-items-center">
+                            <i class="fas fa-user-circle fa-2x text-secondary me-3"></i>
+                            <div>
+                                <h6 class="card-title mb-0">@{{ p.username }}</h6>
+                                <div class="mt-1">
+                                    <span class="badge bg-primary">Comentários: {{ p.comentarios_validos }}</span>
+                                    <span class="badge bg-success">Tickets: {{ p.tickets }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // --- Elementos do DOM ---
+    const chacoalharBtn = document.getElementById('chacoalharBtn');
+    const sortearBtn = document.getElementById('sortearBtn');
+    const listaContainer = document.getElementById('lista-participantes');
+    const csrfToken = '{{ csrf_token() }}';
+    const sorteioId = '{{ sorteio.id }}';
+
+    // Passa o ID do sorteio e o token CSRF para a instância global do SorteioAnimado
+    if (window.sorteioAnimado) {
+        window.sorteioAnimado.sorteioId = sorteioId;
+        window.sorteioAnimado.csrfToken = csrfToken;
+    } else {
+        console.error("Objeto sorteioAnimado não encontrado. Verifique se script.js foi carregado.");
+    }
+
+    // --- Lógica para Chacoalhar ---
+    if (chacoalharBtn) {
+        chacoalharBtn.addEventListener('click', function() {
+            try {
+                console.log("Botão 'Chacoalhar' clicado.");
+                const participantes = Array.from(listaContainer.children);
+                if (participantes.length === 0) return;
+
+                participantes.forEach(p => p.classList.add('shake'));
+                
+                // Embaralha os elementos no DOM
+                for (let i = participantes.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    listaContainer.appendChild(participantes[j]);
+                }
+
+                setTimeout(() => {
+                    participantes.forEach(p => p.classList.remove('shake'));
+                }, 820);
+            } catch (error) {
+                console.error("Erro na função de chacoalhar:", error);
+                alert("Ocorreu um erro ao tentar chacoalhar os participantes.");
+            }
+        });
+    }
+
+    // --- Lógica para Realizar o Sorteio ---
+    if (sortearBtn) {
+        sortearBtn.addEventListener('click', function() {
+            try {
+                console.log("Botão 'Realizar Sorteio' clicado.");
+                const quantidadeVencedores = parseInt(document.getElementById('quantidadeVencedores').value, 10);
+                const participantes = {{ participantes_json|safe }};
+
+                if (isNaN(quantidadeVencedores) || quantidadeVencedores <= 0) {
+                    alert('Por favor, insira um número válido de vencedores.');
+                    return;
+                }
+                
+                if (participantes.length === 0) {
+                    alert('Não há participantes para sortear.');
+                    return;
+                }
+
+                if (participantes.length < quantidadeVencedores) {
+                    alert('O número de vencedores não pode ser maior que o número de participantes.');
+                    return;
+                }
+
+                console.log(`Iniciando sorteio para ${quantidadeVencedores} vencedor(es).`);
+
+                // Cria a lista ponderada de tickets
+                let ticketsPonderados = [];
+                participantes.forEach(p => {
+                    for (let i = 0; i < p.tickets; i++) {
+                        ticketsPonderados.push(p);
+                    }
+                });
+                
+                console.log(`Total de ${ticketsPonderados.length} tickets criados.`);
+
+                // Inicia a animação do sorteio
+                window.sorteioAnimado.iniciarSorteioInstagram(ticketsPonderados, quantidadeVencedores);
+
+            } catch (error) {
+                console.error("Erro na função de realizar sorteio:", error);
+                alert("Ocorreu um erro ao iniciar o sorteio. Verifique o console para mais detalhes.");
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

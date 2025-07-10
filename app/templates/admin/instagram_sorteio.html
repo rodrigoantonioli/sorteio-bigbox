@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_field, render_submit_button %}
+
+{% block title %}Sorteio Instagram: {{ sorteio.titulo }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+    .participante-card {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+    .participante-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    .shake {
+        animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        perspective: 1000px;
+    }
+    @keyframes shake {
+        10%, 90% { transform: translate3d(-1px, 0, 0); }
+        20%, 80% { transform: translate3d(2px, 0, 0); }
+        30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+        40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Cabeçalho -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-dark font-weight-bold mb-1">Sorteio: {{ sorteio.titulo }}</h2>
+            <p class="text-muted mb-0">Gerencie os participantes e realize o sorteio.</p>
+        </div>
+        <a href="{{ url_for('admin.instagram_lista') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Voltar à Lista
+        </a>
+    </div>
+
+    <!-- Cards de Estatísticas -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-users fa-3x text-primary me-3"></i>
+                    <div>
+                        <h5 class="card-title mb-1">Participantes Únicos</h5>
+                        <p class="card-text fs-4 font-weight-bold">{{ participantes|length }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-comments fa-3x text-info me-3"></i>
+                    <div>
+                        <h5 class="card-title mb-1">Comentários Válidos</h5>
+                        <p class="card-text fs-4 font-weight-bold">{{ total_comentarios }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-ticket-alt fa-3x text-success me-3"></i>
+                    <div>
+                        <h5 class="card-title mb-1">Total de Tickets</h5>
+                        <p class="card-text fs-4 font-weight-bold">{{ total_tickets }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações do Sorteio -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Ações do Sorteio</h5>
+        </div>
+        <div class="card-body text-center">
+            {% if sorteio.status != 'sorteado' %}
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <button id="chacoalharBtn" class="btn btn-info w-100 mb-2">
+                            <i class="fas fa-random me-2"></i> Chacoalhar Participantes
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">Vencedores:</span>
+                            <input type="number" id="quantidadeVencedores" class="form-control" value="{{ sorteio.quantidade_vencedores or 1 }}" min="1" max="{{ participantes|length }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <button id="sortearBtn" class="btn btn-lg btn-success w-100 mb-2">
+                            <i class="fas fa-trophy me-2"></i> Realizar Sorteio
+                        </button>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-success">
+                    <h4 class="alert-heading">Sorteio Finalizado!</h4>
+                    <p>Este sorteio foi realizado em {{ sorteio.data_sorteio.strftime('%d/%m/%Y às %H:%M') }}.</p>
+                    <hr>
+                    <form action="{{ url_for('admin.instagram_resetar', id=sorteio.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja resetar este sorteio? Os vencedores serão removidos e um novo sorteio poderá ser realizado.');">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-undo me-2"></i> Resetar Sorteio
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Lista de Participantes -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Lista de Participantes</h5>
+        </div>
+        <div class="card-body">
+            <div id="lista-participantes" class="row">
+                {% for p in participantes %}
+                <div class="col-md-4 mb-3 participante-item">
+                    <div class="card participante-card h-100">
+                        <div class="card-body d-flex align-items-center">
+                            <img src="{{ p.profile_pic_url or url_for('static', filename='images/default_avatar.png') }}" alt="Foto de {{ p.username }}" class="rounded-circle me-3" width="60" height="60">
+                            <div>
+                                <h6 class="card-title mb-0">{{ p.full_name }}</h6>
+                                <a href="https://instagram.com/{{ p.username }}" target="_blank" class="text-muted">@{{ p.username }}</a>
+                                <div class="mt-1">
+                                    <span class="badge bg-primary">Comentários: {{ p.comentarios_validos }}</span>
+                                    <span class="badge bg-success">Tickets: {{ p.tickets }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chacoalharBtn = document.getElementById('chacoalharBtn');
+    const sortearBtn = document.getElementById('sortearBtn');
+    const listaContainer = document.getElementById('lista-participantes');
+
+    // Função para embaralhar a lista de participantes visualmente
+    if (chacoalharBtn) {
+        chacoalharBtn.addEventListener('click', function() {
+            const participantes = Array.from(listaContainer.children);
+            
+            // Adiciona a classe 'shake' para a animação
+            participantes.forEach(p => p.classList.add('shake'));
+
+            // Embaralha os elementos no DOM
+            for (let i = participantes.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                listaContainer.appendChild(participantes[j]);
+            }
+
+            // Remove a classe 'shake' após a animação
+            setTimeout(() => {
+                participantes.forEach(p => p.classList.remove('shake'));
+            }, 820);
+        });
+    }
+
+    // Lógica para iniciar o sorteio
+    if (sortearBtn) {
+        sortearBtn.addEventListener('click', function() {
+            const quantidadeVencedores = parseInt(document.getElementById('quantidadeVencedores').value, 10);
+            const participantes = {{ participantes_json|safe }};
+
+            if (isNaN(quantidadeVencedores) || quantidadeVencedores <= 0) {
+                alert('Por favor, insira um número válido de vencedores.');
+                return;
+            }
+            
+            if (participantes.length < quantidadeVencedores) {
+                alert('O número de vencedores não pode ser maior que o número de participantes.');
+                return;
+            }
+
+            // Cria a lista ponderada de tickets
+            let ticketsPonderados = [];
+            participantes.forEach(p => {
+                for (let i = 0; i < p.tickets; i++) {
+                    ticketsPonderados.push(p);
+                }
+            });
+
+            // Inicia a animação do sorteio
+            window.sorteioAnimado.iniciarSorteioInstagram(ticketsPonderados, quantidadeVencedores);
+        });
+    }
+
+    // Sobrescreve a função de submit do sorteio do Instagram
+    window.sorteioAnimado.submitarSorteioInstagramAjax = function(resultados) {
+        const url = `/admin/instagram/sorteio/{{ sorteio.id }}/salvar`;
+        const vencedores = resultados.map(r => ({
+            username: r.username,
+            full_name: r.full_name,
+            profile_pic_url: r.profile_pic_url
+        }));
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ vencedores: vencedores })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Exibe o HTML retornado pelo servidor
+                this.exibirSucesso(data.html);
+            } else {
+                this.exibirErro(data.message || 'Ocorreu um erro ao salvar o sorteio.');
+            }
+        })
+        .catch(error => {
+            console.error('Erro na requisição AJAX:', error);
+            this.exibirErro('Erro de comunicação com o servidor.');
+        });
+    };
+});
+</script>
+{% endblock %}

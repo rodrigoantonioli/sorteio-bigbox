@@ -1,8 +1,13 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
-from app.models import db, Usuario, Loja, SorteioSemanal, SorteioColaborador, Colaborador, Premio
-from app.forms.admin import SorteioSemanalForm, UsuarioForm, PremioForm, LojaForm, AtribuirPremioForm
-from app.utils import get_brazil_datetime, get_brazil_date, format_brazil_datetime
+from flask_wtf import FlaskForm
+from app.models import db, Usuario, Loja, SorteioSemanal, SorteioColaborador, Colaborador, Premio, SorteioInstagram, ParticipanteInstagram, ConfiguracaoInstagram
+from app.forms.admin import SorteioSemanalForm, UsuarioForm, PremioForm, LojaForm, AtribuirPremioForm, SorteioInstagramForm, ConfiguracaoInstagramForm
+
+# Formulário vazio apenas para proteção CSRF em ações de POST via link/botão
+class CSRFProtectionForm(FlaskForm):
+    pass
+from app.utils import get_brazil_datetime, get_brazil_date, format_brazil_datetime, parse_instagram_comments, validar_arquivo_instagram
 from datetime import datetime, date, timedelta
 from functools import wraps
 from werkzeug.utils import secure_filename
@@ -10,6 +15,10 @@ import random
 import os
 import glob
 import uuid
+import json
+from sqlalchemy import func
+from collections import namedtuple
+from sqlalchemy.orm import joinedload
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -1409,3 +1418,262 @@ def reset_completo():
         flash(f'❌ Erro ao executar reset completo: {str(e)}', 'danger')
     
     return redirect(url_for('admin.configuracoes')) 
+
+# ===== ROTAS DO INSTAGRAM =====
+
+@admin_bp.route('/instagram')
+@admin_required
+def instagram_lista():
+    """Lista todos os sorteios do Instagram com estatísticas (versão otimizada)."""
+    from sqlalchemy import func, select
+
+    # Subquery para calcular estatísticas de forma eficiente no banco de dados
+    stats_sq = select(
+        ParticipanteInstagram.sorteio_id.label("sorteio_id"),
+        func.count(ParticipanteInstagram.id).label("total_participantes"),
+        func.sum(ParticipanteInstagram.comentarios_validos).label("total_comentarios"),
+        func.sum(ParticipanteInstagram.tickets).label("total_tickets")
+    ).group_by(ParticipanteInstagram.sorteio_id).subquery()
+
+    # Query principal que junta os sorteios com suas estatísticas já calculadas
+    sorteios_query = db.session.query(
+        SorteioInstagram,
+        stats_sq.c.total_participantes,
+        stats_sq.c.total_comentarios,
+        stats_sq.c.total_tickets
+    ).outerjoin(stats_sq, SorteioInstagram.id == stats_sq.c.sorteio_id)\
+     .order_by(SorteioInstagram.data_criacao.desc())\
+     .all()
+
+    # Estrutura os dados para o template
+    sorteios_stats = []
+    for sorteio, participantes, comentarios, tickets in sorteios_query:
+        sorteios_stats.append({
+            'sorteio': sorteio,
+            'total_participantes': participantes or 0,
+            'total_comentarios': comentarios or 0,
+            'total_tickets': tickets or 0
+        })
+
+    # Formulário para proteção CSRF no botão de reset
+    csrf_form = CSRFProtectionForm()
+
+    return render_template('admin/instagram_lista.html', sorteios_stats=sorteios_stats, csrf_form=csrf_form)
+
+@admin_bp.route('/instagram/novo', methods=['GET', 'POST'])
+@admin_required
+def instagram_novo():
+    """Criar novo sorteio do Instagram."""
+    form = SorteioInstagramForm()
+    
+    # Preenche com valores padrão da configuração
+    if request.method == 'GET':
+        config = db.session.get(ConfiguracaoInstagram, 1)
+        if config:
+            form.palavra_chave.data = config.palavra_chave_padrao
+            form.tickets_maximos.data = config.tickets_maximos_padrao
+            form.quantidade_vencedores.data = 1
+
+    if form.validate_on_submit():
+        novo_sorteio = SorteioInstagram(
+            titulo=form.titulo.data,
+            descricao=form.descricao.data,
+            palavra_chave=form.palavra_chave.data.upper(),
+            tickets_maximos=form.tickets_maximos.data,
+            quantidade_vencedores=form.quantidade_vencedores.data,
+            texto_original=form.texto_original.data,
+            criado_por=current_user.id
+        )
+        db.session.add(novo_sorteio)
+        db.session.commit()
+
+        flash(f'Sorteio "{novo_sorteio.titulo}" criado! O processamento dos comentários será iniciado.', 'success')
+        return redirect(url_for('admin.instagram_lista'))
+
+    return render_template('admin/instagram_novo.html', form=form)
+
+
+@admin_bp.route('/instagram/<int:id>/editar', methods=['GET', 'POST'])
+@admin_required
+def instagram_editar(id):
+    """Editar um sorteio do Instagram."""
+    sorteio = db.session.get(SorteioInstagram, id)
+    if not sorteio:
+        flash('Sorteio não encontrado.', 'danger')
+        return redirect(url_for('admin.instagram_lista'))
+        
+    form = SorteioInstagramForm()
+
+    if form.validate_on_submit():
+        sorteio.titulo = form.titulo.data
+        sorteio.descricao = form.descricao.data
+        sorteio.palavra_chave = form.palavra_chave.data.upper()
+        sorteio.tickets_maximos = form.tickets_maximos.data
+        sorteio.quantidade_vencedores = form.quantidade_vencedores.data
+        
+        texto_original_form = form.texto_original.data
+        if sorteio.texto_original != texto_original_form and sorteio.status != 'sorteado':
+             sorteio.texto_original = texto_original_form
+             sorteio.status = 'processando'
+             ParticipanteInstagram.query.filter_by(sorteio_id=sorteio.id).delete()
+             flash('Texto do post alterado. Os comentários serão reprocessados.', 'info')
+        
+        db.session.commit()
+        flash('Sorteio atualizado com sucesso!', 'success')
+        return redirect(url_for('admin.instagram_lista'))
+    
+    elif request.method == 'GET':
+        form.titulo.data = sorteio.titulo
+        form.descricao.data = sorteio.descricao
+        form.palavra_chave.data = sorteio.palavra_chave
+        form.tickets_maximos.data = sorteio.tickets_maximos
+        form.texto_original.data = sorteio.texto_original
+        form.quantidade_vencedores.data = sorteio.quantidade_vencedores or 1
+        
+    if sorteio.status in ['pronto', 'sorteado']:
+        form.texto_original.render_kw = {'readonly': True, 'title': 'O texto não pode ser editado após o processamento.'}
+
+    return render_template('admin/instagram_editar.html', form=form, sorteio=sorteio)
+
+
+@admin_bp.route('/instagram/<int:id>/participantes')
+@admin_required
+def instagram_participantes(id):
+    """Exibe os detalhes e participantes de um sorteio do Instagram."""
+    sorteio = db.session.query(SorteioInstagram).options(
+        joinedload(SorteioInstagram.participantes)
+    ).filter_by(id=id).first_or_404()
+
+    participantes = sorteio.participantes
+    total_comentarios = sum(p.comentarios_validos for p in participantes)
+    total_tickets = sum(p.tickets for p in participantes)
+
+    # Prepara um JSON com os dados dos participantes para o sorteio no frontend
+    participantes_json = json.dumps([
+        {'username': p.username, 'tickets': p.tickets} for p in participantes
+    ])
+    
+    # Busca os ganhadores se o sorteio já foi realizado
+    ganhadores = []
+    if sorteio.status == 'sorteado':
+        ganhadores = ParticipanteInstagram.query.filter_by(sorteio_id=id, vencedor=True).all()
+
+    return render_template('admin/instagram_participantes.html', 
+                             sorteio=sorteio,
+                             participantes=participantes,
+                             total_comentarios=total_comentarios,
+                             total_tickets=total_tickets,
+                             participantes_json=participantes_json,
+                             ganhadores=ganhadores)
+
+@admin_bp.route('/instagram/sorteio/<int:sorteio_id>/salvar', methods=['POST'])
+@admin_required
+def salvar_sorteio_instagram_ajax(sorteio_id):
+    """Salva os vencedores de um sorteio do Instagram via AJAX."""
+    try:
+        data = request.get_json()
+        vencedores_data = data.get('vencedores')
+
+        if not vencedores_data:
+            return jsonify({'success': False, 'message': 'Dados dos vencedores não fornecidos.'}), 400
+
+        sorteio = db.session.get(SorteioInstagram, sorteio_id)
+        if not sorteio:
+            return jsonify({'success': False, 'message': 'Sorteio não encontrado.'}), 404
+
+        if sorteio.status == 'sorteado':
+            return jsonify({'success': False, 'message': 'Este sorteio já foi finalizado.'}), 400
+
+        vencedores_objs = []
+        for vencedor_info in vencedores_data:
+            username = vencedor_info.get('username')
+            participante = ParticipanteInstagram.query.filter_by(sorteio_id=sorteio_id, username=username).first()
+            
+            if participante:
+                participante.vencedor = True
+                vencedores_objs.append(participante)
+            else:
+                db.session.rollback()
+                return jsonify({'success': False, 'message': f'Participante @{username} não encontrado.'}), 404
+
+        sorteio.status = 'sorteado'
+        sorteio.data_sorteio = get_brazil_datetime()
+        
+        db.session.commit()
+
+        # Renderiza o template parcial com os dados dos vencedores
+        html_response = render_template(
+            'admin/partials/_ganhadores_instagram.html',
+            vencedores=vencedores_objs,
+            sorteio=sorteio
+        )
+        
+        return jsonify({'success': True, 'html': html_response})
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': f'Erro interno: {str(e)}'}), 500
+
+@admin_bp.route('/instagram/<int:id>/excluir', methods=['POST'])
+@admin_required
+def instagram_excluir(id):
+    """Excluir sorteio do Instagram"""
+    sorteio = SorteioInstagram.query.get_or_404(id)
+    
+    if sorteio.status == 'sorteado':
+        flash('Não é possível excluir um sorteio já realizado!', 'warning')
+        return redirect(url_for('admin.instagram_lista'))
+    
+    titulo = sorteio.titulo
+    db.session.delete(sorteio)
+    db.session.commit()
+    
+    flash(f'Sorteio "{titulo}" excluído com sucesso!', 'success')
+    return redirect(url_for('admin.instagram_lista'))
+
+@admin_bp.route('/instagram/<int:id>/resetar', methods=['POST'])
+@admin_required
+def instagram_resetar(id):
+    """Reseta um sorteio, removendo o vencedor e permitindo um novo sorteio."""
+    sorteio = SorteioInstagram.query.get_or_404(id)
+    
+    # Remove o status de vencedor de todos os participantes
+    for p in sorteio.participantes:
+        p.vencedor = False
+        
+    # Reseta o status e data do sorteio
+    sorteio.status = 'pronto'
+    sorteio.data_sorteio = None
+    
+    db.session.commit()
+    flash(f'Sorteio "{sorteio.titulo}" foi resetado. Você pode realizar o sorteio novamente.', 'success')
+    return redirect(url_for('admin.instagram_participantes', id=id))
+
+@admin_bp.route('/instagram/config', methods=['GET', 'POST'])
+@admin_required
+def instagram_config():
+    """Configurações do Instagram"""
+    config = ConfiguracaoInstagram.query.first()
+    
+    if not config:
+        # Cria configuração padrão
+        config = ConfiguracaoInstagram(
+            palavra_chave_padrao='EU QUERO',
+            tickets_maximos_padrao=30
+        )
+        db.session.add(config)
+        db.session.commit()
+    
+    form = ConfiguracaoInstagramForm(obj=config)
+    
+    if form.validate_on_submit():
+        config.palavra_chave_padrao = form.palavra_chave_padrao.data
+        config.tickets_maximos_padrao = form.tickets_maximos_padrao.data
+        config.atualizado_em = get_brazil_datetime()
+        config.atualizado_por = current_user.id
+        
+        db.session.commit()
+        flash('Configurações atualizadas com sucesso!', 'success')
+        return redirect(url_for('admin.instagram_config'))
+    
+    return render_template('admin/instagram_config.html', form=form) 
