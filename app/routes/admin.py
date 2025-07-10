@@ -17,7 +17,6 @@ import glob
 import uuid
 import json
 from sqlalchemy import func
-from collections import namedtuple
 from sqlalchemy.orm import joinedload
 
 admin_bp = Blueprint('admin', __name__)
@@ -1475,6 +1474,27 @@ def instagram_novo():
             form.quantidade_vencedores.data = 1
 
     if form.validate_on_submit():
+        texto_post = form.texto_post.data
+        arquivo = form.arquivo.data
+        
+        # Prioriza o conteúdo do arquivo se ambos forem fornecidos
+        if arquivo:
+            valido, erro = validar_arquivo_instagram(arquivo)
+            if not valido:
+                flash(erro, 'danger')
+                return render_template('admin/instagram_novo.html', form=form, is_edit=False)
+            
+            # Lê o conteúdo do arquivo
+            try:
+                texto_post = arquivo.read().decode('utf-8')
+            except UnicodeDecodeError:
+                flash('Erro ao ler o arquivo. Certifique-se de que ele está em formato UTF-8.', 'danger')
+                return render_template('admin/instagram_novo.html', form=form, is_edit=False)
+
+        if not texto_post:
+            flash('Você deve fornecer o texto dos comentários ou um arquivo .txt.', 'danger')
+            return render_template('admin/instagram_novo.html', form=form, is_edit=False)
+
         novo_sorteio = SorteioInstagram(
             titulo=form.titulo.data,
             descricao=form.descricao.data,
