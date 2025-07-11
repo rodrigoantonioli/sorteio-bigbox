@@ -100,6 +100,22 @@
         10% { opacity: 1; }
         100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
     }
+    .vencedores-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 2rem;
+    }
+    .vencedor-final-item {
+        background-color: #ffeb3b;
+        color: #000000;
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(255, 235, 59, 0.4);
+    }
 </style>
 {% endblock %}
 
@@ -304,8 +320,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 console.log(`Total de ${ticketsPonderados.length} tickets criados.`);
 
-                // Inicia a animação do sorteio
-                window.sorteioAnimado.iniciarSorteioInstagram(ticketsPonderados, quantidadeVencedores);
+                // Inicia a animação do sorteio, passando também o título e a descrição
+                const sorteioTitulo = "{{ sorteio.titulo|e }}";
+                const sorteioDescricao = "{{ sorteio.descricao|e }}";
+                window.sorteioAnimado.iniciarSorteioInstagram(ticketsPonderados, quantidadeVencedores, sorteioTitulo, sorteioDescricao);
 
             } catch (error) {
                 console.error("Erro na função de realizar sorteio:", error);

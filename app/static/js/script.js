@@ -480,21 +480,35 @@ class SorteioAnimado {
     finalizarSorteio(ganhadores) {
         this.atualizarStatus('Sorteio Concluído!');
         
+        // Esconde a lista lateral de ganhadores
+        const listaGanhadoresEl = document.getElementById('listaGanhadores');
+        if (listaGanhadoresEl) {
+            listaGanhadoresEl.style.display = 'none';
+        }
+
         const sorteioDisplay = document.getElementById('sorteioDisplay');
+        const vencedoresHtml = ganhadores.map(g => 
+            `<div class="vencedor-final-item animate__animated animate__zoomIn">@${g.username}</div>`
+        ).join('');
+
         sorteioDisplay.innerHTML = `
             <div class="text-center w-100">
-                <h3 class="text-white mb-3">🎉 Sorteio Finalizado! 🎉</h3>
-                <p class="text-muted">${this.sorteioTitulo}</p>
-                <p class="text-muted small">${this.sorteioDescricao}</p>
+                <div class="confetti-celebration" id="confettiCelebration"></div>
+                <h2 class="display-4 text-white mb-4 animate__animated animate__tada">🎉 Vencedores! 🎉</h2>
+                <div class="vencedores-grid">
+                    ${vencedoresHtml}
+                </div>
+                <p class="text-muted mt-4 small">${this.sorteioTitulo}</p>
             </div>
         `;
-        sorteioDisplay.classList.remove('vencedor'); // Remove a classe de vencedor do display principal
+        this.criarConfettiCelebracao(); // Ativa os fogos!
+        sorteioDisplay.classList.remove('vencedor');
 
         // Salva os resultados e, no sucesso, mostra os botões finais
         this.submitarSorteioInstagramAjax(ganhadores, () => {
             this.sorteioConcluidoComSucesso = true;
             document.getElementById('finalActions').classList.remove('d-none');
-            document.getElementById('fecharModalBtn').classList.remove('d-none'); // Mostra o X principal
+            document.getElementById('fecharModalBtn').classList.remove('d-none');
         });
     }
 

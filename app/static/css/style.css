@@ -2103,3 +2103,113 @@ main {
     background-color: #00d19f;
     border-color: #00d19f;
 }
+
+/* Estilos do sorteio Instagram (migrados do template) */
+.participante-card {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+}
+.participante-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+.shake {
+    animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+.modal-fullscreen .modal-content {
+    background-color: #1a1a2e;
+    color: #e0e0e0;
+}
+.sorteio-modal .modal-header {
+    border-bottom: none;
+}
+.sorteio-modal .modal-title {
+    color: #fff;
+}
+.sorteio-col-animacao {
+    background-color: #2a2a4a;
+    border-right: 1px solid rgba(255,255,255,0.1);
+}
+.sorteio-col-ganhadores {
+    background-color: #1a1a2e;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+.sorteio-display {
+    font-size: 4rem;
+    font-weight: bold;
+    color: #00f0b5;
+    text-shadow: 0 0 10px rgba(0,240,181,0.5);
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+}
+.sorteio-display.vencedor {
+    color: #ffeb3b;
+    text-shadow: 0 0 15px rgba(255,235,59,0.8);
+}
+.sorteio-status {
+    font-size: 1.5rem;
+    color: #bbb;
+}
+#listaGanhadores .list-group-item {
+    background-color: #2a2a4a;
+    color: #e0e0e0;
+    border-color: rgba(255,255,255,0.1);
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+#listaGanhadores .list-group-item .badge {
+    background-color: #00f0b5 !important;
+    color: #1a1a2e;
+}
+.confetti-celebration {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+.confetti-celebration-piece {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #ffeb3b;
+    opacity: 0;
+    animation: confetti-fall linear infinite;
+}
+@keyframes confetti-fall {
+    0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+.vencedores-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 2rem;
+}
+.vencedor-final-item {
+    background-color: #ffeb3b;
+    color: #000000;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(255, 235, 59, 0.4);
+}
