@@ -321,8 +321,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(`Total de ${ticketsPonderados.length} tickets criados.`);
 
                 // Inicia a animação do sorteio, passando também o título e a descrição
-                const sorteioTitulo = "{{ sorteio.titulo|e }}";
-                const sorteioDescricao = "{{ sorteio.descricao|e }}";
+                const sorteioTitulo = {{ sorteio.titulo|tojson }};
+                const sorteioDescricao = {{ sorteio.descricao|tojson }};
                 window.sorteioAnimado.iniciarSorteioInstagram(ticketsPonderados, quantidadeVencedores, sorteioTitulo, sorteioDescricao);
 
             } catch (error) {
