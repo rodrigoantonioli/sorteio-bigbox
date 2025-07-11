@@ -3,7 +3,7 @@
 {% block title %}Festival Na Praia 2025 - Sistema de Sorteios{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="container-fluid px-4">
     <div class="row">
         <!-- Coluna da Esquerda: Informações do Festival -->
         <div class="col-lg-5 col-xl-4 mb-5">
@@ -54,7 +54,7 @@
 
 <!-- Histórico Completo de Sorteios Passados -->
 {% if historico_semanal %}
-<div class="container-fluid mt-4">
+<div class="container-fluid px-4 mt-4">
     <div class="row">
         <div class="col-12">
             <div class="section-header text-center mb-5">
@@ -69,14 +69,18 @@
     </div>
 
     {% for semana in historico_semanal %}
-    <div class="semana-sorteio-card mb-5">
-        <div class="semana-header">
-            <i class="bi bi-calendar2-week-fill"></i>
-            Semana de {{ semana.intervalo_semana }}
-        </div>
-        <div class="semana-body">
-            {% set sorteio_da_semana = semana %}
-            {% include 'partials/semana_sorteio_body.html' with context %}
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="semana-sorteio-card">
+                <div class="semana-header">
+                    <i class="bi bi-calendar2-week-fill"></i>
+                    Semana de {{ semana.intervalo_semana }}
+                </div>
+                <div class="semana-body">
+                    {% set sorteio_da_semana = semana %}
+                    {% include 'partials/semana_sorteio_body.html' with context %}
+                </div>
+            </div>
         </div>
     </div>
     {% endfor %}

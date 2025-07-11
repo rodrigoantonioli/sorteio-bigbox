@@ -1567,6 +1567,7 @@ def instagram_editar(id):
                     db.session.commit()
                     flash('Nenhum participante válido encontrado com a palavra-chave fornecida.', 'warning')
                     return redirect(url_for('admin.instagram_lista'))
+                
                 for username, data in participantes_data.items():
                     participante = ParticipanteInstagram(
                         username=username,
@@ -1587,7 +1588,7 @@ def instagram_editar(id):
         else:
             db.session.commit()
             flash('Sorteio atualizado com sucesso!', 'success')
-            return redirect(url_for('admin.instagram_lista') )
+            return redirect(url_for('admin.instagram_lista'))
     
     elif request.method == 'GET':
         form.titulo.data = sorteio.titulo
@@ -1610,26 +1611,26 @@ def instagram_participantes(id):
     sorteio = db.session.query(SorteioInstagram).options(
         joinedload(SorteioInstagram.participantes)
     ).filter_by(id=id).first_or_404()
-
+    
     participantes = sorteio.participantes
     total_comentarios = sum(p.comentarios_validos for p in participantes)
     total_tickets = sum(p.tickets for p in participantes)
 
-    # Prepara um JSON com os dados dos participantes para o sorteio no frontend
-    participantes_json = json.dumps([
+    # Prepara os dados dos participantes para o sorteio no frontend
+    participantes_json = [
         {'username': p.username, 'tickets': p.tickets} for p in participantes
-    ])
+    ]
     
     # Busca os ganhadores se o sorteio já foi realizado
     ganhadores = []
     if sorteio.status == 'sorteado':
         ganhadores = ParticipanteInstagram.query.filter_by(sorteio_id=id, vencedor=True).all()
 
-    return render_template('admin/instagram_participantes.html', 
-                             sorteio=sorteio,
-                             participantes=participantes,
-                             total_comentarios=total_comentarios,
-                             total_tickets=total_tickets,
+    return render_template('admin/instagram_participantes.html',
+                           sorteio=sorteio,
+                           participantes=participantes,
+                           total_comentarios=total_comentarios,
+                           total_tickets=total_tickets,
                              participantes_json=participantes_json,
                              ganhadores=ganhadores)
 

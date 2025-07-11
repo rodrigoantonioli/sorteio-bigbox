@@ -71,6 +71,7 @@ def parse_instagram_comments(text, palavra_chave='EU QUERO', tickets_maximos=30)
         comentario_limpo = re.sub(r'[^\w\s]', '', comentario_ascii.lower())
         comentario_palavras = set(comentario_limpo.split())
 
+        # Limpa a palavra-chave para comparação
         palavra_chave_limpa = re.sub(r'[^\w\s]', '', palavra_chave_lower)
         palavras_chave_set = set(palavra_chave_limpa.split())
         
@@ -80,7 +81,7 @@ def parse_instagram_comments(text, palavra_chave='EU QUERO', tickets_maximos=30)
                 participantes[username]['comentarios_validos'],
                 tickets_maximos
             )
-            
+    
     return dict(participantes)
 
 def validar_arquivo_instagram(file):

@@ -91,22 +91,46 @@ class SorteioAnimado {
                             </button>
                         </div>
                         <div class="modal-body p-0">
-                            <div class="row g-0 h-100">
-                                <!-- Coluna da Animação (Esquerda) -->
-                                <div class="col-md-9 d-flex flex-column justify-content-center align-items-center sorteio-col-animacao">
-                                    <div class="sorteio-status mb-3" id="sorteioStatus">${statusInicial}</div>
-                                    <div class="sorteio-display" id="sorteioDisplay">
-                                        <div class="nome-sorteio" id="nomeSorteio">Aguarde...</div>
-                                        <div class="confetti-container" id="confettiContainer"></div>
+                            <div class="sorteio-layout">
+                                <!-- Coluna da Ficha do Sorteio (Esquerda) -->
+                                <div class="sorteio-col-ficha">
+                                    <div class="ficha-header">
+                                        <h5><i class="fas fa-clipboard-list"></i> Detalhes do Sorteio</h5>
+                                    </div>
+                                    <div class="ficha-content" id="fichaSorteio">
+                                        <div class="loading-ficha">Carregando informações...</div>
                                     </div>
                                 </div>
+                                
+                                <!-- Coluna da Animação Central -->
+                                <div class="sorteio-col-central">
+                                    <div class="central-container">
+                                        <!-- Relógio Elegante -->
+                                        <div class="relogio-container">
+                                            <div class="relogio" id="relogioSorteio">
+                                                <div class="data-atual" id="dataAtual"></div>
+                                                <div class="hora-atual" id="horaAtual"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Status do Sorteio -->
+                                        <div class="sorteio-status-central" id="sorteioStatus">${statusInicial}</div>
+                                        
+                                        <!-- Display do Sorteio -->
+                                        <div class="sorteio-display-central" id="sorteioDisplay">
+                                            <div class="nome-sorteio" id="nomeSorteio">Aguarde...</div>
+                                            <div class="confetti-container" id="confettiContainer"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <!-- Coluna dos Ganhadores (Direita) -->
-                                <div class="col-md-3 sorteio-col-ganhadores">
-                                    <h5 class="text-center py-3">🏆 Ganhadores</h5>
-                                    <ul class="list-group list-group-flush" id="listaGanhadores"></ul>
-                                    <div class="p-3 mt-auto d-none" id="finalActions">
-                                         <div class="alert alert-success"><i class="bi bi-check-circle-fill"></i> Sorteio salvo!</div>
-                                         <button class="btn btn-primary w-100" id="fecharEAtualizarBtn">Fechar e Atualizar</button>
+                                <div class="sorteio-col-ganhadores">
+                                    <div class="ganhadores-header">
+                                        <h5><i class="fas fa-trophy"></i> Ganhadores</h5>
+                                    </div>
+                                    <div class="ganhadores-content">
+                                        <ul class="list-group list-group-flush" id="listaGanhadores"></ul>
                                     </div>
                                 </div>
                             </div>
@@ -121,13 +145,101 @@ class SorteioAnimado {
         this.modal.show();
 
         document.getElementById('fecharModalBtn')?.addEventListener('click', () => this.modal.hide());
-        document.getElementById('fecharEAtualizarBtn')?.addEventListener('click', () => window.location.reload());
 
         document.getElementById('sorteioModal').addEventListener('hidden.bs.modal', () => {
             if (this.sorteioConcluidoComSucesso) {
                 window.location.reload();
             }
         });
+
+        // Inicia o relógio
+        this.iniciarRelogio();
+    }
+
+    // Inicia o relógio em tempo real
+    iniciarRelogio() {
+        const atualizarRelogio = () => {
+            const agora = new Date();
+            
+            const dataEl = document.getElementById('dataAtual');
+            const horaEl = document.getElementById('horaAtual');
+            
+            if (dataEl && horaEl) {
+                const data = agora.toLocaleDateString('pt-BR', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                const hora = agora.toLocaleTimeString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                
+                dataEl.textContent = data;
+                horaEl.textContent = hora;
+            }
+        };
+        
+        // Atualiza imediatamente
+        atualizarRelogio();
+        
+        // Atualiza a cada segundo
+        this.relogioInterval = setInterval(atualizarRelogio, 1000);
+    }
+
+    // Para o relógio
+    pararRelogio() {
+        if (this.relogioInterval) {
+            clearInterval(this.relogioInterval);
+            this.relogioInterval = null;
+        }
+    }
+
+    // Popula a ficha do sorteio com as informações
+    popularFichaSorteio(titulo, descricao, participantes, tickets) {
+        const fichaEl = document.getElementById('fichaSorteio');
+        if (!fichaEl) return;
+
+        const fichaHtml = `
+            <div class="ficha-item">
+                <div class="ficha-titulo">
+                    <h6><i class="fas fa-bullhorn"></i> Título</h6>
+                    <p>${titulo}</p>
+                </div>
+            </div>
+            
+            <div class="ficha-item">
+                <div class="ficha-descricao">
+                    <h6><i class="fas fa-align-left"></i> Descrição</h6>
+                    <p>${descricao}</p>
+                </div>
+            </div>
+            
+            <div class="ficha-stats">
+                <h6><i class="fas fa-chart-bar"></i> Estatísticas</h6>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-number">${participantes}</div>
+                            <div class="stat-label">Participantes</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-ticket-alt"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-number">${tickets}</div>
+                            <div class="stat-label">Tickets</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        fichaEl.innerHTML = fichaHtml;
     }
 
     // Executa sorteio sequencial (lojas)
@@ -182,7 +294,23 @@ class SorteioAnimado {
         const todosOsGanhadores = [];
         let ticketsDisponiveis = [...ticketsPonderados];
 
+        // Armazena os participantes originais para usar no final
+        this.participantesOriginais = ticketsPonderados;
+
+        // Calcula estatísticas iniciais
+        const participantesUnicos = new Set(ticketsPonderados.map(t => t.username)).size;
+        const totalTickets = ticketsPonderados.length;
+
+        // Popula a ficha do sorteio
+        this.popularFichaSorteio(
+            this.sorteioTitulo,
+            this.sorteioDescricao,
+            participantesUnicos,
+            totalTickets
+        );
+
         for (let i = 0; i < quantidade; i++) {
+            // Atualiza o status central
             this.atualizarStatus(`Sorteando ${i + 1}º de ${quantidade} ganhador${quantidade > 1 ? 'es' : ''}...`);
 
             if (ticketsDisponiveis.length === 0) {
@@ -478,38 +606,156 @@ class SorteioAnimado {
 
     // Finaliza o sorteio, salva os dados e prepara para fechar
     finalizarSorteio(ganhadores) {
-        this.atualizarStatus('Sorteio Concluído!');
+        // Para o relógio
+        this.pararRelogio();
         
-        // Esconde a lista lateral de ganhadores
-        const listaGanhadoresEl = document.getElementById('listaGanhadores');
-        if (listaGanhadoresEl) {
-            listaGanhadoresEl.style.display = 'none';
+        // Adiciona classe para iniciar a transição final
+        const layout = document.querySelector('.sorteio-layout');
+        if (layout) {
+            layout.classList.add('finalizado');
         }
+        
+        // Aguarda a animação de transição antes de atualizar o conteúdo
+        setTimeout(() => {
+            // Atualiza a ficha com os resultados finais
+            this.atualizarFichaComResultados(ganhadores);
+            
+            // Atualiza a lista de ganhadores com animação e grid responsivo
+            this.atualizarListaGanhadoresFinais(ganhadores);
+            
+        }, 1200);
 
-        const sorteioDisplay = document.getElementById('sorteioDisplay');
-        const vencedoresHtml = ganhadores.map(g => 
-            `<div class="vencedor-final-item animate__animated animate__zoomIn">@${g.username}</div>`
-        ).join('');
-
-        sorteioDisplay.innerHTML = `
-            <div class="text-center w-100">
-                <div class="confetti-celebration" id="confettiCelebration"></div>
-                <h2 class="display-4 text-white mb-4 animate__animated animate__tada">🎉 Vencedores! 🎉</h2>
-                <div class="vencedores-grid">
-                    ${vencedoresHtml}
-                </div>
-                <p class="text-muted mt-4 small">${this.sorteioTitulo}</p>
-            </div>
-        `;
-        this.criarConfettiCelebracao(); // Ativa os fogos!
-        sorteioDisplay.classList.remove('vencedor');
-
-        // Salva os resultados e, no sucesso, mostra os botões finais
+        // Salva os resultados
         this.submitarSorteioInstagramAjax(ganhadores, () => {
             this.sorteioConcluidoComSucesso = true;
-            document.getElementById('finalActions').classList.remove('d-none');
+            // Mostra alerta de sucesso no topo
+            this.mostrarAlertaSucessoTopo();
+            // Mostra o botão de fechar
             document.getElementById('fecharModalBtn').classList.remove('d-none');
         });
+    }
+
+    // Atualiza a ficha com os resultados finais
+    atualizarFichaComResultados(ganhadores) {
+        const fichaEl = document.getElementById('fichaSorteio');
+        if (!fichaEl) return;
+
+        const agora = new Date();
+        const dataHora = agora.toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        const participantesUnicos = new Set(this.participantesOriginais?.map(t => t.username) || []).size;
+        const totalTickets = this.participantesOriginais?.length || 0;
+
+        const fichaHtml = `
+            <div class="ficha-item">
+                <div class="ficha-titulo">
+                    <h6><i class="fas fa-bullhorn"></i> Título</h6>
+                    <p>${this.sorteioTitulo}</p>
+                </div>
+            </div>
+            
+            <div class="ficha-item">
+                <div class="ficha-descricao">
+                    <h6><i class="fas fa-align-left"></i> Descrição</h6>
+                    <p>${this.sorteioDescricao}</p>
+                </div>
+            </div>
+            
+            <div class="ficha-stats">
+                <h6><i class="fas fa-chart-bar"></i> Estatísticas</h6>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-number">${participantesUnicos}</div>
+                            <div class="stat-label">Participantes</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-ticket-alt"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-number">${totalTickets}</div>
+                            <div class="stat-label">Tickets</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="ficha-resultado">
+                <h6><i class="fas fa-trophy text-warning"></i> Resultado</h6>
+                <div class="resultado-info">
+                    <div class="resultado-status">
+                        <i class="fas fa-check-circle text-success"></i>
+                        <span>Sorteio Concluído</span>
+                    </div>
+                    <div class="resultado-data">${dataHora}</div>
+                    <div class="resultado-ganhadores">
+                        <strong>${ganhadores.length} ganhador${ganhadores.length > 1 ? 'es' : ''} sorteado${ganhadores.length > 1 ? 's' : ''}</strong>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        fichaEl.innerHTML = fichaHtml;
+        
+        // Adiciona animação de atualização
+        fichaEl.classList.add('animate__animated', 'animate__pulse');
+    }
+
+    // Atualiza a lista de ganhadores com animação final e grid responsivo
+    atualizarListaGanhadoresFinais(ganhadores) {
+        const listaEl = document.getElementById('listaGanhadores');
+        if (!listaEl) return;
+
+        // Limpa a lista atual
+        listaEl.innerHTML = '';
+
+        // Determina o número de colunas baseado na quantidade de ganhadores
+        let numColunas = 1;
+        if (ganhadores.length <= 5) {
+            numColunas = 1;
+        } else if (ganhadores.length <= 10) {
+            numColunas = 2;
+        } else if (ganhadores.length <= 15) {
+            numColunas = 3;
+        } else {
+            numColunas = 4;
+        }
+
+        // Cria o container do grid
+        const gridContainer = document.createElement('div');
+        gridContainer.className = `ganhadores-grid cols-${numColunas}`;
+        listaEl.appendChild(gridContainer);
+
+        // Adiciona cada ganhador com animação sequencial
+        ganhadores.forEach((ganhador, index) => {
+            setTimeout(() => {
+                const item = document.createElement('div');
+                item.className = 'ganhador-final-item animate__animated animate__bounceIn';
+                item.style.animationDelay = `${index * 0.2}s`;
+                
+                item.innerHTML = `
+                    <div class="ganhador-final-content">
+                        <div class="ganhador-numero">
+                            <i class="fas fa-trophy text-warning"></i>
+                            <span>#${index + 1}</span>
+                        </div>
+                        <div class="ganhador-nome">@${ganhador.username}</div>
+                    </div>
+                `;
+                
+                gridContainer.appendChild(item);
+            }, index * 200);
+        });
+
+        // Adiciona confetti de celebração
+        this.criarConfettiCelebracao();
     }
 
     // Exibe resultado do Instagram (LEGADO - substituído pela nova lógica)
@@ -678,6 +924,37 @@ class SorteioAnimado {
             mensagemSucesso.style.display = 'none';
         }, 4000);
     }
+
+    // Mostra alerta de sucesso no topo da modal
+    mostrarAlertaSucessoTopo() {
+        const modalBody = document.querySelector('#sorteioModal .modal-body');
+        if (!modalBody) return;
+
+        // Remove alerta existente se houver
+        const alertaExistente = modalBody.querySelector('.alerta-sucesso-topo');
+        if (alertaExistente) {
+            alertaExistente.remove();
+        }
+
+        // Cria novo alerta
+        const alerta = document.createElement('div');
+        alerta.className = 'alerta-sucesso-topo animate__animated animate__fadeInDown';
+        alerta.innerHTML = `
+            <div class="alert alert-success m-3 text-center">
+                <i class="fas fa-check-circle me-2"></i>
+                Sorteio salvo com sucesso!
+            </div>
+        `;
+
+        // Insere no início do modal-body
+        modalBody.insertBefore(alerta, modalBody.firstChild);
+
+        // Remove após 5 segundos
+        setTimeout(() => {
+            alerta.classList.add('animate__fadeOutUp');
+            setTimeout(() => alerta.remove(), 1000);
+        }, 5000);
+    }
 }
 
 // Instância global do sorteio
@@ -692,6 +969,6 @@ window.iniciarSorteioColaboradores = function(colaboradores, quantidade = 1) {
     window.sorteioAnimado.iniciarSorteioColaboradores(colaboradores, quantidade);
 };
 
-window.iniciarSorteioInstagram = function(participantes, quantidadeVencedores = 1) {
-    window.sorteioAnimado.iniciarSorteioInstagram(participantes, quantidadeVencedores);
+window.iniciarSorteioInstagram = function(participantes, quantidadeVencedores = 1, sorteioTitulo, sorteioDescricao) {
+    window.sorteioAnimado.iniciarSorteioInstagram(participantes, quantidadeVencedores, sorteioTitulo, sorteioDescricao);
 };

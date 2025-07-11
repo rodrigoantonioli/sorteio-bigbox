@@ -1687,6 +1687,7 @@ main {
     border-color: #5a359e;
     box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.5);
 }
+
 /* ========================================
    MELHORIAS DASHBOARD NAVEGAÇÃO v1.1
 ======================================== */
@@ -2212,4 +2213,573 @@ main {
     font-size: 1.2rem;
     font-weight: bold;
     box-shadow: 0 4px 15px rgba(255, 235, 59, 0.4);
+}
+
+/* ========================================
+   ESTILOS DO SORTEIO INSTAGRAM PROFISSIONAL
+======================================== */
+
+/* Grid Responsivo para Ganhadores */
+.ganhadores-grid {
+    display: grid;
+    gap: 1.5rem;
+    transition: all 0.5s ease;
+}
+
+.ganhadores-grid.cols-1 { 
+    grid-template-columns: 1fr; 
+}
+
+.ganhadores-grid.cols-2 { 
+    grid-template-columns: 1fr 1fr; 
+}
+
+.ganhadores-grid.cols-3 { 
+    grid-template-columns: 1fr 1fr 1fr; 
+}
+
+.ganhadores-grid.cols-4 { 
+    grid-template-columns: 1fr 1fr 1fr 1fr; 
+}
+
+.ganhador-final-item {
+    background: linear-gradient(135deg, rgba(0,240,181,0.15) 0%, rgba(0,240,181,0.05) 100%);
+    border: 1px solid rgba(0,240,181,0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.ganhador-final-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.ganhador-final-item:hover::before {
+    left: 100%;
+}
+
+.ganhador-final-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,240,181,0.2);
+}
+
+.ganhador-final-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.ganhador-numero {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: bold;
+    color: #00f0b5;
+    font-size: 1.1rem;
+}
+
+.ganhador-nome {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    flex: 1;
+}
+
+/* Animações para o Grid */
+@keyframes ganhadorEntrada {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.ganhador-final-item {
+    animation: ganhadorEntrada 0.6s ease-out forwards;
+}
+
+/* Responsividade do Grid */
+@media (max-width: 1400px) {
+    .ganhadores-grid.cols-4 {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+@media (max-width: 1200px) {
+    .ganhadores-grid.cols-3,
+    .ganhadores-grid.cols-4 {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .ganhadores-grid.cols-2,
+    .ganhadores-grid.cols-3,
+    .ganhadores-grid.cols-4 {
+        grid-template-columns: 1fr;
+    }
+    
+    .ganhador-final-item {
+        padding: 1rem;
+    }
+    
+    .ganhador-nome {
+        font-size: 1rem;
+    }
+}
+
+/* Melhorias no Layout do Sorteio */
+.sorteio-layout {
+    display: flex;
+    height: calc(100vh - 120px);
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sorteio-col-ficha {
+    width: 25%;
+    background: linear-gradient(180deg, #2c2c54 0%, #40407a 100%);
+    border-right: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    flex-direction: column;
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sorteio-col-central {
+    width: 50%;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    position: relative;
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sorteio-col-ganhadores {
+    width: 25%;
+    background: linear-gradient(180deg, #2c2c54 0%, #40407a 100%);
+    display: flex;
+    flex-direction: column;
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Transição Final */
+.sorteio-layout.finalizado .sorteio-col-central {
+    width: 0%;
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.sorteio-layout.finalizado .sorteio-col-ficha {
+    width: 50%;
+}
+
+.sorteio-layout.finalizado .sorteio-col-ganhadores {
+    width: 50%;
+}
+
+/* Relógio Elegante */
+.relogio {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.relogio::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+    animation: relogioShine 3s ease-in-out infinite;
+}
+
+@keyframes relogioShine {
+    0%, 100% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
+}
+
+.hora-atual {
+    color: #ffffff;
+    font-size: 3rem;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 3px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Display do Sorteio */
+.sorteio-display-central {
+    background: rgba(255,255,255,0.08);
+    border-radius: 25px;
+    padding: 4rem 3rem;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.sorteio-display-central .nome-sorteio {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: #00f0b5;
+    text-shadow: 0 0 30px rgba(0,240,181,0.6);
+    word-wrap: break-word;
+    line-height: 1.2;
+    transition: all 0.3s ease;
+}
+
+.sorteio-display-central.vencedor .nome-sorteio {
+    color: #ffeb3b;
+    text-shadow: 0 0 40px rgba(255,235,59,0.8);
+    animation: vencedorPulse 2s ease-in-out infinite;
+}
+
+@keyframes vencedorPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* ========================================
+   ESTILOS DA PÁGINA INICIAL / FESTIVAL
+======================================== */
+
+/* Hero Card Compact */
+.hero-card-compact {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    color: white;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-card-compact::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+    animation: heroShine 3s ease-in-out infinite;
+}
+
+@keyframes heroShine {
+    0%, 100% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
+}
+
+.hero-icon {
+    font-size: 4rem;
+    color: #ffeb3b;
+    margin-bottom: 1.5rem;
+    animation: heroIconFloat 3s ease-in-out infinite;
+}
+
+@keyframes heroIconFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.hero-title-compact {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    animation: heroTitleSlide 1s ease-out;
+}
+
+@keyframes heroTitleSlide {
+    0% { 
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-subtitle-compact {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+.info-box-compact {
+    background: rgba(255,255,255,0.1);
+    border-radius: 15px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255,255,255,0.2);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.info-box-compact h4 {
+    color: #ffeb3b;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-box-compact p {
+    margin: 0;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+/* Section Headers */
+.section-header-compact {
+    margin-bottom: 2rem;
+}
+
+.section-header {
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Semana Destaque Card */
+.semana-destaque-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Empty State */
+.empty-state-compact {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 2px dashed #ddd;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: #ccc;
+    margin-bottom: 1.5rem;
+    animation: emptyIconPulse 2s ease-in-out infinite;
+}
+
+@keyframes emptyIconPulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 1; }
+}
+
+.empty-state-compact h4 {
+    color: #333;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state-compact p {
+    color: #666;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Semana Sorteio Card */
+.semana-sorteio-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.semana-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem 2rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.semana-body {
+    padding: 2rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .hero-title-compact {
+        font-size: 2rem;
+    }
+    
+    .hero-subtitle-compact {
+        font-size: 1rem;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .semana-destaque-card {
+        padding: 1.5rem;
+    }
+    
+    .hero-card-compact {
+        padding: 2rem 1.5rem;
+    }
+}
+
+/* Cards de Loja no Histórico */
+.loja-historico-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.loja-historico-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.loja-historico-header {
+    padding: 1.5rem;
+    color: white;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.loja-historico-big .loja-historico-header {
+    background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+}
+
+.loja-historico-ultra .loja-historico-header {
+    background: linear-gradient(135deg, #00a651 0%, #27ae60 100%);
+}
+
+.loja-historico-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.loja-historico-content {
+    padding: 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+.loja-historico-nome {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.loja-historico-codigo {
+    font-size: 1rem;
+    color: #666;
+    font-family: 'Courier New', monospace;
+    background: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.vencedores-header {
+    background: #f8f9fa;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 1px solid #eee;
+}
+
+.vencedor-item {
+    padding: 1rem 1.5rem;
+    border: none;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s ease;
+}
+
+.vencedor-item:hover {
+    background-color: #f8f9fa;
+}
+
+.vencedor-item:last-child {
+    border-bottom: none;
+}
+
+.vencedor-nome {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.vencedor-premio {
+    color: #666;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.vencedor-nome i,
+.vencedor-premio i {
+    color: #007bff;
 }
