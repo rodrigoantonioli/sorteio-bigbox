@@ -3098,49 +3098,47 @@ main {
     }
 }
 
-/* Cartão grande para até 10 ganhadores */
+/* Cartão grande para até 10 ganhadores - mais largo */
 .ganhador-card-grande .ganhador-final-item,
 .ganhador-final-item.ganhador-card-grande {
-    min-width: 160px;
+    min-width: 220px;
+    max-width: 420px;
     min-height: 48px;
     font-size: 1.25rem;
     padding: 0.5rem 1.2rem;
+    white-space: pre-line;
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 .ganhador-card-grande .ganhador-nome,
 .ganhador-final-item.ganhador-card-grande .ganhador-nome {
     color: #fff;
     font-size: 1.25rem;
+    white-space: pre-line;
+    word-break: break-all;
+    overflow-wrap: break-word;
+    line-height: 1.15;
 }
-/* Cartão pequeno para mais de 10 ganhadores */
+/* Cartão pequeno para mais de 10 ganhadores - mais largo */
 .ganhador-card-pequeno .ganhador-final-item,
 .ganhador-final-item.ganhador-card-pequeno {
-    min-width: 90px;
+    min-width: 120px;
+    max-width: 260px;
     min-height: 32px;
     font-size: 0.98rem;
     padding: 0.18rem 0.5rem;
+    white-space: pre-line;
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 .ganhador-card-pequeno .ganhador-nome,
 .ganhador-final-item.ganhador-card-pequeno .ganhador-nome {
     color: #fff;
     font-size: 0.98rem;
-}
-.ganhadores-grid {
-    grid-auto-rows: minmax(32px, 1fr);
-    max-height: 100vh;
-}
-@media (max-width: 900px) {
-    .ganhador-card-grande .ganhador-final-item,
-    .ganhador-final-item.ganhador-card-grande {
-        min-width: 110px;
-        font-size: 1.05rem;
-        padding: 0.3rem 0.6rem;
-    }
-    .ganhador-card-pequeno .ganhador-final-item,
-    .ganhador-final-item.ganhador-card-pequeno {
-        min-width: 70px;
-        font-size: 0.88rem;
-        padding: 0.12rem 0.3rem;
-    }
+    white-space: pre-line;
+    word-break: break-all;
+    overflow-wrap: break-word;
+    line-height: 1.12;
 }
 
 /* Slot machine - nome do usuário com fundo fixo */
@@ -3254,5 +3252,40 @@ main {
     }
     .relogio-container {
         margin-top: -1.2rem;
+    }
+}
+
+/* Slot machine - nome do usuário com fundo fixo, largura totalmente estável */
+.sorteio-display-central {
+    min-width: 520px;
+    max-width: 520px;
+}
+.nome-sorteio {
+    min-width: 520px;
+    max-width: 520px;
+    min-height: 90px;
+    font-size: 2.3rem;
+    padding: 0.7rem 2.2rem;
+    line-height: 1.1;
+    overflow-wrap: break-word;
+    word-break: break-all;
+    white-space: pre-line;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Reduz fonte se o texto for muito grande */
+    font-size: clamp(1.2rem, 2.3rem, 4vw);
+}
+@media (max-width: 900px) {
+    .sorteio-display-central {
+        min-width: 98vw;
+        max-width: 98vw;
+    }
+    .nome-sorteio {
+        min-width: 98vw;
+        max-width: 98vw;
+        min-height: 48px;
+        font-size: clamp(0.9rem, 1.3rem, 3vw);
+        padding: 0.2rem 0.5rem;
     }
 }
