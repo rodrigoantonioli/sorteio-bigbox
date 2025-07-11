@@ -94,10 +94,7 @@ class SorteioAnimado {
                             <div class="sorteio-layout">
                                 <!-- Coluna da Ficha do Sorteio (Esquerda) -->
                                 <div class="sorteio-col-ficha">
-                                    <div class="ficha-header">
-                                        <h5><i class="fas fa-clipboard-list"></i> Detalhes do Sorteio</h5>
-                                    </div>
-                                    <div class="ficha-content" id="fichaSorteio">
+                                    <div class="ficha-content ficha-content-card" id="fichaSorteio">
                                         <div class="loading-ficha">Carregando informações...</div>
                                     </div>
                                 </div>
@@ -126,9 +123,6 @@ class SorteioAnimado {
                                 
                                 <!-- Coluna dos Ganhadores (Direita) -->
                                 <div class="sorteio-col-ganhadores">
-                                    <div class="ganhadores-header">
-                                        <h5><i class="fas fa-trophy"></i> Ganhadores</h5>
-                                    </div>
                                     <div class="ganhadores-content">
                                         <ul class="list-group list-group-flush" id="listaGanhadores"></ul>
                                     </div>
@@ -204,41 +198,21 @@ class SorteioAnimado {
         if (!fichaEl) return;
 
         const fichaHtml = `
-            <div class="ficha-item">
-                <div class="ficha-titulo">
-                    <h6><i class="fas fa-bullhorn"></i> Título</h6>
-                    <p>${titulo}</p>
+            <div class="ficha-titulo-modern">${titulo}</div>
+            <div class="ficha-descricao-modern">${descricao}</div>
+            <div class="ficha-stats-modern">
+                <div class="stat-modern">
+                    <i class="fas fa-users"></i>
+                    <span>${participantes}</span>
+                    <span class="stat-label">Participantes</span>
                 </div>
-            </div>
-            
-            <div class="ficha-item">
-                <div class="ficha-descricao">
-                    <h6><i class="fas fa-align-left"></i> Descrição</h6>
-                    <p>${descricao}</p>
-                </div>
-            </div>
-            
-            <div class="ficha-stats">
-                <h6><i class="fas fa-chart-bar"></i> Estatísticas</h6>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-users"></i></div>
-                        <div class="stat-info">
-                            <div class="stat-number">${participantes}</div>
-                            <div class="stat-label">Participantes</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-ticket-alt"></i></div>
-                        <div class="stat-info">
-                            <div class="stat-number">${tickets}</div>
-                            <div class="stat-label">Tickets</div>
-                        </div>
-                    </div>
+                <div class="stat-modern">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>${tickets}</span>
+                    <span class="stat-label">Tickets</span>
                 </div>
             </div>
         `;
-        
         fichaEl.innerHTML = fichaHtml;
     }
 
@@ -598,7 +572,6 @@ class SorteioAnimado {
         const item = document.createElement('li');
         item.className = 'list-group-item animate__animated animate__fadeInRight';
         item.innerHTML = `
-            <span class="badge bg-primary me-2">#${numero}</span>
             @${ganhador.username}
         `;
         listaGanhadores.appendChild(item);
@@ -653,58 +626,27 @@ class SorteioAnimado {
         const totalTickets = this.participantesOriginais?.length || 0;
 
         const fichaHtml = `
-            <div class="ficha-item">
-                <div class="ficha-titulo">
-                    <h6><i class="fas fa-bullhorn"></i> Título</h6>
-                    <p>${this.sorteioTitulo}</p>
+            <div class="ficha-titulo-modern">${this.sorteioTitulo}</div>
+            <div class="ficha-descricao-modern">${this.sorteioDescricao}</div>
+            <div class="ficha-stats-modern">
+                <div class="stat-modern">
+                    <i class="fas fa-users"></i>
+                    <span>${participantesUnicos}</span>
+                    <span class="stat-label">Participantes</span>
+                </div>
+                <div class="stat-modern">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>${totalTickets}</span>
+                    <span class="stat-label">Tickets</span>
                 </div>
             </div>
-            
-            <div class="ficha-item">
-                <div class="ficha-descricao">
-                    <h6><i class="fas fa-align-left"></i> Descrição</h6>
-                    <p>${this.sorteioDescricao}</p>
-                </div>
-            </div>
-            
-            <div class="ficha-stats">
-                <h6><i class="fas fa-chart-bar"></i> Estatísticas</h6>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-users"></i></div>
-                        <div class="stat-info">
-                            <div class="stat-number">${participantesUnicos}</div>
-                            <div class="stat-label">Participantes</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-ticket-alt"></i></div>
-                        <div class="stat-info">
-                            <div class="stat-number">${totalTickets}</div>
-                            <div class="stat-label">Tickets</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="ficha-resultado">
-                <h6><i class="fas fa-trophy text-warning"></i> Resultado</h6>
-                <div class="resultado-info">
-                    <div class="resultado-status">
-                        <i class="fas fa-check-circle text-success"></i>
-                        <span>Sorteio Concluído</span>
-                    </div>
-                    <div class="resultado-data">${dataHora}</div>
-                    <div class="resultado-ganhadores">
-                        <strong>${ganhadores.length} ganhador${ganhadores.length > 1 ? 'es' : ''} sorteado${ganhadores.length > 1 ? 's' : ''}</strong>
-                    </div>
-                </div>
+            <div class="ficha-resultado-modern">
+                <div class="resultado-status-modern"><i class="fas fa-check-circle"></i> Sorteio Concluído</div>
+                <div class="resultado-data-modern">${dataHora}</div>
+                <div class="resultado-ganhadores-modern">${ganhadores.length} ganhador${ganhadores.length > 1 ? 'es' : ''} sorteado${ganhadores.length > 1 ? 's' : ''}</div>
             </div>
         `;
-        
         fichaEl.innerHTML = fichaHtml;
-        
-        // Adiciona animação de atualização
         fichaEl.classList.add('animate__animated', 'animate__pulse');
     }
 

@@ -2783,3 +2783,260 @@ main {
 .vencedor-premio i {
     color: #007bff;
 }
+
+/* Ficha do Sorteio - Card Lateral Elegante */
+.ficha-content-card {
+    background: rgba(20, 22, 40, 0.85);
+    border-radius: 18px;
+    box-shadow: 0 6px 32px 0 rgba(0,0,0,0.25);
+    padding: 2.2rem 1.5rem 2rem 1.5rem;
+    color: #fff;
+    margin: 1.2rem 0;
+    min-width: 260px;
+    max-width: 480px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: box-shadow 0.2s;
+}
+.ficha-content-card h6 {
+    color: #ffe082;
+    font-size: 1.08rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.01em;
+}
+.ficha-content-card p, .ficha-content-card .stat-label, .ficha-content-card .resultado-info {
+    color: #e0e0e0;
+    margin-bottom: 0.7rem;
+    font-size: 1.05rem;
+}
+.ficha-content-card .ficha-item:not(:last-child),
+.ficha-content-card .ficha-stats {
+    border-bottom: 1px solid rgba(255,255,255,0.10);
+    margin-bottom: 1.1rem;
+    padding-bottom: 1.1rem;
+}
+.ficha-content-card .ficha-titulo p,
+.ficha-content-card .ficha-descricao p {
+    font-size: 1.13rem;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 0.2rem;
+}
+.ficha-content-card .ficha-resultado {
+    margin-top: 1.2rem;
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    padding: 1rem 1rem 0.7rem 1rem;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10);
+}
+.ficha-content-card .resultado-status {
+    color: #81c784;
+    font-weight: 600;
+    font-size: 1.08rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.ficha-content-card .resultado-data {
+    color: #bdbdbd;
+    font-size: 0.98rem;
+    margin-bottom: 0.3rem;
+}
+.ficha-content-card .resultado-ganhadores {
+    color: #fffde7;
+    font-weight: bold;
+    font-size: 1.13rem;
+}
+@media (max-width: 900px) {
+    .ficha-content-card {
+        padding: 1.2rem 0.7rem 1.2rem 0.7rem;
+        min-width: 0;
+        max-width: 100%;
+    }
+}
+
+/* Ficha do Sorteio - Layout Moderno */
+.ficha-titulo-modern {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.01em;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    text-align: left;
+}
+.ficha-descricao-modern {
+    font-size: 1.13rem;
+    color: #bdbdbd;
+    margin-bottom: 1.5rem;
+    font-weight: 400;
+    text-align: left;
+}
+.ficha-stats-modern {
+    display: flex;
+    gap: 2.2rem;
+    margin-bottom: 2.2rem;
+    justify-content: flex-start;
+}
+.stat-modern {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 1.15rem;
+    color: #fff;
+    gap: 0.1rem;
+}
+.stat-modern i {
+    color: #4fd1c5;
+    font-size: 1.3rem;
+    margin-bottom: 0.1rem;
+}
+.stat-modern .stat-label {
+    color: #bdbdbd;
+    font-size: 0.98rem;
+    font-weight: 400;
+    margin-top: 0.1rem;
+}
+.ficha-resultado-modern {
+    margin-top: 2.2rem;
+    padding: 1.1rem 1rem 0.7rem 1rem;
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+}
+.resultado-status-modern {
+    color: #81c784;
+    font-weight: 700;
+    font-size: 1.13rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.resultado-status-modern i {
+    color: #81c784;
+    font-size: 1.2rem;
+}
+.resultado-data-modern {
+    color: #bdbdbd;
+    font-size: 0.98rem;
+}
+.resultado-ganhadores-modern {
+    color: #fffde7;
+    font-weight: 600;
+    font-size: 1.13rem;
+}
+@media (max-width: 900px) {
+    .ficha-stats-modern {
+        flex-direction: column;
+        gap: 1.1rem;
+    }
+    .ficha-titulo-modern {
+        font-size: 1.3rem;
+    }
+}
+
+/* Centralização vertical da ficha do sorteio */
+.sorteio-col-ficha {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    height: 100%;
+    transition: min-height 0.4s cubic-bezier(.4,2,.6,1), padding 0.4s;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.sorteio-layout {
+    align-items: stretch;
+    min-height: 100vh;
+    display: flex;
+}
+.ficha-content-card {
+    transition: box-shadow 0.2s, min-height 0.4s cubic-bezier(.4,2,.6,1), padding 0.4s, margin 0.4s;
+    margin: 0 auto;
+}
+/* Quando resultado aparece, aumenta altura da ficha suavemente */
+.ficha-content-card, .ficha-content-card:has(.ficha-resultado-modern) {
+    min-height: 320px;
+}
+.ficha-content-card .ficha-resultado-modern {
+    transition: all 0.4s cubic-bezier(.4,2,.6,1);
+}
+/* Alerta de sucesso absoluto/fixo no topo da modal */
+.alerta-sucesso-topo {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    z-index: 9999;
+    pointer-events: none;
+    box-shadow: 0 4px 24px 0 rgba(0,0,0,0.10);
+    animation: fadeInDown 0.5s;
+}
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px) translateX(-50%); }
+    to { opacity: 1; transform: translateY(0) translateX(-50%); }
+}
+/* Responsividade */
+@media (max-width: 900px) {
+    .sorteio-col-ficha {
+        min-height: 0;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+    .sorteio-layout {
+        flex-direction: column;
+        align-items: stretch;
+        min-height: 0;
+    }
+    .ficha-content-card {
+        margin: 0 auto 2rem auto;
+    }
+}
+
+/* Coluna dos Ganhadores - Centralização vertical */
+.sorteio-col-ganhadores {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    height: 100%;
+    transition: min-height 0.4s cubic-bezier(.4,2,.6,1), padding 0.4s;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.ganhadores-header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.01em;
+}
+.ganhadores-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+@media (max-width: 900px) {
+    .sorteio-col-ganhadores {
+        min-height: 0;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+    .ganhadores-header {
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+}

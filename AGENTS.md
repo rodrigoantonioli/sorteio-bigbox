@@ -4,6 +4,32 @@
 
 Este sistema implementa um sorteio profissional e elegante para Instagram com layout em 3 colunas, animações fluidas e transições cinematográficas. O sistema foi projetado para ser filmado e transmitido ao vivo.
 
+---
+
+## ⚡️ DICA PARA IAs: Onde está cada parte do layout?
+
+- **Atenção:** O layout do sorteio Instagram (modal fullscreen, ficha, central, ganhadores) NÃO está em um template HTML fixo, mas é **gerado dinamicamente via JavaScript**.
+- **Arquivo principal:** Toda a estrutura do modal, incluindo as 3 colunas, é criada na função `criarModal` da classe `SorteioAnimado` em `app/static/js/script.js`.
+- **A coluna dos ganhadores** (direita) é criada dentro do HTML do modal, na string template da função `criarModal`.
+- **A lista de ganhadores** é populada dinamicamente pelas funções `adicionarGanhadorNaLista` e `atualizarListaGanhadoresFinais` em `script.js`.
+- **A ficha do sorteio** (esquerda) é atualizada pelas funções `popularFichaSorteio` e `atualizarFichaComResultados`.
+- **O alerta de sucesso** é inserido dinamicamente por `mostrarAlertaSucessoTopo`.
+
+---
+
+## Fluxo de Criação do Modal e Colunas
+
+1. **Usuário clica em "Realizar Sorteio"**
+2. A função `iniciarSorteioInstagram` chama `criarModal` (em `script.js`)
+3. `criarModal` gera o HTML do modal fullscreen, com 3 colunas:
+   - `.sorteio-col-ficha` (ficha do sorteio, esquerda)
+   - `.sorteio-col-central` (animação, centro)
+   - `.sorteio-col-ganhadores` (ganhadores, direita)
+4. O modal é inserido no DOM e exibido
+5. Os dados são populados dinamicamente nas colunas via funções JS
+
+---
+
 ## Estrutura do Layout
 
 ### Layout em 3 Colunas
@@ -17,21 +43,30 @@ Este sistema implementa um sorteio profissional e elegante para Instagram com la
 └─────────────────┴─────────────────┴─────────────────┘
 ```
 
-### Transição Final
+- **Ficha do Sorteio (esquerda):**
+  - Criada em `criarModal` e atualizada por `popularFichaSorteio`/`atualizarFichaComResultados`.
+- **Coluna Central:**
+  - Criada em `criarModal`.
+- **Coluna dos Ganhadores (direita):**
+  - Criada em `criarModal`.
+  - Lista populada por `adicionarGanhadorNaLista` e `atualizarListaGanhadoresFinais`.
 
-Após o sorteio, o layout se transforma:
+---
 
-```
-┌─────────────────────────┬─────────────────────────┐
-│     Ficha do Sorteio    │      Ganhadores         │
-│      (50% width)        │      (50% width)        │
-│                         │                         │
-│  - Título               │  - Grid responsivo      │
-│  - Descrição            │  - Animações sequenciais│
-│  - Estatísticas         │  - Confetti             │
-│  - Resultado final      │                         │
-└─────────────────────────┴─────────────────────────┘
-```
+## Como Customizar ou Depurar
+
+- **Para alterar o layout:** Edite o HTML na função `criarModal` em `script.js`.
+- **Para mudar o grid de ganhadores:** Edite `atualizarListaGanhadoresFinais`.
+- **Para alterar a ficha:** Edite `popularFichaSorteio` e `atualizarFichaComResultados`.
+- **Para alterar o alerta de sucesso:** Edite `mostrarAlertaSucessoTopo`.
+
+---
+
+## Dica para buscas rápidas
+- Procure por `criarModal`, `sorteio-col-ganhadores`, `ganhadores-header`, `listaGanhadores` em `app/static/js/script.js` para localizar a lógica da coluna dos ganhadores.
+- O template HTML `app/templates/admin/instagram_participantes.html` apenas carrega o botão e os dados iniciais, mas o layout do sorteio é 100% dinâmico.
+
+---
 
 ## Componentes Principais
 
