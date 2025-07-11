@@ -590,12 +590,15 @@ class SorteioAnimado {
         
         // Aguarda a animação de transição antes de atualizar o conteúdo
         setTimeout(() => {
+            // Adiciona classe para juntar as colunas
+            const layout = document.querySelector('.sorteio-layout');
+            if (layout) {
+                layout.classList.add('resultado-final-juncao');
+            }
             // Atualiza a ficha com os resultados finais
             this.atualizarFichaComResultados(ganhadores);
-            
             // Atualiza a lista de ganhadores com animação e grid responsivo
             this.atualizarListaGanhadoresFinais(ganhadores);
-            
         }, 1200);
 
         // Salva os resultados
