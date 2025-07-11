@@ -3040,3 +3040,60 @@ main {
         font-size: 1.1rem;
     }
 }
+
+/* Grid dos ganhadores - resultado final */
+.ganhadores-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: minmax(38px, 1fr);
+    gap: 1.1rem 1.1rem;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    justify-items: center;
+    align-items: center;
+}
+.ganhador-final-item {
+    background: linear-gradient(120deg, #232b4a 60%, #2e3a6a 100%);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10);
+    padding: 0.3rem 0.7rem;
+    min-width: 120px;
+    min-height: 38px;
+    max-width: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.08rem;
+    font-weight: 600;
+    color: #1de9b6;
+    transition: box-shadow 0.2s, background 0.2s;
+    text-align: center;
+}
+.ganhador-final-item .ganhador-nome {
+    width: 100%;
+    text-align: center;
+    font-size: 1.08rem;
+    font-weight: 600;
+    color: #1de9b6;
+    letter-spacing: 0.01em;
+    word-break: break-all;
+}
+.centralizado {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+@media (max-width: 900px) {
+    .ganhadores-grid {
+        grid-template-columns: 1fr;
+        max-width: 100%;
+    }
+    .ganhador-final-item {
+        min-width: 90px;
+        font-size: 0.98rem;
+        padding: 0.2rem 0.4rem;
+    }
+}

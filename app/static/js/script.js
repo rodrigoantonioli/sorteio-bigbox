@@ -658,16 +658,10 @@ class SorteioAnimado {
         // Limpa a lista atual
         listaEl.innerHTML = '';
 
-        // Determina o número de colunas baseado na quantidade de ganhadores
-        let numColunas = 1;
+        // Para até 20 ganhadores, sempre 2 colunas, até 10 linhas
+        let numColunas = 2;
         if (ganhadores.length <= 5) {
             numColunas = 1;
-        } else if (ganhadores.length <= 10) {
-            numColunas = 2;
-        } else if (ganhadores.length <= 15) {
-            numColunas = 3;
-        } else {
-            numColunas = 4;
         }
 
         // Cria o container do grid
@@ -681,17 +675,11 @@ class SorteioAnimado {
                 const item = document.createElement('div');
                 item.className = 'ganhador-final-item animate__animated animate__bounceIn';
                 item.style.animationDelay = `${index * 0.2}s`;
-                
                 item.innerHTML = `
-                    <div class="ganhador-final-content">
-                        <div class="ganhador-numero">
-                            <i class="fas fa-trophy text-warning"></i>
-                            <span>#${index + 1}</span>
-                        </div>
+                    <div class="ganhador-final-content centralizado">
                         <div class="ganhador-nome">@${ganhador.username}</div>
                     </div>
                 `;
-                
                 gridContainer.appendChild(item);
             }, index * 200);
         });
