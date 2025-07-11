@@ -3341,3 +3341,48 @@ main {
         justify-items: center;
     }
 }
+
+/* Título GANHADORES acima do grid */
+.titulo-ganhadores-final {
+    width: 100%;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.08em;
+    margin-bottom: 1.2rem;
+    margin-top: 0.5rem;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+/* Centralizar grid dos ganhadores vertical e horizontalmente */
+.sorteio-layout.resultado-final-juncao .sorteio-col-ganhadores {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    min-height: 0;
+    padding-left: 0 !important;
+}
+.sorteio-layout.resultado-final-juncao .ganhadores-grid {
+    display: grid !important;
+    align-content: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 0;
+    margin: 0 auto !important;
+    width: 100%;
+    max-width: 100%;
+}
+@media (max-width: 900px) {
+    .sorteio-layout.resultado-final-juncao .sorteio-col-ganhadores {
+        height: auto;
+        min-height: 0;
+        align-items: center;
+        justify-content: flex-start;
+    }
+    .titulo-ganhadores-final {
+        font-size: 1.1rem;
+        margin-bottom: 0.7rem;
+    }
+}

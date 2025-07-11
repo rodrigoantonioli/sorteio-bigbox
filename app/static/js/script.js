@@ -661,6 +661,12 @@ class SorteioAnimado {
         // Limpa a lista atual
         listaEl.innerHTML = '';
 
+        // Adiciona o título 'GANHADORES' centralizado
+        const titulo = document.createElement('div');
+        titulo.className = 'titulo-ganhadores-final';
+        titulo.innerText = 'GANHADORES';
+        listaEl.appendChild(titulo);
+
         // Lógica de grid e tamanho
         let numColunas = 2;
         let cardSizeClass = 'ganhador-card-grande';
