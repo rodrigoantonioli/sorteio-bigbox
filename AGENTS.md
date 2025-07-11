@@ -14,6 +14,20 @@ Este sistema implementa um sorteio profissional e elegante para Instagram com la
 - **A lista de ganhadores** é populada dinamicamente pelas funções `adicionarGanhadorNaLista` e `atualizarListaGanhadoresFinais` em `script.js`.
 - **A ficha do sorteio** (esquerda) é atualizada pelas funções `popularFichaSorteio` e `atualizarFichaComResultados`.
 - **O alerta de sucesso** é inserido dinamicamente por `mostrarAlertaSucessoTopo`.
+- **Transição final:** A classe `.resultado-final-juncao` é adicionada à `.sorteio-layout` para juntar as colunas e centralizar o grid dos ganhadores.
+- **Título GANHADORES:** Adicionado dinamicamente acima do grid na função `atualizarListaGanhadoresFinais`.
+- **Cartões adaptativos:** O tamanho dos cartões dos ganhadores é controlado por `.ganhador-card-grande` e `.ganhador-card-pequeno`.
+- **Slot machine estável:** A caixa do nome sorteado tem largura fixa (CSS `.nome-sorteio`), nunca “pula”.
+
+---
+
+## Novidades e Detalhes Visuais (v1.3+)
+
+- **Transição final cinematográfica:** As colunas da ficha e dos ganhadores se encostam, eliminando o espaço central. O grid dos ganhadores ocupa toda a altura da coluna, centralizado vertical e horizontalmente.
+- **Título "GANHADORES":** Centralizado e destacado acima do grid na tela final.
+- **Cartões dos ganhadores:** Adaptam tamanho conforme a quantidade, sempre centralizados, nomes em branco puro, nunca cortados.
+- **Slot machine:** Caixa do nome sorteado com largura fixa, texto adaptativo, sem saltos.
+- **Responsividade:** Tudo se adapta a telas grandes e pequenas, mantendo o visual premium.
 
 ---
 
@@ -27,6 +41,7 @@ Este sistema implementa um sorteio profissional e elegante para Instagram com la
    - `.sorteio-col-ganhadores` (ganhadores, direita)
 4. O modal é inserido no DOM e exibido
 5. Os dados são populados dinamicamente nas colunas via funções JS
+6. **Transição final:** Após o sorteio, a classe `.resultado-final-juncao` é adicionada à `.sorteio-layout`, eliminando o espaço central e centralizando o grid dos ganhadores.
 
 ---
 
@@ -50,6 +65,7 @@ Este sistema implementa um sorteio profissional e elegante para Instagram com la
 - **Coluna dos Ganhadores (direita):**
   - Criada em `criarModal`.
   - Lista populada por `adicionarGanhadorNaLista` e `atualizarListaGanhadoresFinais`.
+  - **Na transição final:** O grid dos ganhadores é centralizado e o título "GANHADORES" é exibido acima.
 
 ---
 
@@ -59,11 +75,13 @@ Este sistema implementa um sorteio profissional e elegante para Instagram com la
 - **Para mudar o grid de ganhadores:** Edite `atualizarListaGanhadoresFinais`.
 - **Para alterar a ficha:** Edite `popularFichaSorteio` e `atualizarFichaComResultados`.
 - **Para alterar o alerta de sucesso:** Edite `mostrarAlertaSucessoTopo`.
+- **Para customizar a transição final:** Edite a classe `.resultado-final-juncao` em `style.css`.
+- **Para mudar o slot machine:** Edite `.nome-sorteio` em `style.css`.
 
 ---
 
 ## Dica para buscas rápidas
-- Procure por `criarModal`, `sorteio-col-ganhadores`, `ganhadores-header`, `listaGanhadores` em `app/static/js/script.js` para localizar a lógica da coluna dos ganhadores.
+- Procure por `criarModal`, `sorteio-col-ganhadores`, `ganhadores-header`, `listaGanhadores`, `resultado-final-juncao`, `titulo-ganhadores-final` em `app/static/js/script.js` e `app/static/css/style.css` para localizar a lógica e o visual da coluna dos ganhadores.
 - O template HTML `app/templates/admin/instagram_participantes.html` apenas carrega o botão e os dados iniciais, mas o layout do sorteio é 100% dinâmico.
 
 ---
