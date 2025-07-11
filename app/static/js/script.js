@@ -658,22 +658,30 @@ class SorteioAnimado {
         // Limpa a lista atual
         listaEl.innerHTML = '';
 
-        // Para até 20 ganhadores, sempre 2 colunas, até 10 linhas
+        // Lógica de grid e tamanho
         let numColunas = 2;
+        let cardSizeClass = 'ganhador-card-grande';
         if (ganhadores.length <= 5) {
             numColunas = 1;
+            cardSizeClass = 'ganhador-card-grande';
+        } else if (ganhadores.length <= 10) {
+            numColunas = 2;
+            cardSizeClass = 'ganhador-card-grande';
+        } else {
+            numColunas = 2;
+            cardSizeClass = 'ganhador-card-pequeno';
         }
 
         // Cria o container do grid
         const gridContainer = document.createElement('div');
-        gridContainer.className = `ganhadores-grid cols-${numColunas}`;
+        gridContainer.className = `ganhadores-grid cols-${numColunas} ${cardSizeClass}`;
         listaEl.appendChild(gridContainer);
 
         // Adiciona cada ganhador com animação sequencial
         ganhadores.forEach((ganhador, index) => {
             setTimeout(() => {
                 const item = document.createElement('div');
-                item.className = 'ganhador-final-item animate__animated animate__bounceIn';
+                item.className = `ganhador-final-item animate__animated animate__bounceIn ${cardSizeClass}`;
                 item.style.animationDelay = `${index * 0.2}s`;
                 item.innerHTML = `
                     <div class="ganhador-final-content centralizado">

@@ -3097,3 +3097,48 @@ main {
         padding: 0.2rem 0.4rem;
     }
 }
+
+/* Cartão grande para até 10 ganhadores */
+.ganhador-card-grande .ganhador-final-item,
+.ganhador-final-item.ganhador-card-grande {
+    min-width: 160px;
+    min-height: 48px;
+    font-size: 1.25rem;
+    padding: 0.5rem 1.2rem;
+}
+.ganhador-card-grande .ganhador-nome,
+.ganhador-final-item.ganhador-card-grande .ganhador-nome {
+    color: #fff;
+    font-size: 1.25rem;
+}
+/* Cartão pequeno para mais de 10 ganhadores */
+.ganhador-card-pequeno .ganhador-final-item,
+.ganhador-final-item.ganhador-card-pequeno {
+    min-width: 90px;
+    min-height: 32px;
+    font-size: 0.98rem;
+    padding: 0.18rem 0.5rem;
+}
+.ganhador-card-pequeno .ganhador-nome,
+.ganhador-final-item.ganhador-card-pequeno .ganhador-nome {
+    color: #fff;
+    font-size: 0.98rem;
+}
+.ganhadores-grid {
+    grid-auto-rows: minmax(32px, 1fr);
+    max-height: 100vh;
+}
+@media (max-width: 900px) {
+    .ganhador-card-grande .ganhador-final-item,
+    .ganhador-final-item.ganhador-card-grande {
+        min-width: 110px;
+        font-size: 1.05rem;
+        padding: 0.3rem 0.6rem;
+    }
+    .ganhador-card-pequeno .ganhador-final-item,
+    .ganhador-final-item.ganhador-card-pequeno {
+        min-width: 70px;
+        font-size: 0.88rem;
+        padding: 0.12rem 0.3rem;
+    }
+}
