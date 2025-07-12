@@ -32,8 +32,10 @@ def parse_instagram_comments(text, palavra_chave='EU QUERO', tickets_maximos=30)
     participantes = defaultdict(lambda: {'comentarios_validos': 0, 'tickets': 0})
     palavra_chave_lower = palavra_chave.lower().strip()
     
-    # Regex para identificar uma linha de tempo (ex: "4 h", "1 d")
-    timestamp_re = re.compile(r'^\d+\s+(h|d|min|s)\b.*$')
+    # Regex para identificar uma linha de tempo (ex: "4 h", "1 d", "1 sem")
+    # Alguns dumps do Instagram utilizam "sem" para semanas, por isso incluímos
+    # essa variação para não ignorar comentários válidos.
+    timestamp_re = re.compile(r'^\d+\s+(h|d|min|s|sem)\b.*$')
     
     # Divide o texto em blocos, um para cada post de usuário.
     # Usa "lookahead" para não perder o delimitador na divisão.
@@ -99,7 +101,7 @@ def validar_arquivo_instagram(file):
     
     # Verificar extensão
     filename = file.filename
-    if not filename.endswith('.txt'):
+    if not filename.lower().endswith('.txt'):
         return False, "O arquivo deve ser um arquivo .txt"
     
     # Verificar tamanho (máximo 10MB)
