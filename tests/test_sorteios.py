@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from run import create_app
 from app.extensions import db
 from app.models import Usuario, Loja, Colaborador, Premio, SorteioSemanal, SorteioColaborador
-from helpers import generate_random_email, generate_random_password
+from .helpers import generate_random_email, generate_random_password
 
 class SorteiosTestCase(unittest.TestCase):
     def setUp(self):
