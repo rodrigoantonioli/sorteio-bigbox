@@ -1,0 +1,752 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_field, render_submit_button %}
+
+{% block title %}Sorteio Instagram: {{ sorteio.titulo }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+    /* ========================================
+       LAYOUT PROFISSIONAL DO SORTEIO INSTAGRAM
+    ========================================= */
+    
+    /* Modal Fullscreen Profissional */
+    .modal-fullscreen .modal-content {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        color: #e0e0e0;
+        border: none;
+        border-radius: 0;
+        min-height: 100vh;
+    }
+    
+    .sorteio-modal .modal-header {
+        background: rgba(255,255,255,0.05);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding: 1.5rem;
+    }
+    
+    .sorteio-modal .modal-title {
+        color: #ffffff;
+        font-size: 1.8rem;
+        font-weight: 600;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    /* Layout em 3 Colunas */
+    .sorteio-layout {
+        display: flex;
+        height: calc(100vh - 120px);
+        transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Coluna Esquerda - Ficha do Sorteio */
+    .sorteio-col-ficha {
+        width: 25%;
+        background: linear-gradient(180deg, #2c2c54 0%, #40407a 100%);
+        border-right: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        flex-direction: column;
+        transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .ficha-header {
+        background: rgba(255,255,255,0.1);
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .ficha-header h5 {
+        color: #ffffff;
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .ficha-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,0.3) transparent;
+    }
+    
+    .ficha-content::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .ficha-content::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    .ficha-content::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.3);
+        border-radius: 3px;
+    }
+    
+    /* Itens da Ficha */
+    .ficha-item {
+        margin-bottom: 2.5rem;
+    }
+    
+    .ficha-item h6 {
+        color: #00f0b5;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .ficha-item p {
+        color: #e0e0e0;
+        margin: 0;
+        line-height: 1.6;
+        word-wrap: break-word;
+    }
+    
+    .ficha-titulo p {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #ffffff;
+    }
+    
+    .ficha-descricao p {
+        font-size: 1rem;
+        color: #cccccc;
+    }
+    
+    /* Estatísticas Elegantes */
+    .ficha-stats h6 {
+        margin-bottom: 1.5rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+    
+    .stat-card {
+        background: rgba(255,255,255,0.08);
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        border: 1px solid rgba(255,255,255,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        background: rgba(255,255,255,0.12);
+        transform: translateY(-2px);
+    }
+    
+    .stat-icon {
+        color: #00f0b5;
+        font-size: 2rem;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,240,181,0.1);
+        border-radius: 10px;
+    }
+    
+    .stat-info {
+        flex: 1;
+    }
+    
+    .stat-number {
+        color: #ffffff;
+        font-size: 2rem;
+        font-weight: bold;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+    }
+    
+    .stat-label {
+        color: #bbb;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Resultado Final */
+    .ficha-resultado {
+        background: linear-gradient(135deg, rgba(0,240,181,0.15) 0%, rgba(0,240,181,0.05) 100%);
+        border-radius: 12px;
+        padding: 2rem;
+        border-left: 4px solid #00f0b5;
+        border: 1px solid rgba(0,240,181,0.2);
+    }
+    
+    .resultado-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .resultado-status {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+        color: #00f0b5;
+    }
+    
+    .resultado-data {
+        color: #bbb;
+        font-size: 0.9rem;
+    }
+    
+    .resultado-ganhadores {
+        color: #00f0b5;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    
+    /* Coluna Central - Sorteio */
+    .sorteio-col-central {
+        width: 50%;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem;
+        position: relative;
+        transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .central-container {
+        text-align: center;
+        width: 100%;
+        max-width: 600px;
+    }
+    
+    /* Relógio Elegante */
+    .relogio-container {
+        margin-bottom: 4rem;
+    }
+    
+    .relogio {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        border: 1px solid rgba(255,255,255,0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .relogio::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+        animation: relogioShine 3s ease-in-out infinite;
+    }
+    
+    @keyframes relogioShine {
+        0%, 100% { transform: translateX(-100%); }
+        50% { transform: translateX(100%); }
+    }
+    
+    .data-atual {
+        color: #ffffff;
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 0.75rem;
+        text-transform: capitalize;
+        opacity: 0.9;
+    }
+    
+    .hora-atual {
+        color: #ffffff;
+        font-size: 3rem;
+        font-weight: bold;
+        font-family: 'Courier New', monospace;
+        letter-spacing: 3px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    /* Status do Sorteio */
+    .sorteio-status-central {
+        font-size: 1.5rem;
+        color: #ffeb3b;
+        margin-bottom: 3rem;
+        font-weight: 600;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    /* Display do Sorteio */
+    .sorteio-display-central {
+        background: rgba(255,255,255,0.08);
+        border-radius: 25px;
+        padding: 4rem 3rem;
+        min-height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .sorteio-display-central .nome-sorteio {
+        font-size: 3.5rem;
+        font-weight: bold;
+        color: #00f0b5;
+        text-shadow: 0 0 30px rgba(0,240,181,0.6);
+        word-wrap: break-word;
+        line-height: 1.2;
+        transition: all 0.3s ease;
+    }
+    
+    .sorteio-display-central.vencedor .nome-sorteio {
+        color: #ffeb3b;
+        text-shadow: 0 0 40px rgba(255,235,59,0.8);
+        animation: vencedorPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes vencedorPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    /* Coluna Direita - Ganhadores */
+    .sorteio-col-ganhadores {
+        width: 25%;
+        background: linear-gradient(180deg, #2c2c54 0%, #40407a 100%);
+        display: flex;
+        flex-direction: column;
+        transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .ganhadores-header {
+        background: rgba(255,255,255,0.1);
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .ganhadores-header h5 {
+        color: #ffffff;
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .ganhadores-content {
+        flex: 1;
+        padding: 1.5rem;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,0.3) transparent;
+    }
+    
+    .ganhadores-content::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .ganhadores-content::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    .ganhadores-content::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.3);
+        border-radius: 3px;
+    }
+    
+    /* Lista de Ganhadores */
+    #listaGanhadores .list-group-item {
+        background: rgba(255,255,255,0.08);
+        color: #e0e0e0;
+        border: 1px solid rgba(255,255,255,0.1);
+        margin-bottom: 0.75rem;
+        border-radius: 12px;
+        padding: 1.25rem;
+        transition: all 0.3s ease;
+    }
+    
+    #listaGanhadores .list-group-item:hover {
+        background: rgba(255,255,255,0.12);
+        transform: translateX(5px);
+    }
+    
+    #listaGanhadores .list-group-item .badge {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+        color: #ffffff;
+        font-size: 0.8rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+    }
+    
+    /* Ganhadores Finais */
+    .ganhador-final {
+        background: linear-gradient(135deg, rgba(0,240,181,0.15) 0%, rgba(0,240,181,0.05) 100%) !important;
+        border-left: 4px solid #00f0b5 !important;
+        border: 1px solid rgba(0,240,181,0.2) !important;
+    }
+    
+    .ganhador-final-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .ganhador-numero {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: bold;
+        color: #00f0b5;
+    }
+    
+    .ganhador-nome {
+        color: #ffffff;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+    
+    /* Transição Final - Ganhadores "Engolem" o Centro */
+    .sorteio-layout.finalizado .sorteio-col-central {
+        width: 0%;
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    
+    .sorteio-layout.finalizado .sorteio-col-ficha {
+        width: 50%;
+    }
+    
+    .sorteio-layout.finalizado .sorteio-col-ganhadores {
+        width: 50%;
+    }
+    
+    /* Grid Responsivo para Muitos Ganhadores */
+    .ganhadores-grid {
+        display: grid;
+        gap: 1rem;
+        transition: all 0.5s ease;
+    }
+    
+    .ganhadores-grid.cols-1 { grid-template-columns: 1fr; }
+    .ganhadores-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+    .ganhadores-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .ganhadores-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    
+    /* Alerta de Sucesso */
+    .alerta-sucesso-topo {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1050;
+    }
+    
+    /* Animações */
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css');
+    
+    /* Confetti de Celebração */
+    .confetti-celebration {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        pointer-events: none;
+    }
+    
+    .confetti-celebration-piece {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background-color: #ffeb3b;
+        opacity: 0;
+        animation: confetti-fall linear infinite;
+    }
+    
+    @keyframes confetti-fall {
+        0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+        10% { opacity: 1; }
+        100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+    
+    /* Responsividade */
+    @media (max-width: 1200px) {
+        .sorteio-layout {
+            flex-direction: column;
+            height: auto;
+        }
+        
+        .sorteio-col-ficha,
+        .sorteio-col-central,
+        .sorteio-col-ganhadores {
+            width: 100% !important;
+        }
+        
+        .sorteio-col-central {
+            min-height: 400px;
+        }
+        
+        .hora-atual {
+            font-size: 2.5rem;
+        }
+        
+        .sorteio-display-central .nome-sorteio {
+            font-size: 2.5rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .hora-atual {
+            font-size: 2rem;
+        }
+        
+        .sorteio-display-central .nome-sorteio {
+            font-size: 2rem;
+        }
+        
+        .ganhadores-grid.cols-2,
+        .ganhadores-grid.cols-3,
+        .ganhadores-grid.cols-4 {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Cabeçalho -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-dark font-weight-bold mb-1">Sorteio: {{ sorteio.titulo }}</h2>
+            <p class="text-muted mb-0">Gerencie os participantes e realize o sorteio.</p>
+        </div>
+        <a href="{{ url_for('admin.instagram_lista') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Voltar à Lista
+        </a>
+    </div>
+
+    <!-- Cards de Estatísticas -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-users fa-3x text-primary me-3"></i>
+                    <div>
+                        <h5 class="card-title mb-1">Participantes Únicos</h5>
+                        <p class="card-text fs-4 font-weight-bold">{{ participantes|length }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-comments fa-3x text-info me-3"></i>
+                    <div>
+                        <h5 class="card-title mb-1">Comentários Válidos</h5>
+                        <p class="card-text fs-4 font-weight-bold">{{ total_comentarios }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-ticket-alt fa-3x text-success me-3"></i>
+                    <div>
+                        <h5 class="card-title mb-1">Total de Tickets</h5>
+                        <p class="card-text fs-4 font-weight-bold">{{ total_tickets }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações do Sorteio e Ganhadores -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">{% if sorteio.status == 'sorteado' %}Resultados do Sorteio{% else %}Ações do Sorteio{% endif %}</h5>
+        </div>
+        <div class="card-body text-center">
+    {% if sorteio.status != 'sorteado' %}
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <button id="chacoalharBtn" class="btn btn-info w-100 mb-2">
+                            <i class="fas fa-random me-2"></i> Chacoalhar Participantes
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">Vencedores:</span>
+                            <input type="number" id="quantidadeVencedores" class="form-control" value="{{ sorteio.quantidade_vencedores or 1 }}" min="1" max="{{ participantes|length }}" placeholder="Quantidade de vencedores" title="Quantidade de vencedores">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <button id="sortearBtn" class="btn btn-lg btn-success w-100 mb-2">
+                            <i class="fas fa-trophy me-2"></i> Realizar Sorteio
+                        </button>
+                    </div>
+    </div>
+    {% else %}
+                <div class="alert alert-success">
+        <h4 class="alert-heading">🎉 Sorteio Finalizado! 🎉</h4>
+                    <p>Este sorteio foi concluído em {{ sorteio.data_sorteio.strftime('%d/%m/%Y às %H:%M') }}.</p>
+                </div>
+                <h5 class="text-dark font-weight-bold mb-3">Ganhadores</h5>
+                <ul class="list-group text-start">
+                    {% for g in ganhadores %}
+                        <li class="list-group-item d-flex align-items-center text-start">
+                            <span class="me-2">{{ loop.index }}.</span>
+                            <a href="https://instagram.com/{{ g.username }}" target="_blank" rel="noopener" class="text-primary">@{{ g.username }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Lista de Participantes -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Lista de Participantes</h5>
+        </div>
+        <div class="card-body">
+            <div id="lista-participantes" class="row">
+                {% for p in participantes %}
+                <div class="col-md-4 mb-3 participante-item">
+                    <div class="card participante-card h-100">
+                        <div class="card-body d-flex align-items-center">
+                            <i class="fas fa-user-circle fa-2x text-secondary me-3"></i>
+                            <div>
+                                <h6 class="card-title mb-0">@{{ p.username }}</h6>
+                                <div class="mt-1">
+                                    <span class="badge bg-primary">Comentários: {{ p.comentarios_validos }}</span>
+                                    <span class="badge bg-success">Tickets: {{ p.tickets }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // --- Elementos do DOM ---
+    const chacoalharBtn = document.getElementById('chacoalharBtn');
+    const sortearBtn = document.getElementById('sortearBtn');
+    const listaContainer = document.getElementById('lista-participantes');
+    const csrfToken = '{{ csrf_token() }}';
+    const sorteioId = '{{ sorteio.id }}';
+
+    // Passa o ID do sorteio e o token CSRF para a instância global do SorteioAnimado
+    if (window.sorteioAnimado) {
+        window.sorteioAnimado.sorteioId = sorteioId;
+        window.sorteioAnimado.csrfToken = csrfToken;
+    } else {
+        console.error("Objeto sorteioAnimado não encontrado. Verifique se script.js foi carregado.");
+    }
+
+    // --- Lógica para Chacoalhar ---
+    if (chacoalharBtn) {
+        chacoalharBtn.addEventListener('click', function() {
+            try {
+                console.log("Botão 'Chacoalhar' clicado.");
+                const participantes = Array.from(listaContainer.children);
+                if (participantes.length === 0) return;
+
+                participantes.forEach(p => p.classList.add('shake'));
+                
+                // Embaralha os elementos no DOM
+                for (let i = participantes.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                    listaContainer.appendChild(participantes[j]);
+                }
+
+                setTimeout(() => {
+                    participantes.forEach(p => p.classList.remove('shake'));
+                }, 820);
+            } catch (error) {
+                console.error("Erro na função de chacoalhar:", error);
+                alert("Ocorreu um erro ao tentar chacoalhar os participantes.");
+            }
+        });
+    }
+
+    // --- Lógica para Realizar o Sorteio ---
+    if (sortearBtn) {
+        sortearBtn.addEventListener('click', function() {
+            try {
+                console.log("Botão 'Realizar Sorteio' clicado.");
+                const quantidadeVencedores = parseInt(document.getElementById('quantidadeVencedores').value, 10);
+                const participantes = {{ participantes_json|tojson }};
+                const sorteioTitulo = {{ sorteio.titulo|tojson }};
+                const sorteioDescricao = {{ sorteio.descricao|tojson }};
+
+                if (isNaN(quantidadeVencedores) || quantidadeVencedores <= 0) {
+                    alert('Por favor, insira um número válido de vencedores.');
+                    return;
+                }
+                
+                if (participantes.length === 0) {
+                    alert('Não há participantes para sortear.');
+                    return;
+                }
+
+                if (participantes.length < quantidadeVencedores) {
+                    alert('O número de vencedores não pode ser maior que o número de participantes.');
+                    return;
+                }
+
+                console.log(`Iniciando sorteio para ${quantidadeVencedores} vencedor(es).`);
+
+                // Cria a lista ponderada de tickets
+                let ticketsPonderados = [];
+                participantes.forEach(p => {
+                    for (let i = 0; i < p.tickets; i++) {
+                        ticketsPonderados.push(p);
+                    }
+                });
+                
+                console.log(`Total de ${ticketsPonderados.length} tickets criados.`);
+
+                // Inicia a animação do sorteio, passando também o título e a descrição
+                window.sorteioAnimado.iniciarSorteioInstagram(ticketsPonderados, quantidadeVencedores, sorteioTitulo, sorteioDescricao);
+
+            } catch (error) {
+                console.error("Erro na função de realizar sorteio:", error);
+                alert("Ocorreu um erro ao iniciar o sorteio. Verifique o console para mais detalhes.");
+            }
+        });
+    }
+});
+</script>
+{% endblock %} 

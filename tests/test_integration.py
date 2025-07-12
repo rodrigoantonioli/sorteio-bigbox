@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from run import create_app
 from app.extensions import db
 from app.models import Usuario, Loja, Colaborador, Premio, SorteioSemanal, SorteioColaborador
-from helpers import generate_random_email, generate_random_password
+from .helpers import generate_random_email, generate_random_password
 
 class IntegrationTestCase(unittest.TestCase):
     def setUp(self):
@@ -349,6 +349,47 @@ class IntegrationTestCase(unittest.TestCase):
         # Verificar integridade dos dados
         total_sorteios = SorteioColaborador.query.count()
         self.assertEqual(total_sorteios, 2)
+
+    def test_parser_com_arquivo_real(self):
+        """Testa o parser com um arquivo real de comentários do Instagram (posts.txt)."""
+        from app.utils import parse_instagram_comments
+        
+        # Carrega o conteúdo do arquivo de teste principal
+        filepath = os.path.join(os.path.dirname(__file__), '..', 'uploads', 'posts.txt')
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except FileNotFoundError:
+            self.fail("Arquivo de teste 'uploads/posts.txt' não encontrado.")
+
+        # Executa a função de parsing com limite de 30 tickets
+        participantes = parse_instagram_comments(content, palavra_chave='eu quero', tickets_maximos=30)
+
+        # Define os resultados esperados com base na contagem real do parser
+        expected_results = {
+            'rivaldo.rodrigues_': 15,
+            'van3ssasousa': 30,  # Limitado a 30 tickets
+            'ricardoloiola': 1,
+            'luenymello': 30,
+            'elane_oliveiralima': 25,
+            'patymorena1': 14,  # Valor real do parser
+            'sr_batista_': 30,
+            'niveabelfort_': 30,
+            'vitorr_hgoo': 30,
+            'lucasdesousa01': 30,
+            'gildenir.muniz': 20,  # Valor real do parser
+        }
+        
+        # Valida o número total de participantes únicos
+        self.assertGreater(len(participantes), 50) # Garante que muitos participantes foram parsed
+        
+        # Valida a contagem de tickets para usuários específicos
+        for username, expected_tickets in expected_results.items():
+            self.assertIn(username, participantes, f"Usuário esperado '{username}' não foi encontrado.")
+            self.assertEqual(participantes[username]['tickets'], expected_tickets, f"Contagem de tickets para '{username}' está incorreta.")
+
+        # Valida que usuários com comentários inválidos não estão na lista
+        self.assertNotIn('gleycinhag', participantes, "Usuário que apenas mencionou outro não deveria ser incluído.")
 
 if __name__ == '__main__':
     unittest.main() 

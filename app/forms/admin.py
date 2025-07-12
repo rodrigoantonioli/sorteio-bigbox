@@ -74,4 +74,23 @@ class LojaForm(FlaskForm):
         ('ULTRA', 'UltraBox')
     ], validators=[DataRequired(message='Bandeira é obrigatória')])
     ativo = BooleanField('Loja Ativa', default=True)
-    submit = SubmitField('Salvar') 
+    submit = SubmitField('Salvar')
+
+class UploadColaboradoresForm(FlaskForm):
+    arquivo = FileField('Arquivo Excel', validators=[DataRequired()])
+    submit = SubmitField('Fazer Upload')
+
+class SorteioInstagramForm(FlaskForm):
+    """Formulário para criar ou editar um sorteio do Instagram."""
+    titulo = StringField('Título do Sorteio', validators=[DataRequired(), Length(max=200)])
+    descricao = TextAreaField('Descrição (Opcional)')
+    texto_original = TextAreaField('Cole aqui o texto do post do Instagram', validators=[DataRequired()])
+    palavra_chave = StringField('Palavra-chave para Comentários', default='EU QUERO', validators=[DataRequired(), Length(max=100)])
+    tickets_maximos = IntegerField('Máximo de Tickets por Participante', default=30, validators=[DataRequired(), NumberRange(min=1)])
+    quantidade_vencedores = IntegerField('Quantidade de Vencedores', default=1, validators=[DataRequired(), NumberRange(min=1)])
+    submit = SubmitField('Salvar Sorteio')
+
+class ConfiguracaoInstagramForm(FlaskForm):
+    palavra_chave_padrao = StringField('Palavra-chave Padrão', validators=[DataRequired(), Length(max=100)])
+    tickets_maximos_padrao = IntegerField('Tickets Máximos Padrão', validators=[DataRequired(), NumberRange(min=1, max=100)])
+    submit = SubmitField('Salvar Configurações') 

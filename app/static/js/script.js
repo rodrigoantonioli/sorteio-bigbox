@@ -19,15 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Auto-hide alerts após 10 segundos (aumentado de 5 para 10 segundos)
-    const alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
-    alerts.forEach(alert => {
-        setTimeout(() => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-        }, 10000); // Aumentado para 10 segundos
-    });
-    
     // Tooltips do Bootstrap
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
@@ -68,6 +59,17 @@ class SorteioAnimado {
         }, 1000);
     }
 
+    // Inicializa o sorteio do Instagram
+    iniciarSorteioInstagram(participantes, quantidadeVencedores, sorteioTitulo, sorteioDescricao) {
+        this.criarModal('Sorteio Instagram', 'Preparando sorteio...');
+        this.sorteioTitulo = sorteioTitulo;
+        this.sorteioDescricao = sorteioDescricao;
+        
+        setTimeout(() => {
+             this.executarSorteioInstagram(participantes, quantidadeVencedores);
+        }, 1000);
+    }
+
     // Cria o modal do sorteio
     criarModal(titulo, statusInicial) {
         // Remove modal existente se houver
@@ -78,25 +80,53 @@ class SorteioAnimado {
 
         const modalHtml = `
             <div class="modal fade" id="sorteioModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
+                <div class="modal-dialog modal-fullscreen">
                     <div class="modal-content sorteio-modal">
                         <div class="modal-header border-0 position-relative">
                             <h4 class="modal-title text-white w-100 text-center">
                                 🎲 ${titulo}
                             </h4>
-                            <button type="button" id="fecharModalX" class="btn-close-custom d-none" data-bs-dismiss="modal" title="Fechar">
+                            <button type="button" id="fecharModalBtn" class="btn-close-custom d-none" data-bs-dismiss="modal" title="Fechar">
                                 <i class="bi bi-x"></i>
                             </button>
                         </div>
-                        <div class="modal-body">
-                            <div class="sorteio-status" id="sorteioStatus">
-                                ${statusInicial}
-                            </div>
-                            <div class="sorteio-display" id="sorteioDisplay">
-                                <div class="nome-sorteio" id="nomeSorteio">
-                                    Aguarde...
+                        <div class="modal-body p-0">
+                            <div class="sorteio-layout">
+                                <!-- Coluna da Ficha do Sorteio (Esquerda) -->
+                                <div class="sorteio-col-ficha">
+                                    <div class="ficha-content ficha-content-card" id="fichaSorteio">
+                                        <div class="loading-ficha">Carregando informações...</div>
+                                    </div>
                                 </div>
-                                <div class="confetti-container" id="confettiContainer"></div>
+                                
+                                <!-- Coluna da Animação Central -->
+                                <div class="sorteio-col-central">
+                                    <div class="central-container">
+                                        <!-- Relógio Elegante -->
+                                        <div class="relogio-container">
+                                            <div class="relogio" id="relogioSorteio">
+                                                <div class="data-atual" id="dataAtual"></div>
+                                                <div class="hora-atual" id="horaAtual"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Status do Sorteio -->
+                                        <div class="sorteio-status-central" id="sorteioStatus">${statusInicial}</div>
+                                        
+                                        <!-- Display do Sorteio -->
+                                        <div class="sorteio-display-central" id="sorteioDisplay">
+                                            <div class="nome-sorteio" id="nomeSorteio">Aguarde...</div>
+                                            <div class="confetti-container" id="confettiContainer"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Coluna dos Ganhadores (Direita) -->
+                                <div class="sorteio-col-ganhadores">
+                                    <div class="ganhadores-content">
+                                        <ul class="list-group list-group-flush" id="listaGanhadores"></ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -108,30 +138,82 @@ class SorteioAnimado {
         this.modal = new bootstrap.Modal(document.getElementById('sorteioModal'));
         this.modal.show();
 
-        // Event listeners para o X
-        document.getElementById('fecharModalX')?.addEventListener('click', () => {
-            this.modal.hide();
-        });
+        document.getElementById('fecharModalBtn')?.addEventListener('click', () => this.modal.hide());
 
-        // Event listener para quando o modal é fechado - RELOAD APÓS SORTEIO DE LOJAS
         document.getElementById('sorteioModal').addEventListener('hidden.bs.modal', () => {
-            // Se houve sucesso no sorteio de lojas, recarrega a página para mostrar resultado
-            if (this.sorteioLojasComSucesso) {
-                console.log('🔄 Recarregando página após sorteio de lojas bem-sucedido...');
-                // Reset da flag para próximos sorteios
-                this.sorteioLojasComSucesso = false;
-                setTimeout(() => {
-                    window.location.reload();
-                }, 300);
+            if (this.sorteioConcluidoComSucesso) {
+                window.location.reload();
             }
         });
 
-        // Permite fechar clicando no backdrop após sucesso
-        document.getElementById('sorteioModal').addEventListener('click', (e) => {
-            if (e.target.id === 'sorteioModal' && this.sorteioLojasComSucesso) {
-                this.modal.hide();
+        // Inicia o relógio
+        this.iniciarRelogio();
+    }
+
+    // Inicia o relógio em tempo real
+    iniciarRelogio() {
+        const atualizarRelogio = () => {
+            const agora = new Date();
+            
+            const dataEl = document.getElementById('dataAtual');
+            const horaEl = document.getElementById('horaAtual');
+            
+            if (dataEl && horaEl) {
+                const data = agora.toLocaleDateString('pt-BR', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                const hora = agora.toLocaleTimeString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                
+                dataEl.textContent = data;
+                horaEl.textContent = hora;
             }
-        });
+        };
+        
+        // Atualiza imediatamente
+        atualizarRelogio();
+        
+        // Atualiza a cada segundo
+        this.relogioInterval = setInterval(atualizarRelogio, 1000);
+    }
+
+    // Para o relógio
+    pararRelogio() {
+        if (this.relogioInterval) {
+            clearInterval(this.relogioInterval);
+            this.relogioInterval = null;
+        }
+    }
+
+    // Popula a ficha do sorteio com as informações
+    popularFichaSorteio(titulo, descricao, participantes, tickets) {
+        const fichaEl = document.getElementById('fichaSorteio');
+        if (!fichaEl) return;
+
+        const fichaHtml = `
+            <div class="ficha-titulo-modern">${titulo}</div>
+            <div class="ficha-descricao-modern">${descricao}</div>
+            <div class="ficha-stats-modern">
+                <div class="stat-modern">
+                    <i class="fas fa-users"></i>
+                    <span>${participantes}</span>
+                    <span class="stat-label">Participantes</span>
+                </div>
+                <div class="stat-modern">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>${tickets}</span>
+                    <span class="stat-label">Tickets</span>
+                </div>
+            </div>
+        `;
+        fichaEl.innerHTML = fichaHtml;
     }
 
     // Executa sorteio sequencial (lojas)
@@ -180,60 +262,102 @@ class SorteioAnimado {
         this.exibirResultadoColaboradores(resultados);
     }
 
-    // Executa a animação do sorteio
+    // Executa sorteio do Instagram de forma sequencial e interativa
+    async executarSorteioInstagram(ticketsPonderados, quantidade) {
+        this.sorteioConcluidoComSucesso = false;
+        const todosOsGanhadores = [];
+        let ticketsDisponiveis = [...ticketsPonderados];
+
+        // Armazena os participantes originais para usar no final
+        this.participantesOriginais = ticketsPonderados;
+
+        // Calcula estatísticas iniciais
+        const participantesUnicos = new Set(ticketsPonderados.map(t => t.username)).size;
+        const totalTickets = ticketsPonderados.length;
+
+        // Popula a ficha do sorteio
+        this.popularFichaSorteio(
+            this.sorteioTitulo,
+            this.sorteioDescricao,
+            participantesUnicos,
+            totalTickets
+        );
+
+        for (let i = 0; i < quantidade; i++) {
+            // Atualiza o status central
+            this.atualizarStatus(`Sorteando ${i + 1}º de ${quantidade} ganhador${quantidade > 1 ? 'es' : ''}...`);
+
+            if (ticketsDisponiveis.length === 0) {
+                this.atualizarStatus("Não há mais participantes elegíveis para sortear.");
+                break;
+            }
+
+            const vencedor = await this.executarAnimacaoSorteio(ticketsDisponiveis);
+            todosOsGanhadores.push(vencedor);
+
+            // Adiciona o vencedor à lista da direita imediatamente
+            this.adicionarGanhadorNaLista(vencedor, todosOsGanhadores.length);
+
+            // Remove todos os tickets do vencedor para o próximo sorteio
+            const usernameVencedor = vencedor.username;
+            ticketsDisponiveis = ticketsDisponiveis.filter(p => p.username !== usernameVencedor);
+
+            // Pausa antes do próximo sorteio, se houver
+            if (i < quantidade - 1) {
+                await this.delay(2500);
+            }
+        }
+
+        // Finaliza o sorteio
+        this.finalizarSorteio(todosOsGanhadores);
+    }
+
+    // Executa a animação do sorteio com efeito "Slot Machine" aprimorado
     executarAnimacaoSorteio(items) {
         return new Promise((resolve) => {
             const display = document.getElementById('nomeSorteio');
             const container = document.getElementById('sorteioDisplay');
             
-            let currentIndex = 0;
-            let speed = 100; // Velocidade inicial (ms)
+            let speed = 50; // Velocidade inicial (ms)
             let iterations = 0;
-            const maxIterations = Math.random() * 30 + 50; // Entre 50-80 iterações
-            this.ultimoVencedor = null; // Reset do último vencedor
-            
-            // Remove classes anteriores
+            const minIterations = 50; // Mínimo de iterações para garantir um tempo de rolagem
+            const maxSpeed = 200; // Velocidade máxima (mais lenta)
+            const accelerationSteps = 20; // Quantidade de passos para acelerar/desacelerar
+
             display.className = 'nome-sorteio';
             container.className = 'sorteio-display';
 
             const interval = setInterval(() => {
-                // Aumenta a velocidade gradualmente
-                iterations++;
-                if (iterations > maxIterations * 0.7) {
-                    speed += 20; // Desacelera no final
+                // Acelera no início
+                if (iterations < accelerationSteps) {
+                    speed = Math.max(10, speed - 2); // Acelera até 10ms
                 }
 
-                // Mostra item atual
-                const item = items[currentIndex];
-                this.ultimoVencedor = item; // Armazena o item atual
-                display.textContent = item.nome || item.codigo || item;
-                display.classList.add('animando');
+                // Escolhe um item aleatório para exibir a cada tick
+                const randomIndex = Math.floor(Math.random() * items.length);
+                const item = items[randomIndex];
+                display.textContent = item.nome || item.username || item.codigo || item;
                 
-                // Remove animação após um tempo
-                setTimeout(() => {
-                    display.classList.remove('animando');
-                }, 200);
+                display.classList.add('animando');
+                setTimeout(() => display.classList.remove('animando'), speed / 2); // Remove a classe mais rápido
 
-                currentIndex = (currentIndex + 1) % items.length;
+                iterations++;
 
-                // Para o sorteio
-                if (iterations >= maxIterations) {
+                // Lógica para parar a animação
+                if (iterations >= minIterations && Math.random() < 0.05) { // Chance de parar após minIterations
                     clearInterval(interval);
                     
-                    // USA O ÚLTIMO ITEM MOSTRADO NA TELA (correção do bug!)
-                    const vencedor = this.ultimoVencedor;
+                    // Garante que o último item exibido seja o vencedor
+                    const vencedor = item; 
                     
-                    // Animação final
                     setTimeout(() => {
-                        display.textContent = vencedor.nome || vencedor.codigo || vencedor;
+                        display.textContent = vencedor.nome || vencedor.username || vencedor.codigo || vencedor;
                         display.classList.add('vencedor');
                         container.classList.add('vencedor');
                         
-                        // Efeito confetti
                         this.criarConfetti();
-                        
                         resolve(vencedor);
-                    }, 500);
+                    }, 500); // Pequeno delay para o efeito final
                 }
             }, speed);
         });
@@ -442,6 +566,151 @@ class SorteioAnimado {
         }, 2000);
     }
 
+    // Adiciona um ganhador à lista visual na coluna da direita
+    adicionarGanhadorNaLista(ganhador, numero) {
+        const listaGanhadores = document.getElementById('listaGanhadores');
+        const item = document.createElement('li');
+        item.className = 'list-group-item animate__animated animate__fadeInRight';
+        item.innerHTML = `
+            @${ganhador.username}
+        `;
+        listaGanhadores.appendChild(item);
+    }
+
+    // Finaliza o sorteio, salva os dados e prepara para fechar
+    finalizarSorteio(ganhadores) {
+        // Para o relógio
+        this.pararRelogio();
+        
+        // Adiciona classe para iniciar a transição final
+        const layout = document.querySelector('.sorteio-layout');
+        if (layout) {
+            layout.classList.add('finalizado');
+        }
+        
+        // Aguarda a animação de transição antes de atualizar o conteúdo
+        setTimeout(() => {
+            // Adiciona classe para juntar as colunas
+            const layout = document.querySelector('.sorteio-layout');
+            if (layout) {
+                layout.classList.add('resultado-final-juncao');
+            }
+            // Atualiza a ficha com os resultados finais
+            this.atualizarFichaComResultados(ganhadores);
+            // Atualiza a lista de ganhadores com animação e grid responsivo
+            this.atualizarListaGanhadoresFinais(ganhadores);
+        }, 1200);
+
+        // Salva os resultados
+        this.submitarSorteioInstagramAjax(ganhadores, () => {
+            this.sorteioConcluidoComSucesso = true;
+            // Mostra alerta de sucesso no topo
+            this.mostrarAlertaSucessoTopo();
+            // Mostra o botão de fechar
+            document.getElementById('fecharModalBtn').classList.remove('d-none');
+        });
+    }
+
+    // Atualiza a ficha com os resultados finais
+    atualizarFichaComResultados(ganhadores) {
+        const fichaEl = document.getElementById('fichaSorteio');
+        if (!fichaEl) return;
+
+        const agora = new Date();
+        const dataHora = agora.toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        const participantesUnicos = new Set(this.participantesOriginais?.map(t => t.username) || []).size;
+        const totalTickets = this.participantesOriginais?.length || 0;
+
+        const fichaHtml = `
+            <div class="ficha-titulo-modern">${this.sorteioTitulo}</div>
+            <div class="ficha-descricao-modern">${this.sorteioDescricao}</div>
+            <div class="ficha-stats-modern">
+                <div class="stat-modern">
+                    <i class="fas fa-users"></i>
+                    <span>${participantesUnicos}</span>
+                    <span class="stat-label">Participantes</span>
+                </div>
+                <div class="stat-modern">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>${totalTickets}</span>
+                    <span class="stat-label">Tickets</span>
+                </div>
+            </div>
+            <div class="ficha-resultado-modern">
+                <div class="resultado-status-modern"><i class="fas fa-check-circle"></i> Sorteio Concluído</div>
+                <div class="resultado-data-modern">${dataHora}</div>
+                <div class="resultado-ganhadores-modern">${ganhadores.length} ganhador${ganhadores.length > 1 ? 'es' : ''} sorteado${ganhadores.length > 1 ? 's' : ''}</div>
+            </div>
+        `;
+        fichaEl.innerHTML = fichaHtml;
+        fichaEl.classList.add('animate__animated', 'animate__pulse');
+    }
+
+    // Atualiza a lista de ganhadores com animação final e grid responsivo
+    atualizarListaGanhadoresFinais(ganhadores) {
+        const listaEl = document.getElementById('listaGanhadores');
+        if (!listaEl) return;
+
+        // Limpa a lista atual
+        listaEl.innerHTML = '';
+
+        // Adiciona o título 'GANHADORES' centralizado
+        const titulo = document.createElement('div');
+        titulo.className = 'titulo-ganhadores-final';
+        titulo.innerText = 'GANHADORES';
+        listaEl.appendChild(titulo);
+
+        // Lógica de grid e tamanho
+        let numColunas = 2;
+        let cardSizeClass = 'ganhador-card-grande';
+        if (ganhadores.length <= 5) {
+            numColunas = 1;
+            cardSizeClass = 'ganhador-card-grande';
+        } else if (ganhadores.length <= 10) {
+            numColunas = 2;
+            cardSizeClass = 'ganhador-card-grande';
+        } else {
+            numColunas = 2;
+            cardSizeClass = 'ganhador-card-pequeno';
+        }
+
+        // Cria o container do grid
+        const gridContainer = document.createElement('div');
+        gridContainer.className = `ganhadores-grid cols-${numColunas} ${cardSizeClass}`;
+        listaEl.appendChild(gridContainer);
+
+        // Adiciona cada ganhador com animação sequencial
+        ganhadores.forEach((ganhador, index) => {
+            setTimeout(() => {
+                const item = document.createElement('div');
+                item.className = `ganhador-final-item animate__animated animate__bounceIn ${cardSizeClass}`;
+                item.style.animationDelay = `${index * 0.2}s`;
+                item.innerHTML = `
+                    <div class="ganhador-final-content centralizado">
+                        <div class="ganhador-nome">@${ganhador.username}</div>
+                    </div>
+                `;
+                gridContainer.appendChild(item);
+            }, index * 200);
+        });
+
+        // Adiciona confetti de celebração
+        this.criarConfettiCelebracao();
+    }
+
+    // Exibe resultado do Instagram (LEGADO - substituído pela nova lógica)
+    exibirResultadoInstagram(resultados) {
+        // Esta função foi substituída pela lógica em finalizarSorteio
+        // e adicionarGanhadorNaLista. Mantida para evitar quebras em outras partes.
+    }
+
     // Submete formulário de lojas via AJAX
     submitarFormularioAjax(resultados) {
         // Esta função será sobrescrita pelo template que a utiliza
@@ -456,6 +725,44 @@ class SorteioAnimado {
         // Implementação padrão para fallback
         console.log('Colaboradores sorteados:', resultados);
         this.exibirErro('Função de salvamento não configurada');
+    }
+
+    // Submete formulário de Instagram via AJAX
+    submitarSorteioInstagramAjax(resultados, successCallback) {
+        console.log("Enviando vencedores para o servidor:", resultados);
+        const url = `/admin/instagram/sorteio/${this.sorteioId}/salvar`; // Usa o ID do sorteio armazenado
+        const vencedores = resultados.map(r => ({ username: r.username }));
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': this.csrfToken // Usa o token CSRF armazenado
+            },
+            body: JSON.stringify({ vencedores: vencedores })
+        })
+        .then(response => {
+            if (!response.ok) {
+                // Tenta extrair uma mensagem de erro do corpo da resposta
+                return response.json().then(err => { 
+                    throw new Error(err.message || `Erro na rede: ${response.statusText}`); 
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                console.log("Sorteio salvo com sucesso.");
+                if (successCallback) successCallback(); // Executa o callback de sucesso
+            } else {
+                console.error("Erro ao salvar o sorteio:", data.message);
+                this.exibirErro(data.message || 'Ocorreu um erro ao salvar o sorteio.');
+            }
+        })
+        .catch(error => {
+            console.error('Erro fatal na requisição AJAX:', error);
+            this.exibirErro(error.message || 'Erro de comunicação com o servidor.');
+        });
     }
 
     // Submete formulário de lojas (legado - será removido)
@@ -476,9 +783,10 @@ class SorteioAnimado {
         const alertDiv = document.getElementById('statusAlert');
         const botoesDiv = document.getElementById('botoesAcao');
         const colaboradorContainer = document.getElementById('resultadoColaboradorContainer');
+        const instagramContainer = document.getElementById('resultadoInstagramContainer');
         
-                // Para sorteio de lojas: marca sucesso para reload automático SILENCIOSO 
-        if (status && !colaboradorContainer) {
+        // Para sorteio de lojas: marca sucesso para reload automático SILENCIOSO 
+        if (status && !colaboradorContainer && !instagramContainer) {
             this.sorteioLojasComSucesso = true; // Marca para reload quando fechar modal
             status.style.display = 'none'; // Mantém silencioso como antes (melhor para filmagem)
             console.log('✅ Sorteio de lojas salvo com sucesso - página será recarregada ao fechar (silencioso)');
@@ -494,7 +802,7 @@ class SorteioAnimado {
         }
         
         // Remove alert de salvamento (não precisamos mostrar)
-        if (alertDiv && !colaboradorContainer) {
+        if (alertDiv && !colaboradorContainer && !instagramContainer) {
             alertDiv.style.display = 'none';
         }
         
@@ -507,9 +815,19 @@ class SorteioAnimado {
                 alertDiv.innerHTML = '<i class="bi bi-check-circle-fill"></i> Resultado salvo com sucesso!';
             }
         }
+
+        // Se for sorteio de instagram, insere o resultado no container específico
+        if (instagramContainer) {
+            instagramContainer.innerHTML = mensagem;
+            if (status) status.style.display = 'none';
+            if (alertDiv) {
+                alertDiv.className = 'alert alert-success mb-4';
+                alertDiv.innerHTML = '<i class="bi bi-check-circle-fill"></i> Resultado salvo com sucesso!';
+            }
+        }
         
         // Para compatibilidade com sorteio de lojas (sem mostrar botões)
-        if (botoesDiv && colaboradorContainer) {
+        if (botoesDiv && (colaboradorContainer || instagramContainer)) {
             botoesDiv.style.display = 'block';
         }
     }
@@ -517,19 +835,15 @@ class SorteioAnimado {
     // Exibe erro no sorteio
     exibirErro(mensagem) {
         const status = document.getElementById('sorteioStatus');
+        if (status) {
+            status.innerHTML = `<div class="alert alert-danger">${mensagem}</div>`;
+        }
         const alertDiv = document.getElementById('statusAlert');
-        const botoesDiv = document.getElementById('botoesAcao');
-        
-        if (status) status.textContent = '❌ Erro ao salvar sorteio';
-        
         if (alertDiv) {
-            alertDiv.className = 'alert alert-danger mb-3';
-            alertDiv.innerHTML = '<i class="bi bi-x-circle-fill"></i> ' + mensagem;
+            alertDiv.className = 'alert alert-danger';
+            alertDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> ${mensagem}`;
         }
-        
-        if (botoesDiv) {
-            botoesDiv.style.display = 'block';
-        }
+        console.error('Erro no sorteio:', mensagem);
     }
 
     // Função utilitária para delay
@@ -557,6 +871,37 @@ class SorteioAnimado {
             mensagemSucesso.style.display = 'none';
         }, 4000);
     }
+
+    // Mostra alerta de sucesso no topo da modal
+    mostrarAlertaSucessoTopo() {
+        const modalBody = document.querySelector('#sorteioModal .modal-body');
+        if (!modalBody) return;
+
+        // Remove alerta existente se houver
+        const alertaExistente = modalBody.querySelector('.alerta-sucesso-topo');
+        if (alertaExistente) {
+            alertaExistente.remove();
+        }
+
+        // Cria novo alerta
+        const alerta = document.createElement('div');
+        alerta.className = 'alerta-sucesso-topo animate__animated animate__fadeInDown';
+        alerta.innerHTML = `
+            <div class="alert alert-success m-3 text-center">
+                <i class="fas fa-check-circle me-2"></i>
+                Sorteio salvo com sucesso!
+            </div>
+        `;
+
+        // Insere no início do modal-body
+        modalBody.insertBefore(alerta, modalBody.firstChild);
+
+        // Remove após 5 segundos
+        setTimeout(() => {
+            alerta.classList.add('animate__fadeOutUp');
+            setTimeout(() => alerta.remove(), 1000);
+        }, 5000);
+    }
 }
 
 // Instância global do sorteio
@@ -569,4 +914,8 @@ window.iniciarSorteioLojas = function(lojasBig, lojasUltra) {
 
 window.iniciarSorteioColaboradores = function(colaboradores, quantidade = 1) {
     window.sorteioAnimado.iniciarSorteioColaboradores(colaboradores, quantidade);
-}; 
+};
+
+window.iniciarSorteioInstagram = function(participantes, quantidadeVencedores = 1, sorteioTitulo, sorteioDescricao) {
+    window.sorteioAnimado.iniciarSorteioInstagram(participantes, quantidadeVencedores, sorteioTitulo, sorteioDescricao);
+};

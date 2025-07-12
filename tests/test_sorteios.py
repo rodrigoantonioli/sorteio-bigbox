@@ -2,6 +2,9 @@ import unittest
 import sys
 import os
 from datetime import datetime, date
+import pytest
+from flask import url_for
+from flask.testing import FlaskClient
 
 # Adiciona o diretório raiz ao path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -9,7 +12,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from run import create_app
 from app.extensions import db
 from app.models import Usuario, Loja, Colaborador, Premio, SorteioSemanal, SorteioColaborador
-from helpers import generate_random_email, generate_random_password
+from .helpers import generate_random_email, generate_random_password
 
 class SorteiosTestCase(unittest.TestCase):
     def setUp(self):
@@ -284,6 +287,30 @@ class SorteiosTestCase(unittest.TestCase):
         
         sorteio_salvo = SorteioColaborador.query.get(sorteio_colab.id)
         self.assertIsNotNone(sorteio_salvo.colaboradores_snapshot)
+
+@pytest.fixture
+def client():
+    app = create_app('testing')
+    app.config['WTF_CSRF_ENABLED'] = False
+    with app.test_client() as client:
+        with app.app_context():
+            yield client
+
+def test_instagram_sorteio_layout(client: FlaskClient):
+    # Simula acesso à página de participantes de um sorteio Instagram
+    response = client.get('/admin/instagram/1/participantes')
+    assert response.status_code == 200
+    html = response.get_data(as_text=True)
+    # Verifica se a ficha do sorteio está presente
+    assert 'class="ficha-content' in html
+    # Verifica se a coluna dos ganhadores está presente
+    assert 'class="ganhadores-header' in html
+    # Verifica se o título do sorteio aparece
+    assert 'Sorteio Instagram' in html or 'Sorteio' in html
+    # Verifica se o alerta de sucesso pode ser renderizado
+    assert 'alerta-sucesso-topo' in html or 'alert alert-success' in html
+    # Verifica se a lista de ganhadores pode ser exibida
+    assert 'listaGanhadores' in html
 
 if __name__ == '__main__':
     unittest.main() 

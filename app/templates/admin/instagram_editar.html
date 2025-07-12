@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Sorteio do Instagram{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h3>Editar Sorteio: {{ form.titulo.data }}</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="" novalidate>
+                {{ form.csrf_token }}
+                
+                <div class="mb-3">
+                    {{ form.titulo.label(class="form-label") }}
+                    {{ form.titulo(class="form-control") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.descricao.label(class="form-label") }}
+                    {{ form.descricao(class="form-control", rows=3) }}
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        {{ form.palavra_chave.label(class="form-label") }}
+                        {{ form.palavra_chave(class="form-control") }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form.tickets_maximos.label(class="form-label") }}
+                        {{ form.tickets_maximos(class="form-control") }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form.quantidade_vencedores.label(class="form-label") }}
+                        {{ form.quantidade_vencedores(class="form-control") }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form.texto_original.label(class="form-label") }}
+                    {% if sorteio.status == 'pronto' or sorteio.status == 'sorteado' %}
+                        {{ form.texto_original(class="form-control", rows=10, readonly=true, title="Não é possível editar o texto de um sorteio que já foi processado.") }}
+                        <small class="form-text text-muted">O texto original não pode ser alterado após o processamento dos comentários.</small>
+                    {% else %}
+                        {{ form.texto_original(class="form-control", rows=10) }}
+                    {% endif %}
+                </div>
+                
+                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('admin.instagram_lista') }}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

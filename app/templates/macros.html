@@ -1,0 +1,23 @@
+{# Macro para renderizar um campo de formulário com label, erros e classes #}
+{% macro render_field(field, label_visible=true) %}
+  <div class="form-group mb-3">
+    {% if label_visible %}
+      {{ field.label(class='form-label') }}
+    {% endif %}
+    {{ field(class='form-control' + (' is-invalid' if field.errors else ''), **kwargs) }}
+    {% if field.errors %}
+      <div class="invalid-feedback">
+        {% for error in field.errors %}
+          {{ error }}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{# Macro para renderizar um botão de submit com ícone #}
+{% macro render_submit_button(text, icon_class='fa-check') %}
+  <button type="submit" class="btn btn-primary">
+    <i class="fas {{ icon_class }} me-2"></i>{{ text }}
+  </button>
+{% endmacro %}

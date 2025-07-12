@@ -1,6 +1,6 @@
 from flask import Flask
 from config import get_config, db_path
-from app.extensions import db, login_manager, migrate, mail
+from app.extensions import db, login_manager, migrate, mail, csrf
 import os
 import openpyxl
 from app.models import Usuario, Loja
@@ -30,6 +30,7 @@ def create_app(config_name='default'):
     migrate.init_app(app, db)
     mail.init_app(app)
     login_manager.init_app(app)
+    csrf.init_app(app)
     
     # Configurações do Flask-Login
     login_manager.login_view = 'auth.login'

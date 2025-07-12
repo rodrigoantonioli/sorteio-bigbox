@@ -112,3 +112,44 @@ SorteioColaborador.sorteio_semanal = db.relationship('SorteioSemanal')
 SorteioColaborador.premio = db.relationship('Premio')
 SorteioColaborador.colaborador = db.relationship('Colaborador')
 SorteioColaborador.sorteador = db.relationship('Usuario', foreign_keys=[SorteioColaborador.sorteado_por]) 
+
+class SorteioInstagram(db.Model):
+    __tablename__ = 'sorteios_instagram'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(200), nullable=False)
+    descricao = db.Column(db.Text)
+    palavra_chave = db.Column(db.String(100), nullable=False, default='EU QUERO')
+    tickets_maximos = db.Column(db.Integer, nullable=False, default=30)
+    quantidade_vencedores = db.Column(db.Integer, nullable=False, default=1, server_default='1')
+    texto_original = db.Column(db.Text, nullable=False)  # Texto completo do post
+    data_criacao = db.Column(db.DateTime, default=get_brazil_datetime)
+    data_sorteio = db.Column(db.DateTime)
+    status = db.Column(db.String(20), default='processando')  # processando, pronto, sorteado
+    criado_por = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
+    
+    # Relacionamentos
+    criador = db.relationship('Usuario', backref='sorteios_instagram_criados')
+    participantes = db.relationship('ParticipanteInstagram', backref='sorteio', cascade='all, delete-orphan')
+
+class ParticipanteInstagram(db.Model):
+    __tablename__ = 'participantes_instagram'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    sorteio_id = db.Column(db.Integer, db.ForeignKey('sorteios_instagram.id'), nullable=False)
+    username = db.Column(db.String(100), nullable=False)
+    comentarios_validos = db.Column(db.Integer, default=0)
+    tickets = db.Column(db.Integer, default=0)  # Limitado ao máximo configurado
+    vencedor = db.Column(db.Boolean, default=False)
+    
+    # Constraint para evitar username duplicado no mesmo sorteio
+    __table_args__ = (db.UniqueConstraint('username', 'sorteio_id', name='_username_sorteio_uc'),)
+
+class ConfiguracaoInstagram(db.Model):
+    __tablename__ = 'configuracao_instagram'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    palavra_chave_padrao = db.Column(db.String(100), nullable=False, default='EU QUERO')
+    tickets_maximos_padrao = db.Column(db.Integer, nullable=False, default=30)
+    atualizado_em = db.Column(db.DateTime, default=get_brazil_datetime)
+    atualizado_por = db.Column(db.Integer, db.ForeignKey('usuarios.id')) 

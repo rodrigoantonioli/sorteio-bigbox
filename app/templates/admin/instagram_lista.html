@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Sorteios Instagram - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-dark font-weight-bold">Sorteios Instagram</h2>
+        <div>
+            <a href="{{ url_for('admin.instagram_config') }}" class="btn btn-secondary">
+                <i class="fas fa-cog"></i> Configurações
+            </a>
+            <a href="{{ url_for('admin.instagram_novo') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Novo Sorteio
+            </a>
+        </div>
+    </div>
+
+    {% if sorteios_stats %}
+    <div class="row">
+        {% for item in sorteios_stats %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm sorteio-card" onclick="window.location='{{ url_for('admin.instagram_participantes', id=item['sorteio'].id) }}';">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h5 class="card-title text-dark font-weight-bold mb-3">{{ item['sorteio'].titulo }}</h5>
+                        {% if item['sorteio'].status == 'sorteado' %}
+                            <span class="badge rounded-pill bg-info text-dark">Sorteado</span>
+                        {% else %}
+                            <span class="badge rounded-pill bg-success">Aguardando</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="row text-center my-3">
+                        <div class="col-4">
+                            <strong class="d-block text-dark">{{ item['total_participantes'] }}</strong>
+                            <small class="text-muted">Participantes</small>
+                        </div>
+                        <div class="col-4">
+                            <strong class="d-block text-dark">{{ item['total_comentarios'] or 0 }}</strong>
+                            <small class="text-muted">Comentários</small>
+                        </div>
+                        <div class="col-4">
+                            <strong class="d-block text-dark">{{ item['total_tickets'] or 0 }}</strong>
+                            <small class="text-muted">Tickets</small>
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        Criado em: {{ item['sorteio'].data_criacao.strftime('%d/%m/%Y %H:%M') }}
+                    </p>
+                     <p class="text-muted small">
+                        Palavra-chave: <span class="badge bg-secondary">{{ item['sorteio'].palavra_chave }}</span>
+                    </p>
+                </div>
+                <div class="card-footer bg-light text-right d-flex justify-content-end align-items-center">
+                    {% if item['sorteio'].status != 'sorteado' %}
+                        <a href="{{ url_for('admin.instagram_editar', id=item['sorteio'].id) }}" class="btn btn-sm btn-outline-primary me-2" onclick="event.stopPropagation();" data-bs-toggle="tooltip" title="Editar Sorteio">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    {% else %}
+                        <span class="btn btn-sm btn-outline-secondary me-2 disabled" data-bs-toggle="tooltip" title="Sorteio já finalizado">
+                            <i class="fas fa-edit"></i>
+                        </span>
+                    {% endif %}
+                    
+                    {% if item['sorteio'].status == 'sorteado' %}
+                        <form action="{{ url_for('admin.instagram_resetar', id=item['sorteio'].id) }}" method="POST" class="d-inline" onclick="event.stopPropagation();">
+                            {{ csrf_form.hidden_tag() }}
+                            <button type="submit" class="btn btn-sm btn-outline-warning me-2" onclick="return confirm('Deseja resetar o vencedor para refazer o sorteio?')" data-bs-toggle="tooltip" title="Resetar Sorteio">
+                                <i class="fas fa-undo"></i>
+                            </button>
+                        </form>
+                    {% endif %}
+
+                     <form action="{{ url_for('admin.instagram_excluir', id=item['sorteio'].id) }}" method="POST" class="d-inline" onclick="event.stopPropagation();">
+                        {{ csrf_form.hidden_tag() }}
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem certeza que deseja excluir este sorteio permanentemente?')" data-bs-toggle="tooltip" title="Excluir Sorteio">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fab fa-instagram fa-4x text-muted mb-3"></i>
+        <h4 class="text-dark">Nenhum sorteio do Instagram encontrado.</h4>
+        <p class="text-muted">Crie seu primeiro sorteio para começar!</p>
+        <a href="{{ url_for('admin.instagram_novo') }}" class="btn btn-primary mt-3">
+            <i class="fas fa-plus"></i> Criar Novo Sorteio
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.sorteio-card {
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+.sorteio-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+}
+</style>
+{% endblock %} 
