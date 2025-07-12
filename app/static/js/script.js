@@ -36,6 +36,8 @@ class SorteioAnimado {
         this.timeoutIds = [];
         this.ultimoVencedor = null; // Para armazenar o último item mostrado
         this.sorteioLojasComSucesso = false; // Flag para controlar reload
+        // Indica se o sorteio atual terminou e os dados foram salvos com sucesso
+        this.sorteioConcluidoComSucesso = false;
     }
 
     // Inicializa o sorteio de lojas
