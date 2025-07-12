@@ -591,6 +591,7 @@
             <h5 class="mb-0">{% if sorteio.status == 'sorteado' %}Resultados do Sorteio{% else %}Ações do Sorteio{% endif %}</h5>
         </div>
         <div class="card-body text-center">
+            <div class="ganhadores-header d-none"></div>
     {% if sorteio.status != 'sorteado' %}
                 <div class="row align-items-center">
                     <div class="col-md-4">
