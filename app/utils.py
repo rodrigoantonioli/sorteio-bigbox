@@ -41,18 +41,21 @@ def parse_instagram_comments(text, palavra_chave='EU QUERO', tickets_maximos=30)
     
     for bloco in blocos:
         linhas = [line.strip() for line in bloco.splitlines() if line.strip()]
-        
+
         if not linhas or not linhas[0].startswith("Foto do perfil de"):
             continue
-            
+
         if len(linhas) < 2:
             continue
-            
-        # O username é extraído da primeira linha.
-        username = linhas[0].replace("Foto do perfil de ", "").strip()
-        
-        # O username se repete na segunda linha, o que confirma a estrutura do bloco.
-        if linhas[1] != username:
+
+        # O username é extraído da primeira linha de forma robusta
+        m = re.match(r"Foto do perfil de\s+(.+)", linhas[0])
+        if not m:
+            continue
+        username = m.group(1).strip()
+
+        # O username se repete na segunda linha, normalizando maiúsculas/minúsculas
+        if linhas[1].strip().lower() != username.lower():
             continue
         
         # O comentário é a primeira linha "real" após o username e a linha de tempo.

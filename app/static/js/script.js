@@ -36,6 +36,9 @@ class SorteioAnimado {
         this.timeoutIds = [];
         this.ultimoVencedor = null; // Para armazenar o último item mostrado
         this.sorteioLojasComSucesso = false; // Flag para controlar reload
+        this.sorteioConcluidoComSucesso = false; // Controla reload ao fechar o modal
+        this.sorteioId = null; // Armazenado pelo template
+        this.csrfToken = ''; // Token CSRF para requisições AJAX
     }
 
     // Inicializa o sorteio de lojas
@@ -123,6 +126,9 @@ class SorteioAnimado {
                                 
                                 <!-- Coluna dos Ganhadores (Direita) -->
                                 <div class="sorteio-col-ganhadores">
+                                    <div class="ganhadores-header">
+                                        <h5>Ganhadores</h5>
+                                    </div>
                                     <div class="ganhadores-content">
                                         <ul class="list-group list-group-flush" id="listaGanhadores"></ul>
                                     </div>
