@@ -18,7 +18,8 @@ def run_all_tests():
     # Descobrir todos os testes
     loader = unittest.TestLoader()
     start_dir = os.path.dirname(__file__)
-    suite = loader.discover(start_dir, pattern='test_*.py')
+    top_level_dir = os.path.abspath(os.path.join(start_dir, '..'))
+    suite = loader.discover(start_dir=start_dir, pattern='test_*.py', top_level_dir=top_level_dir)
     
     # Executar os testes
     stream = StringIO()
