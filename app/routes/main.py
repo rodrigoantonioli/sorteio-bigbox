@@ -77,8 +77,14 @@ def processar_dados_vitrine():
         # Pega o restante como histórico
         historico_semanal_bruto = todos_sorteios_semanais[1:]
         for sorteio in historico_semanal_bruto:
-            vencedores_big = SorteioColaborador.query.join(Colaborador).filter(SorteioColaborador.sorteio_semanal_id == sorteio.id, Colaborador.loja_id == sorteio.loja_big_id).all()
-            vencedores_ultra = SorteioColaborador.query.join(Colaborador).filter(SorteioColaborador.sorteio_semanal_id == sorteio.id, Colaborador.loja_id == sorteio.loja_ultra_id).all()
+            vencedores_big = SorteioColaborador.query.join(Colaborador).filter(
+                SorteioColaborador.sorteio_semanal_id == sorteio.id,
+                Colaborador.loja_id == sorteio.loja_big_id
+            ).all()
+            vencedores_ultra = SorteioColaborador.query.join(Colaborador).filter(
+                SorteioColaborador.sorteio_semanal_id == sorteio.id,
+                Colaborador.loja_id == sorteio.loja_ultra_id
+            ).all()
             historico_semanal.append({
                 'intervalo_semana': formatar_intervalo_semana(sorteio.semana_inicio),
                 'loja_big': sorteio.loja_big,
@@ -86,6 +92,10 @@ def processar_dados_vitrine():
                 'vencedores_big': vencedores_big,
                 'vencedores_ultra': vencedores_ultra
             })
+
+        # Se houver apenas um sorteio, inclui o atual no histórico
+        if len(todos_sorteios_semanais) == 1:
+            historico_semanal.append(sorteio_atual_dados)
 
     return render_template('index.html',
                          sorteio_da_semana=sorteio_atual_dados,
