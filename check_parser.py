@@ -9,9 +9,9 @@ result = parse_instagram_comments(content, 'eu quero', 30)
 
 # Lista de usuários para verificar
 users = [
-    'rivaldo.rodrigues_', 'van3ssasousa', 'ricardoloiola', 'luenymello', 
-    'elane_oliveiralima', 'patymorena1', 'sr_batista_', 'niveabelfort_', 
-    'vitorr_hgoo', 'lucasdesousa01', 'gildenir.muniz'
+    'fakeuser1', 'fakeuser2', 'fakeuser3', 'fakeuser4',
+    'fakeuser5', 'fakeuser6', 'fakeuser7', 'fakeuser8',
+    'fakeuser9', 'fakeuser10', 'fakeuser11'
 ]
 
 print("Valores reais do parser:")
