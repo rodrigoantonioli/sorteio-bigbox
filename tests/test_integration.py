@@ -367,17 +367,17 @@ class IntegrationTestCase(unittest.TestCase):
 
         # Define os resultados esperados com base na contagem real do parser
         expected_results = {
-            'rivaldo.rodrigues_': 15,
-            'van3ssasousa': 30,  # Limitado a 30 tickets
-            'ricardoloiola': 1,
-            'luenymello': 30,
-            'elane_oliveiralima': 25,
-            'patymorena1': 14,  # Valor real do parser
-            'sr_batista_': 30,
-            'niveabelfort_': 30,
-            'vitorr_hgoo': 30,
-            'lucasdesousa01': 30,
-            'gildenir.muniz': 20,  # Valor real do parser
+            'fakeuser1': 15,
+            'fakeuser2': 30,  # Limitado a 30 tickets
+            'fakeuser3': 1,
+            'fakeuser4': 30,
+            'fakeuser5': 25,
+            'fakeuser6': 14,  # Valor real do parser
+            'fakeuser7': 30,
+            'fakeuser8': 30,
+            'fakeuser9': 30,
+            'fakeuser10': 30,
+            'fakeuser11': 20,  # Valor real do parser
         }
         
         # Valida o número total de participantes únicos
