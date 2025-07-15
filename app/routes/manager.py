@@ -138,7 +138,7 @@ def dashboard():
             Premio.ativo == True,
             Premio.data_evento >= date.today(),
             db.or_(Premio.loja_id == current_user.loja_id, Premio.loja_id.is_(None)),
-            ~Premio.id.in_(premios_ja_sorteados)
+            ~Premio.id.in_(db.select(premios_ja_sorteados).scalar_subquery())
         ).count()
 
     return render_template('manager/dashboard.html',
@@ -539,7 +539,7 @@ def sortear_colaboradores():
         Premio.ativo == True,
         Premio.data_evento >= date.today(),
         db.or_(Premio.loja_id == current_user.loja_id, Premio.loja_id.is_(None)),
-        ~Premio.id.in_(premios_ja_sorteados)  # Exclui prêmios já sorteados
+        ~Premio.id.in_(db.select(premios_ja_sorteados).scalar_subquery())  # Exclui prêmios já sorteados
     ).order_by(Premio.data_evento).all()
     
     form.premio_id.choices = [(p.id, f"{p.nome} - {p.data_evento.strftime('%d/%m/%Y')}") for p in premios_disponiveis]
@@ -572,7 +572,7 @@ def sortear_colaboradores():
             loja_id=current_user.loja_id,
             apto=True
         ).filter(
-            ~Colaborador.id.in_(colaboradores_ja_sorteados)  # Exclui já sorteados
+            ~Colaborador.id.in_(db.select(colaboradores_ja_sorteados).scalar_subquery())  # Exclui já sorteados
         ).all()
         
         if len(colaboradores_aptos) < 1:
