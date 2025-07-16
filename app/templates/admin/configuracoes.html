@@ -158,6 +158,7 @@
                             </p>
                             <form method="POST" action="{{ url_for('admin.resetar_pote_lojas') }}" 
                                   onsubmit="return confirm('⚠️ CONFIRMAÇÃO NECESSÁRIA ⚠️\n\nEsta operação irá REMOVER TODOS OS SORTEIOS do sistema!\n\nTodos os sorteios semanais e de colaboradores serão perdidos permanentemente.\n\nTem certeza ABSOLUTA que deseja continuar?')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                 <button type="submit" class="btn btn-warning">
                                     <i class="fas fa-redo"></i> Resetar Pote
                                 </button>
@@ -190,6 +191,7 @@
                             </p>
                             <form method="POST" action="{{ url_for('admin.reset_completo') }}" 
                                   onsubmit="return confirm('🚨 OPERAÇÃO ULTRA PERIGOSA 🚨\n\nVocê está prestes a DESTRUIR TODOS OS DADOS do sistema!\n\nISSO INCLUI:\n- Todos os sorteios\n- Todos os colaboradores\n- Todos os assistentes\n- Todos os prêmios\n\nAPENAS AS LOJAS E O ADMIN SERÃO MANTIDOS!\n\nEsta operação é IRREVERSÍVEL!\n\nTem certeza ABSOLUTA?')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                 <button type="submit" class="btn btn-danger">
                                     <i class="fas fa-nuclear"></i> DESTRUIR TUDO
                                 </button>

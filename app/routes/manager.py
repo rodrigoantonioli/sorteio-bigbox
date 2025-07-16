@@ -91,6 +91,47 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
 
+@manager_bp.route('/premios-disponiveis')
+@manager_required
+def premios_disponiveis():
+    """Retorna quantidade de prêmios disponíveis para a loja via AJAX"""
+    try:
+        # Verifica se há sorteio atual e se a loja foi sorteada
+        sorteio_atual = SorteioSemanal.query.order_by(SorteioSemanal.semana_inicio.desc()).first()
+        
+        if not sorteio_atual:
+            return jsonify({'success': True, 'premios_count': 0})
+        
+        loja_sorteada = (current_user.loja_id == sorteio_atual.loja_big_id or 
+                        current_user.loja_id == sorteio_atual.loja_ultra_id)
+        
+        if not loja_sorteada:
+            return jsonify({'success': True, 'premios_count': 0})
+        
+        # Prêmios já sorteados
+        premios_ja_sorteados = db.session.query(SorteioColaborador.premio_id).join(Colaborador).filter(
+            SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+            Colaborador.loja_id == current_user.loja_id
+        ).subquery()
+
+        # Conta prêmios disponíveis
+        premios_count = Premio.query.filter(
+            Premio.ativo == True,
+            Premio.data_evento >= date.today(),
+            db.or_(Premio.loja_id == current_user.loja_id, Premio.loja_id.is_(None)),
+            ~Premio.id.in_(db.select(premios_ja_sorteados).scalar_subquery())
+        ).count()
+        
+        return jsonify({
+            'success': True,
+            'premios_count': premios_count
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
 @manager_bp.route('/dashboard')
 @manager_required
 def dashboard():
@@ -133,13 +174,17 @@ def dashboard():
             Colaborador.loja_id == current_user.loja_id
         ).subquery()
 
-        # Conta prêmios disponíveis
-        premios_disponiveis_count = Premio.query.filter(
+        # Lista prêmios disponíveis
+        premios_disponiveis = Premio.query.filter(
             Premio.ativo == True,
             Premio.data_evento >= date.today(),
             db.or_(Premio.loja_id == current_user.loja_id, Premio.loja_id.is_(None)),
             ~Premio.id.in_(db.select(premios_ja_sorteados).scalar_subquery())
-        ).count()
+        ).order_by(Premio.data_evento.asc(), Premio.nome.asc()).all()
+        
+        premios_disponiveis_count = len(premios_disponiveis)
+    else:
+        premios_disponiveis = []
 
     return render_template('manager/dashboard.html',
                          loja=current_user.loja,
@@ -147,7 +192,8 @@ def dashboard():
                          sorteio_atual=sorteio_atual,
                          colaboradores_sorteados=colaboradores_sorteados,
                          total_colaboradores=total_colaboradores,
-                         premios_disponiveis=premios_disponiveis_count)
+                         premios_disponiveis=premios_disponiveis_count,
+                         premios_lista=premios_disponiveis)
 
 @manager_bp.route('/colaboradores')
 @manager_required
@@ -544,6 +590,21 @@ def sortear_colaboradores():
     
     form.premio_id.choices = [(p.id, f"{p.nome} - {p.data_evento.strftime('%d/%m/%Y')}") for p in premios_disponiveis]
     
+    # Verifica se há prêmio pré-selecionado via parâmetro GET
+    premio_selecionado = request.args.get('premio_id', type=int)
+    if premio_selecionado and any(p.id == premio_selecionado for p in premios_disponiveis):
+        form.premio_id.data = premio_selecionado
+    
+    # Dados dos prêmios para JavaScript
+    premios_data = {}
+    for premio in premios_disponiveis:
+        premios_data[premio.id] = {
+            'nome': premio.nome,
+            'data_evento': premio.data_evento.strftime('%d/%m/%Y'),
+            'tipo': 'Show' if premio.tipo == 'show' else 'Day Use',
+            'imagem_url': premio.get_imagem_url()
+        }
+    
     if not premios_disponiveis:
         flash('Não há mais prêmios disponíveis para sorteio. Contate o administrador.', 'warning')
         return redirect(url_for('manager.dashboard'))
@@ -594,7 +655,8 @@ def sortear_colaboradores():
                                  colaboradores_count=len(colaboradores_aptos),
                                  colaboradores=[],
                                  total_premios=total_premios_loja,
-                                 premios_sorteados=premios_sorteados_count)
+                                 premios_sorteados=premios_sorteados_count,
+                                 premios_data=premios_data)
         
         # Cria snapshot da lista de colaboradores
         colaboradores_snapshot = [
@@ -688,7 +750,8 @@ def sortear_colaboradores():
                          colaboradores_count=len(colaboradores_aptos),
                          colaboradores=colaboradores_json,
                          total_premios=total_premios_loja,
-                         premios_sorteados=premios_sorteados_count)
+                         premios_sorteados=premios_sorteados_count,
+                         premios_data=premios_data)
 
 @manager_bp.route('/sortear/ajax', methods=['POST'])
 @manager_required
@@ -792,7 +855,11 @@ def sortear_colaboradores_ajax():
             'message': f'🎉 Colaborador {colaborador.nome} foi sorteado para "{premio.nome}"!',
             'data': {
                 'colaborador': {'nome': colaborador.nome, 'setor': colaborador.setor},
-                'premio': {'nome': premio.nome, 'data_evento': premio.data_evento.strftime('%d/%m/%Y')}
+                'premio': {
+                    'nome': premio.nome, 
+                    'data_evento': premio.data_evento.strftime('%d/%m/%Y'),
+                    'imagem_url': premio.get_imagem_url()
+                }
             }
         })
         

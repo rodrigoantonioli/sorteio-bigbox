@@ -8,7 +8,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Define o caminho do banco dentro da pasta instance
 instance_folder = os.path.join(basedir, 'instance')
-db_path = os.path.join(instance_folder, 'sorteio.db')
+db_path = os.path.join(instance_folder, 'desenvolvimento.db')
 
 # Cria a pasta 'instance' na raiz do projeto se ela não existir
 if not os.path.exists(instance_folder):
@@ -61,6 +61,9 @@ class Config:
     # Configurações de Admin
     ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@example.com')
     ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD') or 'default-dev-password'
+    
+    # Cloudinary
+    CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
 
 class DevelopmentConfig(Config):
     """Configurações de desenvolvimento"""

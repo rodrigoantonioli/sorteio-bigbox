@@ -83,7 +83,7 @@
                                     {{ form.imagem(class="form-control" + (" is-invalid" if form.imagem.errors else ""), accept="image/*") }}
                                     <div class="form-text">
                                         <i class="bi bi-info-circle"></i> 
-                                        Arquivos aceitos: JPG, JPEG, PNG. Se não enviar uma imagem, será usada uma imagem padrão.
+                                        Arquivos aceitos: JPG, JPEG, PNG, GIF, WEBP. Se não enviar uma imagem, será usada uma imagem padrão.
                                     </div>
                                     {% if form.imagem.errors %}
                                         <div class="invalid-feedback">
@@ -248,9 +248,9 @@ document.addEventListener('DOMContentLoaded', function() {
 document.getElementById('imagem').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
         if (!allowedTypes.includes(file.type)) {
-            alert('Apenas arquivos JPG, JPEG e PNG são permitidos!');
+            alert('Apenas arquivos JPG, JPEG, PNG, GIF e WEBP são permitidos!');
             e.target.value = '';
             
             // Restaura estado anterior

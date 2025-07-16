@@ -84,28 +84,26 @@ def allowed_image_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ['jpg', 'jpeg', 'png']
 
-def save_premio_image(image_file):
-    """Salva a imagem do prêmio e retorna o nome do arquivo"""
-    # Verifica se é um objeto FileStorage válido
-    if (image_file and 
-        hasattr(image_file, 'filename') and 
-        image_file.filename and 
-        allowed_image_file(image_file.filename)):
-        
-        # Gera nome único para o arquivo
-        filename = secure_filename(image_file.filename)
-        unique_filename = f"{uuid.uuid4().hex}_{filename}"
-        
-        # Cria diretório se não existir
-        upload_dir = 'app/static/images/premios'
-        os.makedirs(upload_dir, exist_ok=True)
-        
-        # Salva arquivo
-        filepath = os.path.join(upload_dir, unique_filename)
-        image_file.save(filepath)
-        
-        return unique_filename
-    return None
+def save_premio_image(image_file, premio_id=None):
+    """Salva a imagem do prêmio no Cloudinary e retorna a URL"""
+    from app.utils.cloudinary_utils import upload_image, is_valid_image, init_cloudinary
+    from flask import current_app
+    
+    # Inicializa Cloudinary
+    init_cloudinary()
+    
+    # Verifica se é um arquivo válido
+    if not is_valid_image(image_file):
+        return None
+    
+    # Faz upload para o Cloudinary com nome padronizado
+    result = upload_image(image_file, folder='premios', premio_id=premio_id)
+    
+    if result['success']:
+        return result['secure_url']
+    else:
+        current_app.logger.error(f"Erro no upload da imagem: {result['error']}")
+        return None
 
 @admin_bp.route('/dashboard')
 @admin_required
@@ -548,26 +546,29 @@ def novo_premio():
     form = PremioForm()
     
     if form.validate_on_submit():
-        # Processa upload de imagem APENAS se há um arquivo válido
-        imagem_filename = None
-        if (form.imagem.data and 
-            hasattr(form.imagem.data, 'filename') and 
-            form.imagem.data.filename):
-            imagem_filename = save_premio_image(form.imagem.data)
-        
+        # Cria o prêmio primeiro sem imagem para obter o ID
         premio = Premio(
             nome=form.nome.data,
             descricao=form.descricao.data,
             data_evento=form.data_evento.data,
             tipo=form.tipo.data,
-            imagem=imagem_filename,
+            imagem=None,  # Será atualizada depois
             loja_id=None,  # Sempre sem loja por padrão
             criado_por=current_user.id,
             ativo=True
         )
         
         db.session.add(premio)
-        db.session.commit()
+        db.session.commit()  # Commit para obter o ID
+        
+        # Processa upload de imagem APENAS se há um arquivo válido
+        if (form.imagem.data and 
+            hasattr(form.imagem.data, 'filename') and 
+            form.imagem.data.filename):
+            imagem_filename = save_premio_image(form.imagem.data, premio_id=premio.id)
+            if imagem_filename:
+                premio.imagem = imagem_filename
+                db.session.commit()  # Commit para salvar a imagem
         
         flash(f'✅ Prêmio "{premio.nome}" criado com sucesso! Você pode agora atribuí-lo a uma loja ganhadora.', 'success')
         return redirect(url_for('admin.premios'))
@@ -577,14 +578,8 @@ def novo_premio():
 @admin_bp.route('/premios/<int:id>/editar', methods=['GET', 'POST'])
 @admin_required
 def editar_premio(id):
-    """Editar prêmio (apenas se não foi sorteado)"""
+    """Editar prêmio (permitido em qualquer etapa)"""
     premio = Premio.query.get_or_404(id)
-    
-    # Verifica se já foi sorteado
-    sorteio_colaborador = SorteioColaborador.query.filter_by(premio_id=id).first()
-    if sorteio_colaborador:
-        flash('❌ Não é possível editar um prêmio que já foi sorteado!', 'danger')
-        return redirect(url_for('admin.premios'))
     
     form = PremioForm(obj=premio)
     
@@ -605,13 +600,18 @@ def editar_premio(id):
               hasattr(form.imagem.data, 'filename') and 
               form.imagem.data.filename):
             
-            # Remove imagem anterior se existir
-            if premio.imagem:
-                old_image_path = os.path.join('app/static/images/premios', premio.imagem)
-                safe_remove_file(old_image_path)
+            # Remove imagem anterior do Cloudinary se existir
+            if premio.imagem and 'cloudinary' in premio.imagem:
+                from app.utils.cloudinary_utils import delete_image, extract_public_id_from_url
+                from flask import current_app
+                public_id = extract_public_id_from_url(premio.imagem)
+                if public_id:
+                    delete_result = delete_image(public_id)
+                    if delete_result['success']:
+                        current_app.logger.info(f"Imagem anterior removida do Cloudinary: {public_id}")
             
             # Salva nova imagem
-            nova_imagem = save_premio_image(form.imagem.data)
+            nova_imagem = save_premio_image(form.imagem.data, premio_id=premio.id)
             if nova_imagem:
                 premio.imagem = nova_imagem
         
@@ -673,12 +673,6 @@ def desatribuir_premio(id):
     """Remover atribuição de prêmio (voltar para pool geral)"""
     premio = Premio.query.get_or_404(id)
     
-    # Verifica se já foi sorteado
-    sorteio_colaborador = SorteioColaborador.query.filter_by(premio_id=id).first()
-    if sorteio_colaborador:
-        flash('❌ Não é possível desatribuir um prêmio que já foi sorteado!', 'danger')
-        return redirect(url_for('admin.premios'))
-    
     loja_nome = premio.loja.nome if premio.loja else 'desconhecida'
     premio.loja_id = None
     
@@ -690,27 +684,33 @@ def desatribuir_premio(id):
 @admin_bp.route('/premios/<int:id>/excluir', methods=['POST'])
 @admin_required
 def excluir_premio(id):
-    """Excluir prêmio (apenas se não foi atribuído nem sorteado)"""
+    """Excluir prêmio (permitido em qualquer etapa)"""
     premio = Premio.query.get_or_404(id)
-
-    # Verifica se já foi sorteado
+    
+    # Aviso se o prêmio já foi sorteado
     sorteio_existente = SorteioColaborador.query.filter_by(premio_id=id).first()
     if sorteio_existente:
-        flash('❌ Não é possível excluir um prêmio que já foi sorteado!', 'danger')
-        return redirect(url_for('admin.premios'))
-
-    # Verifica se está atribuído a uma loja
-    if premio.loja_id:
-        flash('❌ Não é possível excluir um prêmio que está atribuído a uma loja!', 'danger')
-        return redirect(url_for('admin.premios'))
-
-    # Se passou nas verificações, exclui
+        flash('⚠️ Atenção: Este prêmio já foi sorteado! A exclusão removerá também o histórico do sorteio.', 'warning')
+        # Remove os sorteios associados
+        SorteioColaborador.query.filter_by(premio_id=id).delete()
+    
+    # Remove a imagem do Cloudinary se existir
+    if premio.imagem and 'cloudinary' in premio.imagem:
+        from app.utils.cloudinary_utils import delete_image, extract_public_id_from_url
+        from flask import current_app
+        public_id = extract_public_id_from_url(premio.imagem)
+        if public_id:
+            delete_result = delete_image(public_id)
+            if delete_result['success']:
+                current_app.logger.info(f"Imagem removida do Cloudinary: {public_id}")
+    
+    # Exclui o prêmio
     nome_premio = premio.nome
     db.session.delete(premio)
     db.session.commit()
-
     flash(f'✅ Prêmio "{nome_premio}" foi excluído com sucesso.', 'success')
     return redirect(url_for('admin.premios'))
+
 
 @admin_bp.route('/sorteios')
 @admin_required

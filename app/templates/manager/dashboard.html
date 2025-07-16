@@ -204,6 +204,56 @@
             </div>
         </div>
 
+        <!-- Prêmios Disponíveis -->
+        {% if loja_sorteada and premios_lista %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-gift"></i> 🎁 Prêmios Disponíveis para Sorteio
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted mb-3">Clique em um prêmio para ir diretamente ao sorteio com ele pré-selecionado.</p>
+                        <div class="row">
+                            {% for premio in premios_lista %}
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card h-100 border-warning sorteable-prize" style="cursor: pointer; transition: all 0.3s ease;">
+                                    <div class="position-relative">
+                                        <img src="{{ premio.get_imagem_url() }}" 
+                                             alt="{{ premio.nome }}" 
+                                             class="card-img-top"
+                                             style="height: 200px; object-fit: cover;">
+                                        <span class="badge bg-{{ 'info' if premio.tipo == 'show' else 'secondary' }} position-absolute top-0 end-0 m-2">
+                                            {{ 'Show' if premio.tipo == 'show' else 'Day Use' }}
+                                        </span>
+                                    </div>
+                                    <div class="card-body d-flex flex-column">
+                                        <h6 class="card-title">{{ premio.nome }}</h6>
+                                        {% if premio.descricao %}
+                                            <p class="card-text text-muted small flex-grow-1">{{ premio.descricao[:80] }}{% if premio.descricao|length > 80 %}...{% endif %}</p>
+                                        {% endif %}
+                                        <div class="mt-auto">
+                                            <small class="text-muted d-block mb-2">
+                                                <i class="bi bi-calendar"></i> {{ premio.data_evento.strftime('%d/%m/%Y') }}
+                                            </small>
+                                            <a href="{{ url_for('manager.sortear_colaboradores', premio_id=premio.id) }}" 
+                                               class="btn btn-warning btn-sm w-100">
+                                                <i class="fas fa-dice"></i> Sortear para Este Prêmio
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Colaboradores Sorteados -->
         {% if colaboradores_sorteados %}
         <div class="row">
@@ -226,14 +276,22 @@
                                 </thead>
                                 <tbody>
                                     {% for sorteio in colaboradores_sorteados %}
-                                    <tr>
+                                    <tr style="cursor: pointer;" onclick="abrirModalDetalheSorteio({{ sorteio.id }}, '{{ sorteio.colaborador.nome }}', '{{ sorteio.colaborador.matricula }}', '{{ sorteio.colaborador.setor }}', '{{ sorteio.premio.nome }}', '{{ sorteio.premio.get_imagem_url() }}', '{{ sorteio.data_sorteio.strftime('%d/%m/%Y às %H:%M') }}', '{{ current_user.loja.nome }}', '{{ current_user.loja.codigo }}')">
                                         <td>
                                             <strong>{{ sorteio.colaborador.nome }}</strong><br>
                                             <small class="text-muted">{{ sorteio.colaborador.matricula }} - {{ sorteio.colaborador.setor }}</small>
                                         </td>
                                         <td>
-                                            <strong>{{ sorteio.premio.nome }}</strong><br>
-                                            <small class="text-muted">{{ sorteio.premio.data_evento.strftime('%d/%m/%Y') }}</small>
+                                            <div class="d-flex align-items-center">
+                                                <img src="{{ sorteio.premio.get_imagem_url() }}" 
+                                                     alt="{{ sorteio.premio.nome }}" 
+                                                     class="rounded me-2"
+                                                     style="width: 40px; height: 40px; object-fit: cover;">
+                                                <div>
+                                                    <strong>{{ sorteio.premio.nome }}</strong><br>
+                                                    <small class="text-muted">{{ sorteio.premio.data_evento.strftime('%d/%m/%Y') }}</small>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td>
                                             <small>{{ sorteio.data_sorteio.strftime('%d/%m/%Y %H:%M') }}</small>
@@ -250,4 +308,77 @@
         {% endif %}
     {% endif %}
 </div>
+
+<!-- Modal de Detalhes do Sorteio -->
+<div class="modal fade" id="modalDetalheSorteio" tabindex="-1" aria-labelledby="modalDetalheSorteioLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="modalDetalheSorteioLabel">
+                    <i class="fas fa-trophy"></i> Detalhes do Sorteio
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="resultado-colaborador-moderno">
+                    <!-- Data e hora elegante -->
+                    <div class="data-sorteio-elegante mb-4 text-center">
+                        <i class="bi bi-calendar-check"></i> <strong id="dataHoraSorteio"></strong>
+                    </div>
+                    
+                    <!-- Resultado em Card -->
+                    <div class="card-resultado-final">
+                        <div class="resultado-header">
+                            <div class="icone-sucesso">🎉</div>
+                            <div class="titulo-resultado">Sorteio Realizado!</div>
+                        </div>
+                        
+                        <div class="resultado-body">
+                            <div class="ganhador-principal">
+                                <div class="colaborador-avatar-grande">
+                                    <i class="bi bi-person-circle"></i>
+                                </div>
+                                <div class="colaborador-info">
+                                    <div class="colaborador-nome-destaque" id="nomeColaborador"></div>
+                                    <div class="colaborador-setor-info" id="setorColaborador"></div>
+                                    <div class="loja-info" id="lojaInfo"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="premio-info">
+                                <div class="premio-visual">
+                                    <img id="imagemPremio" src="" alt="" class="premio-imagem">
+                                </div>
+                                <div class="premio-detalhes">
+                                    <div class="premio-nome-resultado" id="nomePremio"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function abrirModalDetalheSorteio(id, nome, matricula, setor, premio, imagemUrl, dataHora, lojaNome, lojaCodigo) {
+    // Preenche os dados no modal
+    document.getElementById('dataHoraSorteio').textContent = dataHora;
+    document.getElementById('nomeColaborador').textContent = nome;
+    document.getElementById('setorColaborador').textContent = setor;
+    document.getElementById('lojaInfo').innerHTML = `
+        <span class="loja-badge">{{ current_user.loja.bandeira }}</span>
+        ${lojaNome} - ${lojaCodigo}
+    `;
+    document.getElementById('nomePremio').textContent = premio;
+    document.getElementById('imagemPremio').src = imagemUrl;
+    document.getElementById('imagemPremio').alt = premio;
+    
+    // Abre o modal
+    const modal = new bootstrap.Modal(document.getElementById('modalDetalheSorteio'));
+    modal.show();
+}
+</script>
+
 {% endblock %} 
