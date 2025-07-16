@@ -21,9 +21,9 @@ def create_app(config_name='default'):
         os.makedirs(instance_path)
     
     # Cria a pasta de uploads se não existir
-    upload_folder = 'uploads'
+    upload_folder = '/app/uploads'  # Path absoluto para volume persistente
     if not os.path.exists(upload_folder):
-        os.makedirs(upload_folder)
+        os.makedirs(upload_folder, exist_ok=True)
     
     # Inicializa extensões
     db.init_app(app)

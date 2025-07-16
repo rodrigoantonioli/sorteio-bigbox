@@ -39,7 +39,7 @@ class Config:
     
     # Upload de arquivos
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB máximo
-    UPLOAD_FOLDER = 'uploads'
+    UPLOAD_FOLDER = '/app/uploads'
     ALLOWED_EXTENSIONS = {'xlsx', 'xls'}
     
     # Flask-Login

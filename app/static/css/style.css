@@ -1092,6 +1092,43 @@ main {
     font-weight: 500;
 }
 
+/* Imagem do prêmio no resultado do sorteio */
+.premio-imagem-container {
+    margin-bottom: 0.5rem;
+}
+
+.premio-imagem-sorteio {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Thumbnails dos prêmios no histórico */
+.premio-thumb {
+    flex-shrink: 0;
+}
+
+.premio-thumb-img {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.premio-thumb-img-sm {
+    width: 35px;
+    height: 35px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
 /* Histórico Cards */
 .historico-card {
     background: white;

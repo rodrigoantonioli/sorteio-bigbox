@@ -122,14 +122,23 @@
                                             {{ sorteio.colaborador.loja.nome }}
                                         </td>
                                         <td>
-                                            <strong>{{ sorteio.premio.nome }}</strong><br>
-                                            <small class="text-muted">
-                                                {% if sorteio.premio.tipo == 'show' %}
-                                                    <i class="fas fa-music"></i> Show
-                                                {% else %}
-                                                    <i class="fas fa-sun"></i> Day Use
-                                                {% endif %}
-                                            </small>
+                                            <div class="d-flex align-items-center">
+                                                <div class="premio-thumb me-2">
+                                                    <img src="{{ sorteio.premio.get_imagem_url() }}" 
+                                                         alt="{{ sorteio.premio.nome }}" 
+                                                         class="premio-thumb-img-sm">
+                                                </div>
+                                                <div>
+                                                    <strong>{{ sorteio.premio.nome }}</strong><br>
+                                                    <small class="text-muted">
+                                                        {% if sorteio.premio.tipo == 'show' %}
+                                                            <i class="fas fa-music"></i> Show
+                                                        {% else %}
+                                                            <i class="fas fa-sun"></i> Day Use
+                                                        {% endif %}
+                                                    </small>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td>{{ sorteio.premio.data_evento.strftime('%d/%m/%Y') }}</td>
                                         <td>{{ sorteio.sorteador.nome }}</td>

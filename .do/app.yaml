@@ -1,0 +1,45 @@
+name: sorteiobigbox
+services:
+- name: web
+  source_dir: /
+  github:
+    repo: rodrigoantonioli/sorteioBigbox
+    branch: master
+  run_command: gunicorn --worker-tmp-dir /dev/shm --config=gunicorn.conf.py run:app
+  environment_slug: python
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  
+  # Volume para uploads persistentes
+  mounts:
+  - path: /app/uploads
+    source:
+      storage_name: sorteiobigbox-uploads
+      
+  envs:
+  - key: FLASK_ENV
+    value: production
+  - key: SECRET_KEY
+    scope: RUN_TIME
+    type: SECRET
+  - key: DATABASE_URL
+    scope: RUN_TIME
+    type: SECRET
+  - key: ADMIN_EMAIL
+    scope: RUN_TIME
+    type: SECRET
+  - key: ADMIN_PASSWORD
+    scope: RUN_TIME
+    type: SECRET
+
+databases:
+- name: sorteiobigbox-db
+  engine: PG
+  version: "13"
+  size: db-s-dev-database
+
+# Volume para uploads
+volumes:
+- name: sorteiobigbox-uploads
+  size: 5GiB
+  region: nyc1

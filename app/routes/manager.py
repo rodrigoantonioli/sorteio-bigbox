@@ -792,7 +792,11 @@ def sortear_colaboradores_ajax():
             'message': f'🎉 Colaborador {colaborador.nome} foi sorteado para "{premio.nome}"!',
             'data': {
                 'colaborador': {'nome': colaborador.nome, 'setor': colaborador.setor},
-                'premio': {'nome': premio.nome, 'data_evento': premio.data_evento.strftime('%d/%m/%Y')}
+                'premio': {
+                    'nome': premio.nome, 
+                    'data_evento': premio.data_evento.strftime('%d/%m/%Y'),
+                    'imagem_url': premio.get_imagem_url()
+                }
             }
         })
         
