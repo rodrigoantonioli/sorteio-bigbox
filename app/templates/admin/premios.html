@@ -97,6 +97,7 @@
                                                 <i class="fas fa-edit"></i> Editar
                                             </a>
                                             <form method="POST" action="{{ url_for('admin.excluir_premio', id=premio.id) }}" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir este prêmio permanentemente?');">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                                 <button type="submit" class="btn btn-outline-danger btn-sm">
                                                     <i class="fas fa-trash"></i> Excluir
                                                 </button>
@@ -165,6 +166,7 @@
                                             </a>
                                         </div>
                                         <form method="POST" action="{{ url_for('admin.desatribuir_premio', id=premio.id) }}">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                             <button type="submit" class="btn btn-outline-warning btn-sm w-100" 
                                                     onclick="return confirm('Tem certeza que deseja remover este prêmio da loja?')">
                                                 <i class="fas fa-arrow-left"></i> Remover da Loja

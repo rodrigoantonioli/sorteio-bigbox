@@ -110,6 +110,7 @@
                     <p>Este sorteio foi realizado em {{ sorteio.data_sorteio.strftime('%d/%m/%Y às %H:%M') }}.</p>
                     <hr>
                     <form action="{{ url_for('admin.instagram_resetar', id=sorteio.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja resetar este sorteio? Os vencedores serão removidos e um novo sorteio poderá ser realizado.');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <button type="submit" class="btn btn-warning">
                             <i class="fas fa-undo me-2"></i> Resetar Sorteio
                         </button>
