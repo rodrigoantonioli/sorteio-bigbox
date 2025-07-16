@@ -574,14 +574,8 @@ def novo_premio():
 @admin_bp.route('/premios/<int:id>/editar', methods=['GET', 'POST'])
 @admin_required
 def editar_premio(id):
-    """Editar prêmio (apenas se não foi sorteado)"""
+    """Editar prêmio (permitido em qualquer etapa)"""
     premio = Premio.query.get_or_404(id)
-    
-    # Verifica se já foi sorteado
-    sorteio_colaborador = SorteioColaborador.query.filter_by(premio_id=id).first()
-    if sorteio_colaborador:
-        flash('❌ Não é possível editar um prêmio que já foi sorteado!', 'danger')
-        return redirect(url_for('admin.premios'))
     
     form = PremioForm(obj=premio)
     
@@ -670,12 +664,6 @@ def desatribuir_premio(id):
     """Remover atribuição de prêmio (voltar para pool geral)"""
     premio = Premio.query.get_or_404(id)
     
-    # Verifica se já foi sorteado
-    sorteio_colaborador = SorteioColaborador.query.filter_by(premio_id=id).first()
-    if sorteio_colaborador:
-        flash('❌ Não é possível desatribuir um prêmio que já foi sorteado!', 'danger')
-        return redirect(url_for('admin.premios'))
-    
     loja_nome = premio.loja.nome if premio.loja else 'desconhecida'
     premio.loja_id = None
     
@@ -687,25 +675,20 @@ def desatribuir_premio(id):
 @admin_bp.route('/premios/<int:id>/excluir', methods=['POST'])
 @admin_required
 def excluir_premio(id):
-    """Excluir prêmio (apenas se não foi atribuído nem sorteado)"""
+    """Excluir prêmio (permitido em qualquer etapa)"""
     premio = Premio.query.get_or_404(id)
-
-    # Verifica se já foi sorteado
+    
+    # Aviso se o prêmio já foi sorteado
     sorteio_existente = SorteioColaborador.query.filter_by(premio_id=id).first()
     if sorteio_existente:
-        flash('❌ Não é possível excluir um prêmio que já foi sorteado!', 'danger')
-        return redirect(url_for('admin.premios'))
-
-    # Verifica se está atribuído a uma loja
-    if premio.loja_id:
-        flash('❌ Não é possível excluir um prêmio que está atribuído a uma loja!', 'danger')
-        return redirect(url_for('admin.premios'))
-
-    # Se passou nas verificações, exclui
+        flash('⚠️ Atenção: Este prêmio já foi sorteado! A exclusão removerá também o histórico do sorteio.', 'warning')
+        # Remove os sorteios associados
+        SorteioColaborador.query.filter_by(premio_id=id).delete()
+    
+    # Exclui o prêmio
     nome_premio = premio.nome
     db.session.delete(premio)
     db.session.commit()
-
     flash(f'✅ Prêmio "{nome_premio}" foi excluído com sucesso.', 'success')
     return redirect(url_for('admin.premios'))
 
