@@ -129,7 +129,7 @@
                                     🎲 Chacoalhar Pote
                                 </button>
                                 <button type="button" class="btn btn-sortear-final" id="btnSortearFinal" disabled>
-                                    🎯 Realizar Sorteio Cinematográfico
+                                    🎯 Realizar Sorteio
                                 </button>
                             </div>
                         </form>
@@ -309,7 +309,7 @@ function initializeSorteioColaboradores() {
             btnSortearFinal.disabled = false;
             poteChacoalhado = true;
             
-            statusTexto.textContent = 'Pote chacoalhado! Clique em "Realizar Sorteio Cinematográfico"';
+            statusTexto.textContent = 'Pote chacoalhado! Clique em "Realizar Sorteio"';
             statusSorteio.className = 'alert alert-primary text-center';
         }, 2000);
     });
@@ -381,7 +381,7 @@ function initializeSorteioColaboradores() {
             console.error('❌ Erro no sorteio:', error);
             alert('❌ Erro ao iniciar sorteio: ' + error.message);
             btnSortearFinal.disabled = false;
-            btnSortearFinal.textContent = '🎯 Realizar Sorteio Cinematográfico';
+            btnSortearFinal.textContent = '🎯 Realizar Sorteio';
         }
     });
     
