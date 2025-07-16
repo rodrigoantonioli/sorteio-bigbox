@@ -84,7 +84,7 @@ def allowed_image_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ['jpg', 'jpeg', 'png']
 
-def save_premio_image(image_file, premio_nome=None):
+def save_premio_image(image_file, premio_id=None):
     """Salva a imagem do prêmio no Cloudinary e retorna a URL"""
     from app.utils.cloudinary_utils import upload_image, is_valid_image, init_cloudinary
     from flask import current_app
@@ -97,7 +97,7 @@ def save_premio_image(image_file, premio_nome=None):
         return None
     
     # Faz upload para o Cloudinary com nome padronizado
-    result = upload_image(image_file, folder='premios', premio_nome=premio_nome)
+    result = upload_image(image_file, folder='premios', premio_id=premio_id)
     
     if result['success']:
         return result['secure_url']
@@ -546,26 +546,29 @@ def novo_premio():
     form = PremioForm()
     
     if form.validate_on_submit():
-        # Processa upload de imagem APENAS se há um arquivo válido
-        imagem_filename = None
-        if (form.imagem.data and 
-            hasattr(form.imagem.data, 'filename') and 
-            form.imagem.data.filename):
-            imagem_filename = save_premio_image(form.imagem.data, premio_nome=form.nome.data)
-        
+        # Cria o prêmio primeiro sem imagem para obter o ID
         premio = Premio(
             nome=form.nome.data,
             descricao=form.descricao.data,
             data_evento=form.data_evento.data,
             tipo=form.tipo.data,
-            imagem=imagem_filename,
+            imagem=None,  # Será atualizada depois
             loja_id=None,  # Sempre sem loja por padrão
             criado_por=current_user.id,
             ativo=True
         )
         
         db.session.add(premio)
-        db.session.commit()
+        db.session.commit()  # Commit para obter o ID
+        
+        # Processa upload de imagem APENAS se há um arquivo válido
+        if (form.imagem.data and 
+            hasattr(form.imagem.data, 'filename') and 
+            form.imagem.data.filename):
+            imagem_filename = save_premio_image(form.imagem.data, premio_id=premio.id)
+            if imagem_filename:
+                premio.imagem = imagem_filename
+                db.session.commit()  # Commit para salvar a imagem
         
         flash(f'✅ Prêmio "{premio.nome}" criado com sucesso! Você pode agora atribuí-lo a uma loja ganhadora.', 'success')
         return redirect(url_for('admin.premios'))
@@ -597,13 +600,18 @@ def editar_premio(id):
               hasattr(form.imagem.data, 'filename') and 
               form.imagem.data.filename):
             
-            # Remove imagem anterior se existir
-            if premio.imagem:
-                old_image_path = os.path.join('app/static/images/premios', premio.imagem)
-                safe_remove_file(old_image_path)
+            # Remove imagem anterior do Cloudinary se existir
+            if premio.imagem and 'cloudinary' in premio.imagem:
+                from app.utils.cloudinary_utils import delete_image, extract_public_id_from_url
+                from flask import current_app
+                public_id = extract_public_id_from_url(premio.imagem)
+                if public_id:
+                    delete_result = delete_image(public_id)
+                    if delete_result['success']:
+                        current_app.logger.info(f"Imagem anterior removida do Cloudinary: {public_id}")
             
             # Salva nova imagem
-            nova_imagem = save_premio_image(form.imagem.data, premio_nome=form.nome.data)
+            nova_imagem = save_premio_image(form.imagem.data, premio_id=premio.id)
             if nova_imagem:
                 premio.imagem = nova_imagem
         

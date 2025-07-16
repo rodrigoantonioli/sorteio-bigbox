@@ -14,30 +14,26 @@ def init_cloudinary():
         cloudinary_url=current_app.config['CLOUDINARY_URL']
     )
 
-def upload_image(file, folder='premios', premio_nome=None):
+def upload_image(file, folder='premios', premio_id=None):
     """
     Faz upload de uma imagem para o Cloudinary com nome padronizado
     
     Args:
         file: Arquivo de imagem (werkzeug.FileStorage)
         folder: Pasta no Cloudinary (default: 'premios')
-        premio_nome: Nome do prêmio para padronização do nome da imagem
+        premio_id: ID do prêmio para padronização do nome da imagem
     
     Returns:
         dict: Dados do upload incluindo public_id e secure_url
     """
     try:
-        # Gera nome padronizado: premio_YYYYMMDD_HHMMSS
+        # Gera nome padronizado: YYYYMMDD_HHMMSS_PREMIO[ID]
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         
-        if premio_nome:
-            # Limpa o nome do prêmio para usar no filename
-            nome_limpo = re.sub(r'[^a-zA-Z0-9_-]', '_', premio_nome.lower())
-            nome_limpo = re.sub(r'_+', '_', nome_limpo)  # Remove underscores duplicados
-            nome_limpo = nome_limpo.strip('_')  # Remove underscores das extremidades
-            public_id = f"premio_{nome_limpo}_{timestamp}"
+        if premio_id:
+            public_id = f"{timestamp}_PREMIO{premio_id}"
         else:
-            public_id = f"premio_{timestamp}"
+            public_id = f"{timestamp}_PREMIO_TEMP"
         
         # Faz o upload
         result = cloudinary.uploader.upload(
