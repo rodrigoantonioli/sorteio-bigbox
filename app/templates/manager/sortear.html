@@ -461,7 +461,7 @@ function initializeSorteioColaboradores() {
                             </div>
                             
                             <div class="resultado-footer">
-                                <button type="button" class="btn btn-primary btn-voltar" onclick="window.location.reload()">
+                                <button type="button" class="btn btn-primary btn-voltar" onclick="verificarPremiosRestantesEVoltar()">
                                     <i class="bi bi-arrow-left"></i> Sortear Outro Prêmio
                                 </button>
                             </div>
@@ -535,8 +535,39 @@ function initializeSorteioColaboradores() {
         });
     }
     
+    // Função para verificar prêmios restantes e voltar
+    function verificarPremiosRestantesEVoltar() {
+        // Fecha o modal primeiro
+        const modal = bootstrap.Modal.getInstance(document.getElementById('sorteioModal'));
+        if (modal) {
+            modal.hide();
+        }
+        
+        // Verifica se ainda há prêmios disponíveis via AJAX
+        fetch('/assistente/premios-disponiveis', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.premios_count > 0) {
+                // Há prêmios disponíveis - recarrega a página de sorteio
+                window.location.reload();
+            } else {
+                // Não há mais prêmios - redireciona para dashboard
+                window.location.href = '/assistente/dashboard';
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao verificar prêmios:', error);
+            // Em caso de erro, recarrega a página por segurança
+            window.location.reload();
+        });
+    }
     
-    // Fun��o para configurar atualiza��o ao fechar modal
+    // Função para configurar atualização ao fechar modal
     function configurarAtualizacaoAoFecharModal() {
         // Listener para detectar quando modal � fechado
         const modal = document.getElementById('sorteioModal');

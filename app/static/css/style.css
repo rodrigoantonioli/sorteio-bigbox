@@ -2431,6 +2431,178 @@ main {
 }
 
 /* ========================================
+    ESTILOS MODAL SORTEIO - LAYOUT WIDE
+======================================== */
+
+/* Layout principal do modal - mais largo */
+.sorteio-layout-wide {
+    min-height: 70vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+}
+
+/* Área principal centralizada */
+.sorteio-area-principal {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    position: relative;
+}
+
+/* Botão X customizado */
+.btn-close-custom {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.btn-close-custom:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* Relógio centralizado */
+.relogio-container {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.relogio {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Status do sorteio */
+.sorteio-status-central {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1rem 2rem;
+    margin: 1rem 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Display central do sorteio */
+.sorteio-display-central {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 600px;
+}
+
+.nome-sorteio {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    margin-bottom: 1rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.2;
+}
+
+/* Lista de ganhadores centralizada */
+.ganhadores-lista-central {
+    width: 100%;
+    max-width: 500px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.ganhadores-lista-central .list-group-item {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    margin-bottom: 0.5rem;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+    .sorteio-layout-wide {
+        padding: 1.5rem;
+    }
+    
+    .sorteio-area-principal {
+        max-width: 700px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sorteio-layout-wide {
+        padding: 1rem;
+        min-height: 60vh;
+    }
+    
+    .sorteio-area-principal {
+        gap: 1.5rem;
+    }
+    
+    .nome-sorteio {
+        font-size: 2rem;
+    }
+    
+    .sorteio-display-central {
+        padding: 2rem 1rem;
+        min-height: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nome-sorteio {
+        font-size: 1.5rem;
+    }
+    
+    .sorteio-status-central {
+        font-size: 1rem;
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* ========================================
    ESTILOS DO SORTEIO INSTAGRAM PROFISSIONAL
 ======================================== */
 

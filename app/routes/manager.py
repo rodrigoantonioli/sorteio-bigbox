@@ -91,6 +91,47 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
 
+@manager_bp.route('/premios-disponiveis')
+@manager_required
+def premios_disponiveis():
+    """Retorna quantidade de prêmios disponíveis para a loja via AJAX"""
+    try:
+        # Verifica se há sorteio atual e se a loja foi sorteada
+        sorteio_atual = SorteioSemanal.query.order_by(SorteioSemanal.semana_inicio.desc()).first()
+        
+        if not sorteio_atual:
+            return jsonify({'success': True, 'premios_count': 0})
+        
+        loja_sorteada = (current_user.loja_id == sorteio_atual.loja_big_id or 
+                        current_user.loja_id == sorteio_atual.loja_ultra_id)
+        
+        if not loja_sorteada:
+            return jsonify({'success': True, 'premios_count': 0})
+        
+        # Prêmios já sorteados
+        premios_ja_sorteados = db.session.query(SorteioColaborador.premio_id).join(Colaborador).filter(
+            SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
+            Colaborador.loja_id == current_user.loja_id
+        ).subquery()
+
+        # Conta prêmios disponíveis
+        premios_count = Premio.query.filter(
+            Premio.ativo == True,
+            Premio.data_evento >= date.today(),
+            db.or_(Premio.loja_id == current_user.loja_id, Premio.loja_id.is_(None)),
+            ~Premio.id.in_(db.select(premios_ja_sorteados).scalar_subquery())
+        ).count()
+        
+        return jsonify({
+            'success': True,
+            'premios_count': premios_count
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
 @manager_bp.route('/dashboard')
 @manager_required
 def dashboard():

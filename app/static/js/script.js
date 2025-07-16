@@ -80,50 +80,39 @@ class SorteioAnimado {
 
         const modalHtml = `
             <div class="modal fade" id="sorteioModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-fullscreen">
+                <div class="modal-dialog modal-xl">
                     <div class="modal-content sorteio-modal">
                         <div class="modal-header border-0 position-relative">
                             <h4 class="modal-title text-white w-100 text-center">
                                 🎲 ${titulo}
                             </h4>
-                            <button type="button" id="fecharModalBtn" class="btn-close-custom d-none" data-bs-dismiss="modal" title="Fechar">
+                            <button type="button" id="fecharModalBtn" class="btn-close-custom" data-bs-dismiss="modal" title="Fechar">
                                 <i class="bi bi-x"></i>
                             </button>
                         </div>
                         <div class="modal-body p-0">
-                            <div class="sorteio-layout">
-                                <!-- Coluna da Ficha do Sorteio (Esquerda) -->
-                                <div class="sorteio-col-ficha">
-                                    <div class="ficha-content ficha-content-card" id="fichaSorteio">
-                                        <div class="loading-ficha">Carregando informações...</div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Coluna da Animação Central -->
-                                <div class="sorteio-col-central">
-                                    <div class="central-container">
-                                        <!-- Relógio Elegante -->
-                                        <div class="relogio-container">
-                                            <div class="relogio" id="relogioSorteio">
-                                                <div class="data-atual" id="dataAtual"></div>
-                                                <div class="hora-atual" id="horaAtual"></div>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Status do Sorteio -->
-                                        <div class="sorteio-status-central" id="sorteioStatus">${statusInicial}</div>
-                                        
-                                        <!-- Display do Sorteio -->
-                                        <div class="sorteio-display-central" id="sorteioDisplay">
-                                            <div class="nome-sorteio" id="nomeSorteio">Aguarde...</div>
-                                            <div class="confetti-container" id="confettiContainer"></div>
+                            <div class="sorteio-layout-wide">
+                                <!-- Área Principal do Sorteio -->
+                                <div class="sorteio-area-principal">
+                                    <!-- Relógio Elegante -->
+                                    <div class="relogio-container">
+                                        <div class="relogio" id="relogioSorteio">
+                                            <div class="data-atual" id="dataAtual"></div>
+                                            <div class="hora-atual" id="horaAtual"></div>
                                         </div>
                                     </div>
-                                </div>
-                                
-                                <!-- Coluna dos Ganhadores (Direita) -->
-                                <div class="sorteio-col-ganhadores">
-                                    <div class="ganhadores-content">
+                                    
+                                    <!-- Status do Sorteio -->
+                                    <div class="sorteio-status-central" id="sorteioStatus">${statusInicial}</div>
+                                    
+                                    <!-- Display do Sorteio -->
+                                    <div class="sorteio-display-central" id="sorteioDisplay">
+                                        <div class="nome-sorteio" id="nomeSorteio">Aguarde...</div>
+                                        <div class="confetti-container" id="confettiContainer"></div>
+                                    </div>
+                                    
+                                    <!-- Lista de Ganhadores (Se múltiplos) -->
+                                    <div class="ganhadores-lista-central" id="ganhadores-container" style="display: none;">
                                         <ul class="list-group list-group-flush" id="listaGanhadores"></ul>
                                     </div>
                                 </div>
