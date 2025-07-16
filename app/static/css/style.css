@@ -2216,6 +2216,172 @@ main {
 }
 
 /* ========================================
+    ESTILOS TELA FINAL SORTEIO COLABORADORES
+======================================== */
+
+/* Container principal da tela final */
+.resultado-compacto-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.resultado-detalhes-flex {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 100%;
+}
+
+/* Seção do ganhador */
+.ganhador-compacto {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    min-width: 200px;
+    max-width: 280px;
+}
+
+.colaborador-avatar {
+    font-size: 3rem;
+    color: #667eea;
+    margin-bottom: 1rem;
+}
+
+.colaborador-nome {
+    font-size: 1.3rem !important;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    line-height: 1.2;
+}
+
+.colaborador-setor {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Seção da loja */
+.loja-compacta {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    min-width: 200px;
+    max-width: 280px;
+}
+
+.loja-bandeira {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+}
+
+.loja-nome {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.3rem;
+}
+
+.loja-codigo {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Seção do prêmio */
+.premio-compacto {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    min-width: 200px;
+    max-width: 280px;
+}
+
+.premio-nome {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.3rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    line-height: 1.2;
+}
+
+.premio-data {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .resultado-detalhes-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .ganhador-compacto,
+    .loja-compacta,
+    .premio-compacto {
+        max-width: 100%;
+        min-width: 250px;
+    }
+    
+    .colaborador-nome {
+        font-size: 1.1rem !important;
+    }
+    
+    .premio-nome {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .colaborador-nome {
+        font-size: 1rem !important;
+    }
+    
+    .loja-nome,
+    .premio-nome {
+        font-size: 0.95rem;
+    }
+    
+    .ganhador-compacto,
+    .loja-compacta,
+    .premio-compacto {
+        padding: 1rem;
+        min-width: 200px;
+    }
+}
+
+/* ========================================
    ESTILOS DO SORTEIO INSTAGRAM PROFISSIONAL
 ======================================== */
 
