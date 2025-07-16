@@ -204,6 +204,56 @@
             </div>
         </div>
 
+        <!-- Prêmios Disponíveis -->
+        {% if loja_sorteada and premios_lista %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-gift"></i> 🎁 Prêmios Disponíveis para Sorteio
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted mb-3">Clique em um prêmio para ir diretamente ao sorteio com ele pré-selecionado.</p>
+                        <div class="row">
+                            {% for premio in premios_lista %}
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card h-100 border-warning sorteable-prize" style="cursor: pointer; transition: all 0.3s ease;">
+                                    <div class="position-relative">
+                                        <img src="{{ premio.get_imagem_url() }}" 
+                                             alt="{{ premio.nome }}" 
+                                             class="card-img-top"
+                                             style="height: 200px; object-fit: cover;">
+                                        <span class="badge bg-{{ 'info' if premio.tipo == 'show' else 'secondary' }} position-absolute top-0 end-0 m-2">
+                                            {{ 'Show' if premio.tipo == 'show' else 'Day Use' }}
+                                        </span>
+                                    </div>
+                                    <div class="card-body d-flex flex-column">
+                                        <h6 class="card-title">{{ premio.nome }}</h6>
+                                        {% if premio.descricao %}
+                                            <p class="card-text text-muted small flex-grow-1">{{ premio.descricao[:80] }}{% if premio.descricao|length > 80 %}...{% endif %}</p>
+                                        {% endif %}
+                                        <div class="mt-auto">
+                                            <small class="text-muted d-block mb-2">
+                                                <i class="bi bi-calendar"></i> {{ premio.data_evento.strftime('%d/%m/%Y') }}
+                                            </small>
+                                            <a href="{{ url_for('manager.sortear_colaboradores', premio_id=premio.id) }}" 
+                                               class="btn btn-warning btn-sm w-100">
+                                                <i class="fas fa-dice"></i> Sortear para Este Prêmio
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Colaboradores Sorteados -->
         {% if colaboradores_sorteados %}
         <div class="row">

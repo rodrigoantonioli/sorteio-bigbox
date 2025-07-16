@@ -52,3 +52,6 @@ htmlcov/
 
 # Migrations
 migrations/ 
+
+# Ignore
+TODO.md

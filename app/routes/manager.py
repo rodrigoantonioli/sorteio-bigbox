@@ -174,13 +174,17 @@ def dashboard():
             Colaborador.loja_id == current_user.loja_id
         ).subquery()
 
-        # Conta prêmios disponíveis
-        premios_disponiveis_count = Premio.query.filter(
+        # Lista prêmios disponíveis
+        premios_disponiveis = Premio.query.filter(
             Premio.ativo == True,
             Premio.data_evento >= date.today(),
             db.or_(Premio.loja_id == current_user.loja_id, Premio.loja_id.is_(None)),
             ~Premio.id.in_(db.select(premios_ja_sorteados).scalar_subquery())
-        ).count()
+        ).order_by(Premio.data_evento.asc(), Premio.nome.asc()).all()
+        
+        premios_disponiveis_count = len(premios_disponiveis)
+    else:
+        premios_disponiveis = []
 
     return render_template('manager/dashboard.html',
                          loja=current_user.loja,
@@ -188,7 +192,8 @@ def dashboard():
                          sorteio_atual=sorteio_atual,
                          colaboradores_sorteados=colaboradores_sorteados,
                          total_colaboradores=total_colaboradores,
-                         premios_disponiveis=premios_disponiveis_count)
+                         premios_disponiveis=premios_disponiveis_count,
+                         premios_lista=premios_disponiveis)
 
 @manager_bp.route('/colaboradores')
 @manager_required
@@ -584,6 +589,11 @@ def sortear_colaboradores():
     ).order_by(Premio.data_evento).all()
     
     form.premio_id.choices = [(p.id, f"{p.nome} - {p.data_evento.strftime('%d/%m/%Y')}") for p in premios_disponiveis]
+    
+    # Verifica se há prêmio pré-selecionado via parâmetro GET
+    premio_selecionado = request.args.get('premio_id', type=int)
+    if premio_selecionado and any(p.id == premio_selecionado for p in premios_disponiveis):
+        form.premio_id.data = premio_selecionado
     
     # Dados dos prêmios para JavaScript
     premios_data = {}
