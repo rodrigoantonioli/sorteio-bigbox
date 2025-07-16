@@ -15,11 +15,6 @@
                     <a href="{{ url_for('admin.novo_premio') }}" class="btn btn-success">
                         <i class="fas fa-plus"></i> Novo Prêmio
                     </a>
-                    <form method="POST" action="{{ url_for('admin.cleanup_images') }}" class="d-inline" onsubmit="return confirm('Tem certeza que deseja limpar imagens não utilizadas do Cloudinary? Esta ação não pode ser desfeita.');">
-                        <button type="submit" class="btn btn-outline-warning">
-                            <i class="fas fa-broom"></i> Limpar Imagens
-                        </button>
-                    </form>
                     <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </a>

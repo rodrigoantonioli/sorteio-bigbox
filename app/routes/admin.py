@@ -703,20 +703,6 @@ def excluir_premio(id):
     flash(f'✅ Prêmio "{nome_premio}" foi excluído com sucesso.', 'success')
     return redirect(url_for('admin.premios'))
 
-@admin_bp.route('/premios/cleanup-images', methods=['POST'])
-@admin_required
-def cleanup_images():
-    """Limpa imagens não utilizadas do Cloudinary"""
-    from app.utils.cloudinary_utils import cleanup_unused_images
-    
-    result = cleanup_unused_images()
-    
-    if result['success']:
-        flash(f'✅ Limpeza concluída! {result["deleted_count"]} imagens removidas de {result["total_checked"]} verificadas. {result["in_use_count"]} imagens em uso mantidas.', 'success')
-    else:
-        flash(f'❌ Erro na limpeza: {result["error"]}', 'danger')
-    
-    return redirect(url_for('admin.premios'))
 
 @admin_bp.route('/sorteios')
 @admin_required

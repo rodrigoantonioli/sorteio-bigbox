@@ -1,7 +1,6 @@
 import cloudinary
 import cloudinary.uploader
 import cloudinary.utils
-import cloudinary.api
 from flask import current_app
 import os
 import uuid
@@ -159,61 +158,3 @@ def extract_public_id_from_url(cloudinary_url):
         current_app.logger.error(f"Erro ao extrair public_id da URL: {str(e)}")
         return None
 
-def cleanup_unused_images():
-    """
-    Remove imagens não utilizadas do Cloudinary
-    Esta função deve ser executada periodicamente
-    
-    Returns:
-        dict: Resultado da operação de limpeza
-    """
-    try:
-        from app.models import Premio
-        
-        # Busca todas as imagens no banco
-        premios_com_imagem = Premio.query.filter(
-            Premio.imagem.isnot(None),
-            Premio.imagem.contains('cloudinary')
-        ).all()
-        
-        # Extrai public_ids das imagens em uso
-        public_ids_em_uso = set()
-        for premio in premios_com_imagem:
-            public_id = extract_public_id_from_url(premio.imagem)
-            if public_id:
-                public_ids_em_uso.add(public_id)
-        
-        # Lista todas as imagens na pasta premios do Cloudinary
-        result = cloudinary.api.resources(
-            type='upload',
-            prefix='premios/',
-            max_results=500
-        )
-        
-        # Identifica imagens não utilizadas
-        imagens_para_deletar = []
-        for resource in result.get('resources', []):
-            if resource['public_id'] not in public_ids_em_uso:
-                imagens_para_deletar.append(resource['public_id'])
-        
-        # Remove imagens não utilizadas
-        deleted_count = 0
-        for public_id in imagens_para_deletar:
-            delete_result = delete_image(public_id)
-            if delete_result['success']:
-                deleted_count += 1
-                current_app.logger.info(f"Imagem removida: {public_id}")
-        
-        return {
-            'success': True,
-            'deleted_count': deleted_count,
-            'total_checked': len(result.get('resources', [])),
-            'in_use_count': len(public_ids_em_uso)
-        }
-        
-    except Exception as e:
-        current_app.logger.error(f"Erro na limpeza de imagens: {str(e)}")
-        return {
-            'success': False,
-            'error': str(e)
-        }
