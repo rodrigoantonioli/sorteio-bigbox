@@ -544,6 +544,16 @@ def sortear_colaboradores():
     
     form.premio_id.choices = [(p.id, f"{p.nome} - {p.data_evento.strftime('%d/%m/%Y')}") for p in premios_disponiveis]
     
+    # Dados dos prêmios para JavaScript
+    premios_data = {}
+    for premio in premios_disponiveis:
+        premios_data[premio.id] = {
+            'nome': premio.nome,
+            'data_evento': premio.data_evento.strftime('%d/%m/%Y'),
+            'tipo': 'Show' if premio.tipo == 'show' else 'Day Use',
+            'imagem_url': premio.get_imagem_url()
+        }
+    
     if not premios_disponiveis:
         flash('Não há mais prêmios disponíveis para sorteio. Contate o administrador.', 'warning')
         return redirect(url_for('manager.dashboard'))
@@ -594,7 +604,8 @@ def sortear_colaboradores():
                                  colaboradores_count=len(colaboradores_aptos),
                                  colaboradores=[],
                                  total_premios=total_premios_loja,
-                                 premios_sorteados=premios_sorteados_count)
+                                 premios_sorteados=premios_sorteados_count,
+                                 premios_data=premios_data)
         
         # Cria snapshot da lista de colaboradores
         colaboradores_snapshot = [
@@ -688,7 +699,8 @@ def sortear_colaboradores():
                          colaboradores_count=len(colaboradores_aptos),
                          colaboradores=colaboradores_json,
                          total_premios=total_premios_loja,
-                         premios_sorteados=premios_sorteados_count)
+                         premios_sorteados=premios_sorteados_count,
+                         premios_data=premios_data)
 
 @manager_bp.route('/sortear/ajax', methods=['POST'])
 @manager_required
@@ -792,7 +804,11 @@ def sortear_colaboradores_ajax():
             'message': f'🎉 Colaborador {colaborador.nome} foi sorteado para "{premio.nome}"!',
             'data': {
                 'colaborador': {'nome': colaborador.nome, 'setor': colaborador.setor},
-                'premio': {'nome': premio.nome, 'data_evento': premio.data_evento.strftime('%d/%m/%Y')}
+                'premio': {
+                    'nome': premio.nome, 
+                    'data_evento': premio.data_evento.strftime('%d/%m/%Y'),
+                    'imagem_url': premio.get_imagem_url()
+                }
             }
         })
         

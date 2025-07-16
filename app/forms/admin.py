@@ -48,7 +48,7 @@ class PremioForm(FlaskForm):
         ('day_use', 'Day Use')
     ], validators=[DataRequired(message='Tipo é obrigatório')])
     imagem = FileField('Imagem do Prêmio', validators=[
-        FileAllowed(['jpg', 'jpeg', 'png'], 'Apenas arquivos JPG, JPEG e PNG são permitidos!')
+        FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'webp'], 'Apenas arquivos JPG, JPEG, PNG, GIF e WEBP são permitidos!')
     ])
     submit = SubmitField('Salvar')
 

@@ -15,4 +15,5 @@ bcrypt==4.1.2
 PyJWT==2.8.0
 email-validator==2.1.0
 python-dateutil==2.8.2
-pytest==8.2.2 
+pytest==8.2.2
+cloudinary==1.44.1 

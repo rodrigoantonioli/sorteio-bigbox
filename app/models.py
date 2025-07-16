@@ -67,14 +67,19 @@ class Premio(db.Model):
     
     def get_imagem_url(self):
         """Retorna a URL da imagem do prêmio ou imagem padrão"""
-        if self.imagem and os.path.exists(f'app/static/images/premios/{self.imagem}'):
-            return f'/static/images/premios/{self.imagem}'
-        else:
-            # Retorna imagem padrão baseada no tipo
-            if self.tipo == 'show':
-                return '/static/images/premios/default_show.jpg'
-            else:  # day_use
-                return '/static/images/premios/default_day_use.jpg'
+        if self.imagem:
+            # Se a imagem contém 'cloudinary', é uma URL do Cloudinary
+            if 'cloudinary' in self.imagem:
+                return self.imagem
+            # Se não, tenta buscar localmente (compatibilidade com imagens antigas)
+            elif os.path.exists(f'app/static/images/premios/{self.imagem}'):
+                return f'/static/images/premios/{self.imagem}'
+        
+        # Retorna imagem padrão baseada no tipo
+        if self.tipo == 'show':
+            return '/static/images/premios/default_show.jpg'
+        else:  # day_use
+            return '/static/images/premios/default_day_use.jpg'
 
 class SorteioSemanal(db.Model):
     __tablename__ = 'sorteios_semanais'

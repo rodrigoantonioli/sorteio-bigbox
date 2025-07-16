@@ -85,27 +85,24 @@ def allowed_image_file(filename):
            filename.rsplit('.', 1)[1].lower() in ['jpg', 'jpeg', 'png']
 
 def save_premio_image(image_file):
-    """Salva a imagem do prêmio e retorna o nome do arquivo"""
-    # Verifica se é um objeto FileStorage válido
-    if (image_file and 
-        hasattr(image_file, 'filename') and 
-        image_file.filename and 
-        allowed_image_file(image_file.filename)):
-        
-        # Gera nome único para o arquivo
-        filename = secure_filename(image_file.filename)
-        unique_filename = f"{uuid.uuid4().hex}_{filename}"
-        
-        # Cria diretório se não existir
-        upload_dir = 'app/static/images/premios'
-        os.makedirs(upload_dir, exist_ok=True)
-        
-        # Salva arquivo
-        filepath = os.path.join(upload_dir, unique_filename)
-        image_file.save(filepath)
-        
-        return unique_filename
-    return None
+    """Salva a imagem do prêmio no Cloudinary e retorna a URL"""
+    from app.utils.cloudinary_utils import upload_image, is_valid_image, init_cloudinary
+    
+    # Inicializa Cloudinary
+    init_cloudinary()
+    
+    # Verifica se é um arquivo válido
+    if not is_valid_image(image_file):
+        return None
+    
+    # Faz upload para o Cloudinary
+    result = upload_image(image_file, folder='premios')
+    
+    if result['success']:
+        return result['secure_url']
+    else:
+        current_app.logger.error(f"Erro no upload da imagem: {result['error']}")
+        return None
 
 @admin_bp.route('/dashboard')
 @admin_required

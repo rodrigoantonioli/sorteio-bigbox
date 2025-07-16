@@ -232,8 +232,16 @@
                                             <small class="text-muted">{{ sorteio.colaborador.matricula }} - {{ sorteio.colaborador.setor }}</small>
                                         </td>
                                         <td>
-                                            <strong>{{ sorteio.premio.nome }}</strong><br>
-                                            <small class="text-muted">{{ sorteio.premio.data_evento.strftime('%d/%m/%Y') }}</small>
+                                            <div class="d-flex align-items-center">
+                                                <img src="{{ sorteio.premio.get_imagem_url() }}" 
+                                                     alt="{{ sorteio.premio.nome }}" 
+                                                     class="rounded me-2"
+                                                     style="width: 40px; height: 40px; object-fit: cover;">
+                                                <div>
+                                                    <strong>{{ sorteio.premio.nome }}</strong><br>
+                                                    <small class="text-muted">{{ sorteio.premio.data_evento.strftime('%d/%m/%Y') }}</small>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td>
                                             <small>{{ sorteio.data_sorteio.strftime('%d/%m/%Y %H:%M') }}</small>

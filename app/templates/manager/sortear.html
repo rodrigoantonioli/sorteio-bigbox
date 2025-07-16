@@ -51,6 +51,26 @@
                                             {% endfor %}
                                         </div>
                                     {% endif %}
+                                    
+                                    <!-- Preview do Prêmio Selecionado -->
+                                    <div id="premioPreview" class="mt-3" style="display: none;">
+                                        <div class="card border-info">
+                                            <div class="card-body p-3">
+                                                <div class="d-flex align-items-center">
+                                                    <img id="premioImagem" src="" alt="Prêmio" 
+                                                         class="rounded me-3" 
+                                                         style="width: 80px; height: 80px; object-fit: cover;">
+                                                    <div>
+                                                        <h6 class="mb-1" id="premioNome"></h6>
+                                                        <small class="text-muted" id="premioData"></small>
+                                                        <div>
+                                                            <span class="badge bg-info" id="premioTipo"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 
                                 <div class="col-md-4 mb-3">
@@ -189,8 +209,9 @@ function initializeSorteioColaboradores() {
     const statusSorteio = document.getElementById('statusSorteio');
     const statusTexto = document.getElementById('statusTexto');
     
-    // Dados dos colaboradores e loja
+    // Dados dos colaboradores, loja e prêmios
     const colaboradores = JSON.parse('{{ colaboradores | tojson | safe }}');
+    const premiosData = JSON.parse('{{ premios_data | tojson | safe }}');
     const loja = {
         nome: '{{ current_user.loja.nome }}',
         codigo: '{{ current_user.loja.codigo }}',
@@ -205,8 +226,30 @@ function initializeSorteioColaboradores() {
     let seedRandom = Date.now();
     
     // Event Listeners
-    premioSelect.addEventListener('change', verificarFormulario);
+    premioSelect.addEventListener('change', function() {
+        verificarFormulario();
+        atualizarPreviewPremio();
+    });
     confirmarCheck.addEventListener('change', verificarFormulario);
+    
+    // Função para atualizar preview do prêmio
+    function atualizarPreviewPremio() {
+        const premioId = premioSelect.value;
+        const premioPreview = document.getElementById('premioPreview');
+        
+        if (premioId && premiosData[premioId]) {
+            const premio = premiosData[premioId];
+            
+            document.getElementById('premioImagem').src = premio.imagem_url;
+            document.getElementById('premioNome').textContent = premio.nome;
+            document.getElementById('premioData').textContent = premio.data_evento;
+            document.getElementById('premioTipo').textContent = premio.tipo;
+            
+            premioPreview.style.display = 'block';
+        } else {
+            premioPreview.style.display = 'none';
+        }
+    }
     
     function verificarFormulario() {
         const premioSelecionado = premioSelect.value && premioSelect.value !== '';
@@ -409,7 +452,8 @@ function initializeSorteioColaboradores() {
                                 
                                 <!-- Prêmio Compacto -->
                                 <div class="premio-compacto">
-                                    <div class="premio-icone">🎁</div>
+                                    <img src="${data.data.premio.imagem_url}" alt="${data.data.premio.nome}" 
+                                         style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;">
                                     <div class="premio-nome">${data.data.premio.nome}</div>
                                     <div class="premio-data">${data.data.premio.data_evento}</div>
                                 </div>

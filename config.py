@@ -61,6 +61,9 @@ class Config:
     # Configurações de Admin
     ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@example.com')
     ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD') or 'default-dev-password'
+    
+    # Cloudinary
+    CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
 
 class DevelopmentConfig(Config):
     """Configurações de desenvolvimento"""
