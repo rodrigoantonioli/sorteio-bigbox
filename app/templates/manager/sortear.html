@@ -420,69 +420,75 @@ function initializeSorteioColaboradores() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // VERSÃO MELHORADA COM LOJA EM DESTAQUE E SEM BOTÃO DASHBOARD
+                // VERSÃO COMPACTA E ELEGANTE - MELHOR UX
                 const mensagemParabens = `
-                                        <div class="resultado-colaborador-elegante">
+                    <div class="resultado-colaborador-moderno">
                         <!-- Confetes dinâmicos -->
                         <div class="confetti-celebration" id="confettiCelebration"></div>
 
-                        <!-- Parabéns Compacto -->
-                        <div class="parabens-compacto mb-4">
-                            🎉 PARABÉNS AO GANHADOR! 🎉
-                        </div>
-
-                        <!-- Container Compacto -->
-                        <div class="resultado-compacto-container">
-                            <div class="resultado-detalhes-flex">
-                                <!-- Loja Compacta -->
-                                <div class="loja-compacta">
-                                    <div class="loja-bandeira">${loja.bandeira} BOX</div>
-                                    <div class="loja-nome">${loja.nome}</div>
-                                    <div class="loja-codigo">${loja.codigo}</div>
-                                </div>
-                                
-                                <!-- Colaborador Ganhador Compacto -->
-                                <div class="ganhador-compacto">
-                                    <div class="colaborador-avatar">
+                        <!-- Resultado Compacto em Card Único -->
+                        <div class="card-resultado-final">
+                            <div class="resultado-header">
+                                <div class="icone-sucesso">🎉</div>
+                                <div class="titulo-resultado">Sorteio Realizado!</div>
+                            </div>
+                            
+                            <div class="resultado-body">
+                                <div class="ganhador-principal">
+                                    <div class="colaborador-avatar-grande">
                                         <i class="bi bi-person-circle"></i>
                                     </div>
-                                    <div class="colaborador-nome">${colaboradorSorteado.nome}</div>
-                                    <div class="colaborador-setor">${colaboradorSorteado.setor}</div>
+                                    <div class="colaborador-info">
+                                        <div class="colaborador-nome-destaque">${colaboradorSorteado.nome}</div>
+                                        <div class="colaborador-setor-info">${colaboradorSorteado.setor}</div>
+                                        <div class="loja-info">
+                                            <span class="loja-badge">${loja.bandeira}</span>
+                                            ${loja.nome} - ${loja.codigo}
+                                        </div>
+                                    </div>
                                 </div>
                                 
-                                <!-- Prêmio Compacto -->
-                                <div class="premio-compacto">
-                                    <img src="${data.data.premio.imagem_url}" alt="${data.data.premio.nome}" 
-                                         style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;">
-                                    <div class="premio-nome">${data.data.premio.nome}</div>
-                                    <div class="premio-data">${data.data.premio.data_evento}</div>
+                                <div class="premio-info">
+                                    <div class="premio-visual">
+                                        <img src="${data.data.premio.imagem_url}" alt="${data.data.premio.nome}" 
+                                             class="premio-imagem">
+                                    </div>
+                                    <div class="premio-detalhes">
+                                        <div class="premio-nome-resultado">${data.data.premio.nome}</div>
+                                        <div class="premio-data-resultado">${data.data.premio.data_evento}</div>
+                                    </div>
                                 </div>
+                            </div>
+                            
+                            <div class="resultado-footer">
+                                <button type="button" class="btn btn-primary btn-voltar" onclick="window.location.reload()">
+                                    <i class="bi bi-arrow-left"></i> Sortear Outro Prêmio
+                                </button>
                             </div>
                         </div>
                     </div>
                 `;
                 window.sorteioAnimado.exibirSucesso(mensagemParabens);
                 
-                // Marca sorteio como realizado com sucesso
-                window.sorteioRealizadoComSucesso = true;
+                // NÃO marca para auto-reload - usuário vai clicar no botão voltar
+                window.sorteioRealizadoComSucesso = false;
                 
-                // Desabilita botões para evitar repetição
-                btnChacoalhar.disabled = true;
-                btnSortearFinal.disabled = true;
-                btnChacoalhar.innerHTML = '✅ SORTEIO REALIZADO';
-                btnSortearFinal.innerHTML = '🎯 SORTEIO CONCLUÍDO';
+                // Mantém botões habilitados para permitir novos sorteios
+                btnChacoalhar.disabled = false;
+                btnSortearFinal.disabled = false;
+                btnChacoalhar.innerHTML = '🎲 Chacoalhar Pote';
+                btnSortearFinal.innerHTML = '🎯 Realizar Sorteio';
                 
-                // Atualiza status
-                statusTexto.textContent = 'Sorteio realizado com sucesso! Resultado salvo.';
-                statusSorteio.className = 'alert alert-success text-center';
+                // Atualiza status de forma discreta
+                statusTexto.textContent = 'Sorteio salvo! Clique no botão "Sortear Outro Prêmio" para continuar.';
+                statusSorteio.className = 'alert alert-info text-center';
                 
                 // Ativa confetes dinâmicos
                 setTimeout(() => {
                     window.sorteioAnimado.criarConfettiCelebracao();
                 }, 500);
 
-                // Configura atualização quando modal for fechado
-                configurarAtualizacaoAoFecharModal();
+                // NÃO configura auto-reload - melhor UX com botão manual
             } else {
                 window.sorteioAnimado.exibirErro(data.message);
             }

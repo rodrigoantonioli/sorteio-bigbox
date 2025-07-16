@@ -811,8 +811,7 @@ class SorteioAnimado {
             colaboradorContainer.innerHTML = mensagem;
             if (status) status.style.display = 'none';
             if (alertDiv) {
-                alertDiv.className = 'alert alert-success mb-4';
-                alertDiv.innerHTML = '<i class="bi bi-check-circle-fill"></i> Resultado salvo com sucesso!';
+                alertDiv.style.display = 'none'; // Remove a mensagem gigante de sucesso
             }
         }
 
