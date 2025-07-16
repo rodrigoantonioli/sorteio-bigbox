@@ -2,7 +2,7 @@
 
 ## 📋 Visão Geral
 
-O **Sistema de Endomarketing Grupo Big Box Ultrabox v1.3** é uma aplicação Flask robusta e completa para gerenciar sorteios internos de lojas, colaboradores e Instagram. Este documento fornece orientações específicas para assistentes de IA trabalharem eficientemente com o projeto.
+O **Sistema de Endomarketing Grupo Big Box Ultrabox v1.4** é uma aplicação Flask robusta e completa para gerenciar sorteios internos de lojas, colaboradores e Instagram. Este documento fornece orientações específicas para assistentes de IA trabalharem eficientemente com o projeto.
 
 ## 🎯 Arquitetura do Sistema
 
@@ -45,11 +45,13 @@ sorteioBigbox/
 2. **Atribuição de Prêmios (Admin)** → Vincula prêmios às lojas ganhadoras
 3. **Sorteio de Colaboradores (Assistente)** → Sorteia colaboradores para prêmios
 
-#### **Sistema Instagram (v1.3)**
+#### **Sistema Instagram (v1.4)**
 - Processamento de comentários do Instagram
 - Sistema de tickets ponderados
 - Interface cinematográfica para sorteios
 - Configurações personalizáveis
+- Integração com Cloudinary para upload de imagens de prêmios
+- Galeria de prêmios com visualização otimizada
 
 ## 🛠️ Comandos Essenciais
 
@@ -452,6 +454,32 @@ MAIL_SERVER=smtp.gmail.com
 MAIL_USERNAME=email@gmail.com
 MAIL_PASSWORD=senha_app
 ```
+
+## 📈 Novidades da Versão 1.4
+
+### 🎯 Principais Melhorias
+1. **Integração Cloudinary** → Upload e gerenciamento de imagens de prêmios
+2. **Galeria de Prêmios** → Visualização otimizada no dashboard do assistente
+3. **Melhor UX** → Interface aprimorada para sorteios e modais
+4. **Correções CSRF** → Proteção aprimorada em formulários POST
+5. **Layout Responsivo** → Melhor experiência mobile
+6. **Sistema de Fotos** → Gestão completa de imagens de prêmios
+
+### 📸 Sistema de Fotos (v1.4)
+```python
+# Configuração Cloudinary
+CLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name
+
+# Upload de imagens
+foto_url = upload_image_to_cloudinary(foto_file)
+premio.foto_url = foto_url
+```
+
+### 🎨 Galeria de Prêmios
+- **Cards responsivos** com imagens otimizadas
+- **Links diretos** para sorteio de cada prêmio
+- **Visualização aprimorada** no dashboard
+- **Fallback gracioso** para prêmios sem foto
 
 ## 📈 Melhorias Futuras
 
