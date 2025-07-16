@@ -59,7 +59,7 @@ class Premio(db.Model):
     descricao = db.Column(db.Text)
     data_evento = db.Column(db.Date, nullable=False)
     tipo = db.Column(db.String(20), nullable=False)  # 'show' ou 'day_use'
-    imagem = db.Column(db.String(255), nullable=True)  # Nome do arquivo de imagem
+    imagem = db.Column(db.String(500), nullable=True)  # URL da imagem (Cloudinary ou local)
     loja_id = db.Column(db.Integer, db.ForeignKey('lojas.id'), nullable=True)  # Vinculação com loja ganhadora
     ativo = db.Column(db.Boolean, default=True)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)

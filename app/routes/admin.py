@@ -84,9 +84,10 @@ def allowed_image_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ['jpg', 'jpeg', 'png']
 
-def save_premio_image(image_file):
+def save_premio_image(image_file, premio_nome=None):
     """Salva a imagem do prêmio no Cloudinary e retorna a URL"""
     from app.utils.cloudinary_utils import upload_image, is_valid_image, init_cloudinary
+    from flask import current_app
     
     # Inicializa Cloudinary
     init_cloudinary()
@@ -95,8 +96,8 @@ def save_premio_image(image_file):
     if not is_valid_image(image_file):
         return None
     
-    # Faz upload para o Cloudinary
-    result = upload_image(image_file, folder='premios')
+    # Faz upload para o Cloudinary com nome padronizado
+    result = upload_image(image_file, folder='premios', premio_nome=premio_nome)
     
     if result['success']:
         return result['secure_url']
@@ -550,7 +551,7 @@ def novo_premio():
         if (form.imagem.data and 
             hasattr(form.imagem.data, 'filename') and 
             form.imagem.data.filename):
-            imagem_filename = save_premio_image(form.imagem.data)
+            imagem_filename = save_premio_image(form.imagem.data, premio_nome=form.nome.data)
         
         premio = Premio(
             nome=form.nome.data,
@@ -602,7 +603,7 @@ def editar_premio(id):
                 safe_remove_file(old_image_path)
             
             # Salva nova imagem
-            nova_imagem = save_premio_image(form.imagem.data)
+            nova_imagem = save_premio_image(form.imagem.data, premio_nome=form.nome.data)
             if nova_imagem:
                 premio.imagem = nova_imagem
         
@@ -685,11 +686,36 @@ def excluir_premio(id):
         # Remove os sorteios associados
         SorteioColaborador.query.filter_by(premio_id=id).delete()
     
+    # Remove a imagem do Cloudinary se existir
+    if premio.imagem and 'cloudinary' in premio.imagem:
+        from app.utils.cloudinary_utils import delete_image, extract_public_id_from_url
+        from flask import current_app
+        public_id = extract_public_id_from_url(premio.imagem)
+        if public_id:
+            delete_result = delete_image(public_id)
+            if delete_result['success']:
+                current_app.logger.info(f"Imagem removida do Cloudinary: {public_id}")
+    
     # Exclui o prêmio
     nome_premio = premio.nome
     db.session.delete(premio)
     db.session.commit()
     flash(f'✅ Prêmio "{nome_premio}" foi excluído com sucesso.', 'success')
+    return redirect(url_for('admin.premios'))
+
+@admin_bp.route('/premios/cleanup-images', methods=['POST'])
+@admin_required
+def cleanup_images():
+    """Limpa imagens não utilizadas do Cloudinary"""
+    from app.utils.cloudinary_utils import cleanup_unused_images
+    
+    result = cleanup_unused_images()
+    
+    if result['success']:
+        flash(f'✅ Limpeza concluída! {result["deleted_count"]} imagens removidas de {result["total_checked"]} verificadas. {result["in_use_count"]} imagens em uso mantidas.', 'success')
+    else:
+        flash(f'❌ Erro na limpeza: {result["error"]}', 'danger')
+    
     return redirect(url_for('admin.premios'))
 
 @admin_bp.route('/sorteios')
