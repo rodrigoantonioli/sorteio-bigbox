@@ -461,7 +461,7 @@ function initializeSorteioColaboradores() {
                             </div>
                             
                             <div class="resultado-footer">
-                                <button type="button" class="btn btn-primary btn-voltar" onclick="verificarPremiosRestantesEVoltar()">
+                                <button type="button" class="btn btn-primary btn-voltar" onclick="fecharModalERecarregar()">
                                     <i class="bi bi-arrow-left"></i> Sortear Outro Prêmio
                                 </button>
                             </div>
@@ -606,6 +606,22 @@ function initializeSorteioColaboradores() {
     verificarFormulario();
     
     console.log('✅ Sistema de sorteio de colaboradores inicializado!');
+}
+
+// Função para fechar modal e recarregar página
+function fecharModalERecarregar() {
+    console.log('🔄 Fechando modal e recarregando página...');
+    
+    // Fecha o modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('sorteioModal'));
+    if (modal) {
+        modal.hide();
+    }
+    
+    // Recarrega a página após um pequeno delay
+    setTimeout(() => {
+        window.location.reload();
+    }, 300);
 }
 
 // Sistema de Random determinístico (mesmo do sorteio de lojas)

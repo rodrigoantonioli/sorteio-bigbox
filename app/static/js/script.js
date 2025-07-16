@@ -94,8 +94,8 @@ class SorteioAnimado {
                             <div class="sorteio-layout-wide">
                                 <!-- Área Principal do Sorteio -->
                                 <div class="sorteio-area-principal">
-                                    <!-- Relógio Elegante -->
-                                    <div class="relogio-container">
+                                    <!-- Relógio Elegante - Removido para melhor UX -->
+                                    <div class="relogio-container" id="relogioContainer" style="display: none;">
                                         <div class="relogio" id="relogioSorteio">
                                             <div class="data-atual" id="dataAtual"></div>
                                             <div class="hora-atual" id="horaAtual"></div>
@@ -532,10 +532,6 @@ class SorteioAnimado {
                         <i class="bi bi-calendar-check"></i> <strong>${dataHora}</strong>
                     </div>
                     
-                    <!-- Status de salvamento -->
-                    <div class="alert alert-info mb-4 status-salvamento" id="statusAlert">
-                        <i class="bi bi-gear-fill animate-spin"></i> Salvando resultados no sistema...
-                    </div>
                     
                     <!-- Resultado será inserido pelo template via AJAX -->
                     <div id="resultadoColaboradorContainer">

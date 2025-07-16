@@ -276,7 +276,7 @@
                                 </thead>
                                 <tbody>
                                     {% for sorteio in colaboradores_sorteados %}
-                                    <tr>
+                                    <tr style="cursor: pointer;" onclick="abrirModalDetalheSorteio({{ sorteio.id }}, '{{ sorteio.colaborador.nome }}', '{{ sorteio.colaborador.matricula }}', '{{ sorteio.colaborador.setor }}', '{{ sorteio.premio.nome }}', '{{ sorteio.premio.get_imagem_url() }}', '{{ sorteio.data_sorteio.strftime('%d/%m/%Y às %H:%M') }}', '{{ current_user.loja.nome }}', '{{ current_user.loja.codigo }}')">
                                         <td>
                                             <strong>{{ sorteio.colaborador.nome }}</strong><br>
                                             <small class="text-muted">{{ sorteio.colaborador.matricula }} - {{ sorteio.colaborador.setor }}</small>
@@ -308,4 +308,77 @@
         {% endif %}
     {% endif %}
 </div>
+
+<!-- Modal de Detalhes do Sorteio -->
+<div class="modal fade" id="modalDetalheSorteio" tabindex="-1" aria-labelledby="modalDetalheSorteioLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="modalDetalheSorteioLabel">
+                    <i class="fas fa-trophy"></i> Detalhes do Sorteio
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="resultado-colaborador-moderno">
+                    <!-- Data e hora elegante -->
+                    <div class="data-sorteio-elegante mb-4 text-center">
+                        <i class="bi bi-calendar-check"></i> <strong id="dataHoraSorteio"></strong>
+                    </div>
+                    
+                    <!-- Resultado em Card -->
+                    <div class="card-resultado-final">
+                        <div class="resultado-header">
+                            <div class="icone-sucesso">🎉</div>
+                            <div class="titulo-resultado">Sorteio Realizado!</div>
+                        </div>
+                        
+                        <div class="resultado-body">
+                            <div class="ganhador-principal">
+                                <div class="colaborador-avatar-grande">
+                                    <i class="bi bi-person-circle"></i>
+                                </div>
+                                <div class="colaborador-info">
+                                    <div class="colaborador-nome-destaque" id="nomeColaborador"></div>
+                                    <div class="colaborador-setor-info" id="setorColaborador"></div>
+                                    <div class="loja-info" id="lojaInfo"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="premio-info">
+                                <div class="premio-visual">
+                                    <img id="imagemPremio" src="" alt="" class="premio-imagem">
+                                </div>
+                                <div class="premio-detalhes">
+                                    <div class="premio-nome-resultado" id="nomePremio"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function abrirModalDetalheSorteio(id, nome, matricula, setor, premio, imagemUrl, dataHora, lojaNome, lojaCodigo) {
+    // Preenche os dados no modal
+    document.getElementById('dataHoraSorteio').textContent = dataHora;
+    document.getElementById('nomeColaborador').textContent = nome;
+    document.getElementById('setorColaborador').textContent = setor;
+    document.getElementById('lojaInfo').innerHTML = `
+        <span class="loja-badge">{{ current_user.loja.bandeira }}</span>
+        ${lojaNome} - ${lojaCodigo}
+    `;
+    document.getElementById('nomePremio').textContent = premio;
+    document.getElementById('imagemPremio').src = imagemUrl;
+    document.getElementById('imagemPremio').alt = premio;
+    
+    // Abre o modal
+    const modal = new bootstrap.Modal(document.getElementById('modalDetalheSorteio'));
+    modal.show();
+}
+</script>
+
 {% endblock %} 
