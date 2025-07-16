@@ -158,6 +158,12 @@
                                         <small class="text-muted d-block mb-2">
                                             <i class="bi bi-shop"></i> {{ premio.loja.nome }}
                                         </small>
+                                        <div class="btn-group w-100 mb-2" role="group">
+                                            <a href="{{ url_for('admin.editar_premio', id=premio.id) }}" 
+                                               class="btn btn-outline-secondary btn-sm">
+                                                <i class="fas fa-edit"></i> Editar
+                                            </a>
+                                        </div>
                                         <form method="POST" action="{{ url_for('admin.desatribuir_premio', id=premio.id) }}">
                                             <button type="submit" class="btn btn-outline-warning btn-sm w-100" 
                                                     onclick="return confirm('Tem certeza que deseja remover este prêmio da loja?')">
@@ -224,6 +230,12 @@
                                         <br>
                                         <i class="bi bi-person"></i> Por: {{ item.sorteio.sorteador.nome }}
                                     </small>
+                                    <div class="mt-2">
+                                        <a href="{{ url_for('admin.editar_premio', id=item.premio.id) }}" 
+                                           class="btn btn-outline-secondary btn-sm">
+                                            <i class="fas fa-edit"></i> Editar Prêmio
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
