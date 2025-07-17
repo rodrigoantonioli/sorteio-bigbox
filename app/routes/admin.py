@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from flask_wtf import FlaskForm
 from app.models import db, Usuario, Loja, SorteioSemanal, SorteioColaborador, Colaborador, Premio, SorteioInstagram, ParticipanteInstagram, ConfiguracaoInstagram
-from app.forms.admin import SorteioSemanalForm, UsuarioForm, PremioForm, LojaForm, AtribuirPremioForm, SorteioInstagramForm, ConfiguracaoInstagramForm
+from app.forms.admin import SorteioSemanalForm, UsuarioForm, PremioForm, LojaForm, AtribuirPremioForm, SorteioInstagramForm, ConfiguracaoInstagramForm, EditarSorteioColaboradorForm
 
 # Formulário vazio apenas para proteção CSRF em ações de POST via link/botão
 class CSRFProtectionForm(FlaskForm):
@@ -786,6 +786,43 @@ def excluir_sorteio_colaborador(id):
     
     flash(f'Sorteio de {colaborador_nome} para "{premio_nome}" foi excluído com sucesso.', 'success')
     return redirect(url_for('admin.sorteios'))
+
+@admin_bp.route('/sorteios/colaborador/<int:id>/editar', methods=['GET', 'POST'])
+@admin_required
+def editar_sorteio_colaborador(id):
+    """Editar o colaborador de um sorteio de colaborador já realizado."""
+    sorteio = SorteioColaborador.query.get_or_404(id)
+    form = EditarSorteioColaboradorForm()
+
+    # Popula o dropdown com colaboradores da mesma loja do sorteio original
+    colaboradores_loja = Colaborador.query.filter_by(loja_id=sorteio.colaborador.loja_id, apto=True).order_by(Colaborador.nome).all()
+    form.colaborador_id.choices = [(c.id, f"{c.nome} ({c.matricula})") for c in colaboradores_loja]
+
+    if form.validate_on_submit():
+        novo_colaborador_id = form.colaborador_id.data
+        novo_colaborador = Colaborador.query.get(novo_colaborador_id)
+
+        if novo_colaborador:
+            # Guarda os nomes para o flash message
+            antigo_colaborador_nome = sorteio.colaborador.nome
+            novo_colaborador_nome = novo_colaborador.nome
+
+            # Atualiza o colaborador_id no sorteio
+            sorteio.colaborador_id = novo_colaborador_id
+            db.session.commit()
+
+            flash(f'Sorteio atualizado: {antigo_colaborador_nome} foi substituído por {novo_colaborador_nome}.', 'success')
+            return redirect(url_for('admin.sorteios'))
+        else:
+            flash('Colaborador selecionado não encontrado.', 'danger')
+
+    # Pré-seleciona o colaborador atual no formulário
+    form.colaborador_id.data = sorteio.colaborador_id
+
+    return render_template('admin/editar_sorteio_colaborador.html', 
+                           form=form, 
+                           sorteio=sorteio, 
+                           titulo='Editar Ganhador do Sorteio')
 
 @admin_bp.route('/colaboradores')
 @admin_required

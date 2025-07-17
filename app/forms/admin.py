@@ -93,4 +93,11 @@ class SorteioInstagramForm(FlaskForm):
 class ConfiguracaoInstagramForm(FlaskForm):
     palavra_chave_padrao = StringField('Palavra-chave Padrão', validators=[DataRequired(), Length(max=100)])
     tickets_maximos_padrao = IntegerField('Tickets Máximos Padrão', validators=[DataRequired(), NumberRange(min=1, max=100)])
-    submit = SubmitField('Salvar Configurações') 
+    submit = SubmitField('Salvar Configurações')
+
+class EditarSorteioColaboradorForm(FlaskForm):
+    """Formulário para editar o colaborador de um sorteio realizado"""
+    colaborador_id = SelectField('Novo Colaborador', coerce=int, validators=[
+        DataRequired(message='Selecione o novo colaborador')
+    ])
+    submit = SubmitField('Salvar Alteração') 
