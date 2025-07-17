@@ -139,6 +139,10 @@
                                             </small>
                                         </td>
                                         <td>
+                                            <a href="{{ url_for('admin.editar_sorteio_colaborador', id=sorteio.id) }}"
+                                               class="btn btn-sm btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
                                             <a href="{{ url_for('admin.excluir_sorteio_colaborador', id=sorteio.id) }}" 
                                                class="btn btn-sm btn-outline-danger" title="Excluir"
                                                onclick="return confirm('Tem certeza que deseja excluir este sorteio de colaborador?')">
