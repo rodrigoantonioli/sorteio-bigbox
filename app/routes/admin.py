@@ -803,6 +803,22 @@ def editar_sorteio_colaborador(id):
         novo_colaborador = Colaborador.query.get(novo_colaborador_id)
 
         if novo_colaborador:
+            # Server-side validation: ensure collaborator belongs to same store
+            if novo_colaborador.loja_id != sorteio.colaborador.loja_id:
+                flash('Erro: O colaborador selecionado não pertence à mesma loja do sorteio original.', 'danger')
+                return render_template('admin/editar_sorteio_colaborador.html', 
+                                       form=form, 
+                                       sorteio=sorteio, 
+                                       titulo='Editar Ganhador do Sorteio')
+            
+            # Server-side validation: ensure collaborator is eligible
+            if not novo_colaborador.apto:
+                flash('Erro: O colaborador selecionado não está apto para participar de sorteios.', 'danger')
+                return render_template('admin/editar_sorteio_colaborador.html', 
+                                       form=form, 
+                                       sorteio=sorteio, 
+                                       titulo='Editar Ganhador do Sorteio')
+
             # Guarda os nomes para o flash message
             antigo_colaborador_nome = sorteio.colaborador.nome
             novo_colaborador_nome = novo_colaborador.nome
@@ -816,8 +832,10 @@ def editar_sorteio_colaborador(id):
         else:
             flash('Colaborador selecionado não encontrado.', 'danger')
 
-    # Pré-seleciona o colaborador atual no formulário
-    form.colaborador_id.data = sorteio.colaborador_id
+    # Pré-seleciona o colaborador atual no formulário apenas se ele ainda estiver apto
+    # e na lista de colaboradores elegíveis da mesma loja
+    if sorteio.colaborador.apto and sorteio.colaborador_id in [c.id for c in colaboradores_loja]:
+        form.colaborador_id.data = sorteio.colaborador_id
 
     return render_template('admin/editar_sorteio_colaborador.html', 
                            form=form, 
