@@ -599,12 +599,23 @@ class SorteioAnimado {
     // Adiciona um ganhador à lista visual na coluna da direita
     adicionarGanhadorNaLista(ganhador, numero) {
         const listaGanhadores = document.getElementById('listaGanhadores');
-        const item = document.createElement('li');
-        item.className = 'list-group-item animate__animated animate__fadeInRight';
+        const item = document.createElement('div');
+        item.className = 'ganhador-live-item animate__animated animate__fadeInRight';
         item.innerHTML = `
-            @${ganhador.username}
+            <div class="ganhador-live-content">
+                <div class="ganhador-live-posicao">${numero}º</div>
+                <div class="ganhador-live-username">@${ganhador.username}</div>
+                <div class="ganhador-live-stats">
+                    <span class="badge badge-comentarios">${ganhador.comentarios_validos} comentários</span>
+                </div>
+            </div>
         `;
         listaGanhadores.appendChild(item);
+        
+        // Auto-scroll para mostrar o último ganhador
+        setTimeout(() => {
+            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
     }
 
     // Finaliza o sorteio, salva os dados e prepara para fechar
@@ -701,17 +712,19 @@ class SorteioAnimado {
         titulo.innerText = 'GANHADORES';
         listaEl.appendChild(titulo);
 
-        // Lógica de grid e tamanho
+        // Lógica de grid otimizada para 10-20 ganhadores
         let numColunas = 2;
-        let cardSizeClass = 'ganhador-card-grande';
+        let cardSizeClass = 'ganhador-card-pequeno';
+        
+        // Otimização baseada na quantidade de ganhadores
         if (ganhadores.length <= 5) {
             numColunas = 1;
             cardSizeClass = 'ganhador-card-grande';
-        } else if (ganhadores.length <= 10) {
-            numColunas = 2;
-            cardSizeClass = 'ganhador-card-grande';
+        } else if (ganhadores.length <= 15) {
+            numColunas = 2; // 2 colunas para até 15 ganhadores
+            cardSizeClass = 'ganhador-card-medio';
         } else {
-            numColunas = 2;
+            numColunas = 2; // Mantém 2 colunas mesmo com mais ganhadores
             cardSizeClass = 'ganhador-card-pequeno';
         }
 
@@ -729,6 +742,10 @@ class SorteioAnimado {
                 item.innerHTML = `
                     <div class="ganhador-final-content centralizado">
                         <div class="ganhador-nome">@${ganhador.username}</div>
+                        <div class="ganhador-stats-modal">
+                            <span class="badge badge-comentarios">${ganhador.comentarios_validos} comentários</span>
+                            <span class="badge badge-tickets">${ganhador.tickets} tickets</span>
+                        </div>
                     </div>
                 `;
                 gridContainer.appendChild(item);

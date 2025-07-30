@@ -371,28 +371,110 @@
         border-radius: 3px;
     }
     
-    /* Lista de Ganhadores */
-    #listaGanhadores .list-group-item {
+    /* Lista de Ganhadores Durante o Sorteio - Melhorada */
+    #listaGanhadores {
+        max-height: calc(100vh - 300px);
+        overflow-y: auto;
+        padding-right: 0.5rem;
+    }
+    
+    #listaGanhadores::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    #listaGanhadores::-webkit-scrollbar-track {
+        background: rgba(255,255,255,0.1);
+        border-radius: 3px;
+    }
+    
+    #listaGanhadores::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.3);
+        border-radius: 3px;
+    }
+    
+    .ganhador-live-item {
         background: rgba(255,255,255,0.08);
         color: #e0e0e0;
         border: 1px solid rgba(255,255,255,0.1);
-        margin-bottom: 0.75rem;
-        border-radius: 12px;
-        padding: 1.25rem;
-        transition: all 0.3s ease;
-    }
-    
-    #listaGanhadores .list-group-item:hover {
-        background: rgba(255,255,255,0.12);
-        transform: translateX(5px);
-    }
-    
-    #listaGanhadores .list-group-item .badge {
-        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
-        color: #ffffff;
-        font-size: 0.8rem;
-        padding: 0.5rem 0.75rem;
+        margin-bottom: 0.5rem;
         border-radius: 8px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        animation: slideInRight 0.5s ease-out;
+    }
+    
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .ganhador-live-item:hover {
+        background: rgba(255,255,255,0.12);
+        transform: translateX(3px);
+    }
+    
+    .ganhador-live-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .ganhador-live-posicao {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #ffc107;
+        min-width: 30px;
+    }
+    
+    .ganhador-live-username {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #ffffff;
+        flex: 1;
+    }
+    
+    .ganhador-live-stats {
+        display: flex;
+        gap: 0.25rem;
+        font-size: 0.7rem;
+    }
+    
+    .ganhador-live-stats .badge {
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.65rem;
+        font-weight: 500;
+    }
+    
+    .badge-comentarios {
+        background: #007bff !important;
+    }
+    
+    .badge-tickets {
+        background: #28a745 !important;
+    }
+    
+    /* Estilos para Grid Final 2-colunas */
+    .ganhadores-grid.cols-2 {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+    
+    .ganhador-card-medio {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .ganhador-card-pequeno {
+        padding: 0.5rem;
+        font-size: 0.8rem;
     }
     
     /* Ganhadores Finais */
@@ -826,6 +908,159 @@
         font-weight: 300;
     }
     
+    /* Estilos para Resultados do Sorteio na Tela Principal */
+    .resultados-sorteio-container {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 1rem 0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .stat-card-resultado {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        border-left: 4px solid #007bff;
+    }
+    
+    .stat-card-resultado:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    
+    .stat-icon-resultado {
+        font-size: 2.5rem;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        border-radius: 12px;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .stat-number-resultado {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #2c3e50;
+        line-height: 1;
+    }
+    
+    .stat-label-resultado {
+        font-size: 0.9rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+    }
+    
+    .ganhadores-resultado-section {
+        margin-top: 2rem;
+    }
+    
+    .ganhadores-titulo-resultado {
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 1.4rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .ganhadores-grid-resultado {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .ganhador-card-resultado {
+        background: white;
+        border-radius: 12px;
+        padding: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        border-left: 4px solid #28a745;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .ganhador-card-resultado::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(40,167,69,0.05) 0%, rgba(40,167,69,0.02) 100%);
+        z-index: 1;
+    }
+    
+    .ganhador-card-resultado:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        border-left-color: #ffc107;
+    }
+    
+    .ganhador-posicao-resultado {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #ffc107;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        min-width: 50px;
+        text-align: center;
+        z-index: 2;
+        position: relative;
+    }
+    
+    .ganhador-info-resultado {
+        flex: 1;
+        z-index: 2;
+        position: relative;
+    }
+    
+    .ganhador-username-resultado {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .ganhador-username-resultado a {
+        color: #2c3e50;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .ganhador-username-resultado a:hover {
+        color: #007bff;
+        text-decoration: underline;
+    }
+    
+    .ganhador-stats-resultado {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .ganhador-stats-resultado .badge {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+    }
+    
     /* Responsividade */
     @media (max-width: 1200px) {
         .sorteio-layout {
@@ -858,6 +1093,10 @@
         .ganhadores-final-grid.cols-3,
         .ganhadores-final-grid.cols-4 {
             grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .ganhadores-grid-resultado {
+            grid-template-columns: 1fr;
         }
     }
     
@@ -892,6 +1131,31 @@
         .ganhadores-final-grid.cols-3,
         .ganhadores-final-grid.cols-4 {
             grid-template-columns: 1fr;
+        }
+        
+        .ganhadores-grid-resultado {
+            grid-template-columns: 1fr;
+        }
+        
+        .ganhador-card-resultado {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.75rem;
+        }
+        
+        .ganhador-posicao-resultado {
+            font-size: 1.5rem;
+        }
+        
+        .stat-card-resultado {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.75rem;
+        }
+        
+        .stat-icon-resultado {
+            width: 50px;
+            height: 50px;
         }
         
         .ganhador-final-card {
@@ -988,19 +1252,70 @@
                     </div>
     </div>
     {% else %}
-                <div class="alert alert-success">
-        <h4 class="alert-heading">🎉 Sorteio Finalizado! 🎉</h4>
-                    <p>Este sorteio foi concluído em {{ sorteio.data_sorteio.strftime('%d/%m/%Y às %H:%M') }}.</p>
+                <!-- Resultados do Sorteio Estilizados -->
+                <div class="resultados-sorteio-container">
+                    <div class="alert alert-success text-center">
+                        <h4 class="alert-heading">🏆 Sorteio Finalizado! 🏆</h4>
+                        <p class="mb-2"><strong>{{ sorteio.titulo }}</strong></p>
+                        <p class="mb-0">Concluído em {{ sorteio.data_sorteio.strftime('%d/%m/%Y às %H:%M') }}</p>
+                    </div>
+                    
+                    <!-- Estatísticas do Sorteio -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="stat-card-resultado">
+                                <div class="stat-icon-resultado">👥</div>
+                                <div class="stat-info-resultado">
+                                    <div class="stat-number-resultado">{{ participantes|length }}</div>
+                                    <div class="stat-label-resultado">Participantes</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card-resultado">
+                                <div class="stat-icon-resultado">🎫</div>
+                                <div class="stat-info-resultado">
+                                    <div class="stat-number-resultado">{{ total_tickets }}</div>
+                                    <div class="stat-label-resultado">Total Tickets</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card-resultado">
+                                <div class="stat-icon-resultado">🏆</div>
+                                <div class="stat-info-resultado">
+                                    <div class="stat-number-resultado">{{ ganhadores|length }}</div>
+                                    <div class="stat-label-resultado">Ganhadores</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Lista de Ganhadores Estilizada -->
+                    <div class="ganhadores-resultado-section">
+                        <h5 class="ganhadores-titulo-resultado">
+                            <i class="fas fa-trophy me-2"></i>Ganhadores por Ordem do Sorteio
+                        </h5>
+                        <div class="ganhadores-grid-resultado">
+                            {% for g in ganhadores %}
+                            <div class="ganhador-card-resultado">
+                                <div class="ganhador-posicao-resultado">{{ loop.index }}º</div>
+                                <div class="ganhador-info-resultado">
+                                    <div class="ganhador-username-resultado">
+                                        <a href="https://instagram.com/{{ g.username }}" target="_blank" rel="noopener">
+                                            @{{ g.username }}
+                                        </a>
+                                    </div>
+                                    <div class="ganhador-stats-resultado">
+                                        <span class="badge bg-primary me-1">{{ g.comentarios_validos }} comentários</span>
+                                        <span class="badge bg-success">{{ g.tickets }} tickets</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
-                <h5 class="text-dark font-weight-bold mb-3">Ganhadores</h5>
-                <ul class="list-group text-start">
-                    {% for g in ganhadores %}
-                        <li class="list-group-item d-flex align-items-center text-start">
-                            <span class="me-2">{{ loop.index }}.</span>
-                            <a href="https://instagram.com/{{ g.username }}" target="_blank" rel="noopener" class="text-primary">@{{ g.username }}</a>
-                        </li>
-                    {% endfor %}
-                </ul>
             {% endif %}
         </div>
     </div>
