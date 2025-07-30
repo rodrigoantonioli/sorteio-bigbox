@@ -218,23 +218,36 @@ class SorteioAnimado {
     }
 
     // Popula a ficha do sorteio com as informações
-    popularFichaSorteio(titulo, descricao, participantes, tickets) {
+    popularFichaSorteio(titulo, descricao, participantes, comentarios) {
         const fichaEl = document.getElementById('fichaSorteio');
         if (!fichaEl) return;
 
         const fichaHtml = `
-            <div class="ficha-titulo-modern">${titulo}</div>
-            <div class="ficha-descricao-modern">${descricao}</div>
-            <div class="ficha-stats-modern">
-                <div class="stat-modern">
-                    <i class="fas fa-users"></i>
-                    <span>${participantes}</span>
-                    <span class="stat-label">Participantes</span>
-                </div>
-                <div class="stat-modern">
-                    <i class="fas fa-ticket-alt"></i>
-                    <span>${tickets}</span>
-                    <span class="stat-label">Tickets</span>
+            <div class="ficha-item">
+                <h6><i class="fas fa-trophy"></i> Título</h6>
+                <p>${titulo}</p>
+            </div>
+            <div class="ficha-item">
+                <h6><i class="fas fa-info-circle"></i> Descrição</h6>
+                <p>${descricao || 'Sem descrição'}</p>
+            </div>
+            <div class="ficha-stats">
+                <h6><i class="fas fa-chart-bar"></i> Estatísticas</h6>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-number">${participantes}</div>
+                            <div class="stat-label">Participantes</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-comments"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-number">${comentarios}</div>
+                            <div class="stat-label">Comentários</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -298,14 +311,14 @@ class SorteioAnimado {
 
         // Calcula estatísticas iniciais
         const participantesUnicos = new Set(ticketsPonderados.map(t => t.username)).size;
-        const totalTickets = ticketsPonderados.length;
+        const totalComentarios = ticketsPonderados.reduce((total, p) => total + (p.comentarios_validos || 0), 0);
 
         // Popula a ficha do sorteio
         this.popularFichaSorteio(
             this.sorteioTitulo,
             this.sorteioDescricao,
             participantesUnicos,
-            totalTickets
+            totalComentarios
         );
 
         for (let i = 0; i < quantidade; i++) {
@@ -606,7 +619,7 @@ class SorteioAnimado {
                 <div class="ganhador-live-posicao">${numero}º</div>
                 <div class="ganhador-live-username">@${ganhador.username}</div>
                 <div class="ganhador-live-stats">
-                    <span class="badge badge-comentarios">${ganhador.comentarios_validos} comentários</span>
+                    <span class="badge badge-comentarios">${ganhador.comentarios_validos || 0} comentários</span>
                 </div>
             </div>
         `;
@@ -649,10 +662,7 @@ class SorteioAnimado {
             this.mostrarAlertaSucessoTopo();
             // Mostra o botão de fechar
             document.getElementById('fecharModalBtn').classList.remove('d-none');
-            // Mostra tela final fullscreen após 3 segundos
-            setTimeout(() => {
-                this.mostrarTelaFinalFullscreen(ganhadores);
-            }, 3000);
+            // Sorteio finalizado - ganhadores já estão visíveis no layout
         });
     }
 
@@ -743,8 +753,7 @@ class SorteioAnimado {
                     <div class="ganhador-final-content centralizado">
                         <div class="ganhador-nome">@${ganhador.username}</div>
                         <div class="ganhador-stats-modal">
-                            <span class="badge badge-comentarios">${ganhador.comentarios_validos} comentários</span>
-                            <span class="badge badge-tickets">${ganhador.tickets} tickets</span>
+                            <span class="badge badge-comentarios">${ganhador.comentarios_validos || 0} comentários</span>
                         </div>
                     </div>
                 `;
