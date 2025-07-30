@@ -38,9 +38,9 @@ class Config:
     }
     
     # Upload de arquivos
-    MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB máximo
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB máximo para comentários do Instagram
     UPLOAD_FOLDER = 'uploads'
-    ALLOWED_EXTENSIONS = {'xlsx', 'xls'}
+    ALLOWED_EXTENSIONS = {'xlsx', 'xls', 'txt'}
     
     # Flask-Login
     REMEMBER_COOKIE_DURATION = timedelta(days=7)

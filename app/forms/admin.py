@@ -84,11 +84,31 @@ class SorteioInstagramForm(FlaskForm):
     """Formulário para criar ou editar um sorteio do Instagram."""
     titulo = StringField('Título do Sorteio', validators=[DataRequired(), Length(max=200)])
     descricao = TextAreaField('Descrição (Opcional)')
-    texto_original = TextAreaField('Cole aqui o texto do post do Instagram', validators=[DataRequired()])
+    
+    # Opção 1: Texto colado
+    texto_original = TextAreaField('Cole aqui o texto do post do Instagram')
+    
+    # Opção 2: Upload de arquivo
+    arquivo_comentarios = FileField('Ou faça upload de um arquivo .txt', validators=[
+        FileAllowed(['txt'], 'Apenas arquivos .txt são permitidos!')
+    ])
+    
     palavra_chave = StringField('Palavra-chave para Comentários', default='EU QUERO', validators=[DataRequired(), Length(max=100)])
     tickets_maximos = IntegerField('Máximo de Tickets por Participante', default=30, validators=[DataRequired(), NumberRange(min=1)])
     quantidade_vencedores = IntegerField('Quantidade de Vencedores', default=1, validators=[DataRequired(), NumberRange(min=1)])
     submit = SubmitField('Salvar Sorteio')
+    
+    def validate(self, extra_validators=None):
+        if not super().validate(extra_validators):
+            return False
+            
+        # Pelo menos um dos dois deve estar preenchido
+        if not self.texto_original.data and not self.arquivo_comentarios.data:
+            self.texto_original.errors.append('Você deve fornecer o texto dos comentários ou fazer upload de um arquivo.')
+            self.arquivo_comentarios.errors.append('Você deve fornecer o texto dos comentários ou fazer upload de um arquivo.')
+            return False
+            
+        return True
 
 class ConfiguracaoInstagramForm(FlaskForm):
     palavra_chave_padrao = StringField('Palavra-chave Padrão', validators=[DataRequired(), Length(max=100)])

@@ -9,7 +9,7 @@
             <h3>Criar Novo Sorteio do Instagram</h3>
         </div>
         <div class="card-body">
-            <form method="POST" action="" novalidate>
+            <form method="POST" action="" enctype="multipart/form-data" novalidate>
                 {{ form.csrf_token }}
                 
                 <div class="mb-3">
@@ -38,8 +38,39 @@
                 </div>
 
                 <div class="mb-3">
-                    {{ form.texto_original.label(class="form-label") }}
-                    {{ form.texto_original(class="form-control", rows=10, placeholder="Copie todo o texto do post do Instagram, incluindo o nome de usuário, e cole aqui...") }}
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Dados dos Comentários</h6>
+                            <div class="alert alert-info">
+                                <strong>Para muitos comentários:</strong> Se você tem mais de 1000 comentários, recomendamos salvar o texto em um arquivo .txt e fazer upload abaixo para evitar erros.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.texto_original.label(class="form-label") }}
+                            {{ form.texto_original(class="form-control", rows=8, placeholder="Copie todo o texto do post do Instagram, incluindo o nome de usuário, e cole aqui...") }}
+                            {% if form.texto_original.errors %}
+                                <div class="text-danger mt-1">{{ form.texto_original.errors[0] }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="text-center my-3">
+                                <span class="badge bg-secondary">OU</span>
+                            </div>
+                            {{ form.arquivo_comentarios.label(class="form-label") }}
+                            {{ form.arquivo_comentarios(class="form-control") }}
+                            {% if form.arquivo_comentarios.errors %}
+                                <div class="text-danger mt-1">{{ form.arquivo_comentarios.errors[0] }}</div>
+                            {% endif %}
+                            <div class="form-text">
+                                Salve o texto dos comentários em um arquivo .txt e faça upload aqui.<br>
+                                Máximo: 16MB
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 {{ form.submit(class="btn btn-primary") }}

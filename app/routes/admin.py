@@ -1530,9 +1530,34 @@ def instagram_novo():
             form.quantidade_vencedores.data = 1
 
     if form.validate_on_submit():
-        texto_post = form.texto_original.data
-        if not texto_post:
-            flash('Você deve fornecer o texto dos comentários.', 'danger')
+        # Obtém texto dos comentários (de arquivo ou campo de texto)
+        texto_post = None
+        
+        if form.arquivo_comentarios.data:
+            # Processa arquivo de upload
+            arquivo = form.arquivo_comentarios.data
+            try:
+                # Lê conteúdo do arquivo como UTF-8
+                texto_post = arquivo.read().decode('utf-8')
+                # Reinicia o ponteiro do arquivo para outras operações
+                arquivo.seek(0)
+            except UnicodeDecodeError:
+                try:
+                    # Tenta encoding latin-1 se UTF-8 falhar
+                    arquivo.seek(0)
+                    texto_post = arquivo.read().decode('latin-1')
+                except:
+                    flash('Erro ao ler o arquivo. Verifique se é um arquivo de texto válido.', 'danger')
+                    return render_template('admin/instagram_novo.html', form=form)
+            except Exception as e:
+                flash(f'Erro ao processar arquivo: {str(e)}', 'danger')
+                return render_template('admin/instagram_novo.html', form=form)
+        else:
+            # Usa texto colado
+            texto_post = form.texto_original.data
+        
+        if not texto_post or not texto_post.strip():
+            flash('Você deve fornecer o texto dos comentários ou fazer upload de um arquivo.', 'danger')
             return render_template('admin/instagram_novo.html', form=form)
 
         # 1. Cria o sorteio no banco de dados
@@ -1606,8 +1631,33 @@ def instagram_editar(id):
         sorteio.tickets_maximos = form.tickets_maximos.data
         sorteio.quantidade_vencedores = form.quantidade_vencedores.data
         
-        texto_original_form = form.texto_original.data
-        if sorteio.texto_original != texto_original_form and sorteio.status != 'sorteado':
+        # Obtém texto dos comentários (de arquivo ou campo de texto)
+        texto_original_form = None
+        
+        if form.arquivo_comentarios.data:
+            # Processa arquivo de upload
+            arquivo = form.arquivo_comentarios.data
+            try:
+                # Lê conteúdo do arquivo como UTF-8
+                texto_original_form = arquivo.read().decode('utf-8')
+                # Reinicia o ponteiro do arquivo para outras operações
+                arquivo.seek(0)
+            except UnicodeDecodeError:
+                try:
+                    # Tenta encoding latin-1 se UTF-8 falhar
+                    arquivo.seek(0)
+                    texto_original_form = arquivo.read().decode('latin-1')
+                except:
+                    flash('Erro ao ler o arquivo. Verifique se é um arquivo de texto válido.', 'danger')
+                    return render_template('admin/instagram_editar.html', form=form, sorteio=sorteio)
+            except Exception as e:
+                flash(f'Erro ao processar arquivo: {str(e)}', 'danger')
+                return render_template('admin/instagram_editar.html', form=form, sorteio=sorteio)
+        else:
+            # Usa texto do campo se não houve upload
+            texto_original_form = form.texto_original.data
+        
+        if texto_original_form and sorteio.texto_original != texto_original_form and sorteio.status != 'sorteado':
             sorteio.texto_original = texto_original_form
             sorteio.status = 'processando'
             ParticipanteInstagram.query.filter_by(sorteio_id=sorteio.id).delete()

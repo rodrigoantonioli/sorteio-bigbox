@@ -9,7 +9,7 @@
             <h3>Editar Sorteio: {{ form.titulo.data }}</h3>
         </div>
         <div class="card-body">
-            <form method="POST" action="" novalidate>
+            <form method="POST" action="" enctype="multipart/form-data" novalidate>
                 {{ form.csrf_token }}
                 
                 <div class="mb-3">
@@ -38,12 +38,41 @@
                 </div>
 
                 <div class="mb-3">
-                    {{ form.texto_original.label(class="form-label") }}
                     {% if sorteio.status == 'pronto' or sorteio.status == 'sorteado' %}
+                        {{ form.texto_original.label(class="form-label") }}
                         {{ form.texto_original(class="form-control", rows=10, readonly=true, title="Não é possível editar o texto de um sorteio que já foi processado.") }}
                         <small class="form-text text-muted">O texto original não pode ser alterado após o processamento dos comentários.</small>
                     {% else %}
-                        {{ form.texto_original(class="form-control", rows=10) }}
+                        <div class="row">
+                            <div class="col-12">
+                                <h6 class="text-muted mb-3">Dados dos Comentários</h6>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.texto_original.label(class="form-label") }}
+                                {{ form.texto_original(class="form-control", rows=8) }}
+                                {% if form.texto_original.errors %}
+                                    <div class="text-danger mt-1">{{ form.texto_original.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="text-center my-3">
+                                    <span class="badge bg-secondary">OU</span>
+                                </div>
+                                {{ form.arquivo_comentarios.label(class="form-label") }}
+                                {{ form.arquivo_comentarios(class="form-control") }}
+                                {% if form.arquivo_comentarios.errors %}
+                                    <div class="text-danger mt-1">{{ form.arquivo_comentarios.errors[0] }}</div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Faça upload de um arquivo .txt para substituir os dados atuais.<br>
+                                    Máximo: 16MB
+                                </div>
+                            </div>
+                        </div>
                     {% endif %}
                 </div>
                 
