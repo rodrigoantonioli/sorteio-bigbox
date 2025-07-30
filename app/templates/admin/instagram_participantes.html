@@ -487,6 +487,345 @@
         100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
     }
     
+    /* Tela Final Fullscreen - Memorável */
+    .tela-final-fullscreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        overflow-y: auto;
+    }
+    
+    .tela-final-content {
+        max-width: 90vw;
+        max-height: 90vh;
+        text-align: center;
+        padding: 2rem;
+        background: rgba(0,0,0,0.1);
+        border-radius: 30px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        animation: slideInUp 1s ease-out;
+    }
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    
+    .tela-final-header {
+        margin-bottom: 2rem;
+    }
+    
+    .tela-final-titulo {
+        font-size: 3.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        background: linear-gradient(45deg, #fff, #f093fb, #00f0b5);
+        background-size: 300% 300%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientShift 3s ease-in-out infinite;
+    }
+    
+    @keyframes gradientShift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    
+    .tela-final-descricao {
+        font-size: 1.4rem;
+        opacity: 0.9;
+        margin-bottom: 1rem;
+    }
+    
+    .tela-final-datetime {
+        font-size: 1.2rem;
+        opacity: 0.8;
+        font-weight: 300;
+        margin-bottom: 3rem;
+    }
+    
+    .ganhadores-final-grid {
+        display: grid;
+        gap: 1.5rem;
+        margin: 2rem 0;
+        justify-items: center;
+    }
+    
+    .ganhadores-final-grid.cols-1 { grid-template-columns: 1fr; }
+    .ganhadores-final-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .ganhadores-final-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .ganhadores-final-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+    
+    .ganhador-final-card {
+        background: rgba(255,255,255,0.15);
+        border-radius: 20px;
+        padding: 2rem;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255,255,255,0.2);
+        transition: all 0.3s ease;
+        min-width: 200px;
+        animation: bounceIn 0.8s ease-out;
+    }
+    
+    .ganhador-final-card:hover {
+        transform: translateY(-10px) scale(1.05);
+        background: rgba(255,255,255,0.25);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+    
+    @keyframes bounceIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.3) translateY(50px);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+        70% {
+            transform: scale(0.9);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+    
+    .ganhador-posicao {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #ffeb3b;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        margin-bottom: 1rem;
+    }
+    
+    .ganhador-nome-final {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .ganhador-tickets-final {
+        font-size: 1rem;
+        opacity: 0.8;
+        color: #00f0b5;
+        font-weight: 500;
+    }
+    
+    .tela-final-stats {
+        margin-top: 3rem;
+        display: flex;
+        justify-content: center;
+        gap: 3rem;
+        flex-wrap: wrap;
+    }
+    
+    .stat-final {
+        text-align: center;
+    }
+    
+    .stat-final-numero {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #00f0b5;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .stat-final-label {
+        font-size: 1rem;
+        opacity: 0.8;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .btn-sair-fullscreen {
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        background: rgba(255,255,255,0.2);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: white;
+        border-radius: 50px;
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+    
+    .btn-sair-fullscreen:hover {
+        background: rgba(255,255,255,0.3);
+        transform: scale(1.1);
+        color: white;
+    }
+    
+    /* Confetti melhorado */
+    .confetti-final {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 10000;
+    }
+    
+    .confetti-piece {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: #ffeb3b;
+        animation: confetti-fall 3s linear infinite;
+    }
+    
+    .confetti-piece:nth-child(2n) { background: #00f0b5; }
+    .confetti-piece:nth-child(3n) { background: #ff6b6b; }
+    .confetti-piece:nth-child(4n) { background: #4ecdc4; }
+    .confetti-piece:nth-child(5n) { background: #45b7d1; }
+    
+    /* Estilos para tela final específica */
+    .tela-final-confetti {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+    }
+    
+    .tela-final-confetti-piece {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        animation: confetti-fall 4s linear infinite;
+    }
+    
+    .tela-final-titulo-sorteio {
+        font-size: 2.2rem;
+        font-weight: bold;
+        color: white;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    
+    .tela-final-descricao {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        color: rgba(255,255,255,0.9);
+    }
+    
+    .tela-final-data {
+        font-size: 1.4rem;
+        color: rgba(255,255,255,0.8);
+        font-weight: 300;
+        text-transform: capitalize;
+    }
+    
+    .tela-final-ganhadores-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .tela-final-ganhador {
+        background: rgba(255,255,255,0.15);
+        border-radius: 25px;
+        padding: 2rem;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255,255,255,0.2);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .tela-final-ganhador::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        animation: shine 3s ease-in-out infinite;
+    }
+    
+    @keyframes shine {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+    
+    .tela-final-ganhador:hover {
+        transform: translateY(-10px) scale(1.05);
+        background: rgba(255,255,255,0.25);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .tela-final-ganhador-numero {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #FFD700;
+        text-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        margin-bottom: 1rem;
+    }
+    
+    .tela-final-ganhador-username {
+        font-size: 2rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .tela-final-ganhador-tickets {
+        font-size: 1.2rem;
+        color: #00f0b5;
+        font-weight: 500;
+        opacity: 0.9;
+    }
+    
+    .tela-final-stat {
+        margin-bottom: 2rem;
+    }
+    
+    .tela-final-numero {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #00f0b5;
+        text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        margin-bottom: 0.5rem;
+    }
+    
+    .tela-final-label {
+        font-size: 1.2rem;
+        color: rgba(255,255,255,0.8);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 300;
+    }
+    
     /* Responsividade */
     @media (max-width: 1200px) {
         .sorteio-layout {
@@ -511,6 +850,15 @@
         .sorteio-display-central .nome-sorteio {
             font-size: 2.5rem;
         }
+        
+        .tela-final-titulo {
+            font-size: 2.5rem;
+        }
+        
+        .ganhadores-final-grid.cols-3,
+        .ganhadores-final-grid.cols-4 {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
     
     @media (max-width: 768px) {
@@ -530,6 +878,25 @@
         .ganhadores-grid.cols-3,
         .ganhadores-grid.cols-4 {
             grid-template-columns: 1fr;
+        }
+        
+        .tela-final-titulo {
+            font-size: 2rem;
+        }
+        
+        .tela-final-stats {
+            gap: 1.5rem;
+        }
+        
+        .ganhadores-final-grid.cols-2,
+        .ganhadores-final-grid.cols-3,
+        .ganhadores-final-grid.cols-4 {
+            grid-template-columns: 1fr;
+        }
+        
+        .ganhador-final-card {
+            padding: 1.5rem;
+            min-width: 250px;
         }
     }
 </style>
@@ -593,18 +960,28 @@
         <div class="card-body text-center">
     {% if sorteio.status != 'sorteado' %}
                 <div class="row align-items-center">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <button id="chacoalharBtn" class="btn btn-info w-100 mb-2">
                             <i class="fas fa-random me-2"></i> Chacoalhar Participantes
                         </button>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="input-group mb-2">
                             <span class="input-group-text">Vencedores:</span>
                             <input type="number" id="quantidadeVencedores" class="form-control" value="{{ sorteio.quantidade_vencedores or 1 }}" min="1" max="{{ participantes|length }}" placeholder="Quantidade de vencedores" title="Quantidade de vencedores">
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
+                        <div class="input-group mb-2">
+                            <span class="input-group-text"><i class="fas fa-tachometer-alt me-1"></i>Velocidade:</span>
+                            <select id="velocidadeSorteio" class="form-select" title="Velocidade do sorteio">
+                                <option value="2000">Rápido (2s)</option>
+                                <option value="4000" selected>Normal (4s)</option>
+                                <option value="8000">Cinema (8s)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
                         <button id="sortearBtn" class="btn btn-lg btn-success w-100 mb-2">
                             <i class="fas fa-trophy me-2"></i> Realizar Sorteio
                         </button>
@@ -631,12 +1008,35 @@
     <!-- Lista de Participantes -->
     <div class="card shadow-sm">
         <div class="card-header bg-light">
-            <h5 class="mb-0">Lista de Participantes</h5>
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Lista de Participantes</h5>
+                <div class="d-flex gap-2 align-items-center">
+                    <!-- Busca -->
+                    <div class="input-group" style="width: 250px;">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" id="buscaParticipantes" class="form-control" placeholder="Buscar por username...">
+                    </div>
+                    <!-- Ordenação -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownOrdenacao" data-bs-toggle="dropdown">
+                            <i class="fas fa-sort me-2"></i>Ordenar
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><button class="dropdown-item" data-sort="nome"><i class="fas fa-sort-alpha-down me-2"></i>Nome (A-Z)</button></li>
+                            <li><button class="dropdown-item" data-sort="tickets"><i class="fas fa-sort-numeric-down me-2"></i>Mais Tickets</button></li>
+                            <li><button class="dropdown-item" data-sort="comentarios"><i class="fas fa-sort-numeric-down me-2"></i>Mais Comentários</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="card-body">
             <div id="lista-participantes" class="row">
                 {% for p in participantes %}
-                <div class="col-md-4 mb-3 participante-item">
+                <div class="col-md-4 mb-3 participante-item" 
+                     data-username="{{ p.username|lower }}" 
+                     data-tickets="{{ p.tickets }}" 
+                     data-comentarios="{{ p.comentarios_validos }}">
                     <div class="card participante-card h-100">
                         <div class="card-body d-flex align-items-center">
                             <i class="fas fa-user-circle fa-2x text-secondary me-3"></i>
@@ -651,6 +1051,11 @@
                     </div>
                 </div>
                 {% endfor %}
+            </div>
+            <!-- Mensagem quando não há resultados -->
+            <div id="sem-resultados" class="text-center py-4 d-none">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Nenhum participante encontrado com essa busca.</p>
             </div>
         </div>
     </div>
@@ -701,6 +1106,82 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // --- Funcionalidades de Busca e Ordenação ---
+    const buscaInput = document.getElementById('buscaParticipantes');
+    const botoesOrdenacao = document.querySelectorAll('[data-sort]');
+    const participantesContainer = document.getElementById('lista-participantes');
+    const semResultados = document.getElementById('sem-resultados');
+
+    // Função para filtrar participantes
+    function filtrarParticipantes() {
+        const termo = buscaInput.value.toLowerCase().trim();
+        const participantes = participantesContainer.querySelectorAll('.participante-item');
+        let visiveisCount = 0;
+
+        participantes.forEach(participante => {
+            const username = participante.dataset.username;
+            if (username.includes(termo)) {
+                participante.style.display = 'block';
+                visiveisCount++;
+            } else {
+                participante.style.display = 'none';
+            }
+        });
+
+        // Mostra/esconde mensagem de "sem resultados"
+        if (visiveisCount === 0 && termo !== '') {
+            semResultados.classList.remove('d-none');
+            participantesContainer.style.display = 'none';
+        } else {
+            semResultados.classList.add('d-none');
+            participantesContainer.style.display = 'flex';
+        }
+    }
+
+    // Função para ordenar participantes
+    function ordenarParticipantes(criterio) {
+        const participantes = Array.from(participantesContainer.querySelectorAll('.participante-item'));
+        
+        participantes.sort((a, b) => {
+            switch (criterio) {
+                case 'nome':
+                    return a.dataset.username.localeCompare(b.dataset.username);
+                case 'tickets':
+                    return parseInt(b.dataset.tickets) - parseInt(a.dataset.tickets);
+                case 'comentarios':
+                    return parseInt(b.dataset.comentarios) - parseInt(a.dataset.comentarios);
+                default:
+                    return 0;
+            }
+        });
+
+        // Reordena no DOM
+        participantes.forEach(participante => {
+            participantesContainer.appendChild(participante);
+        });
+    }
+
+    // Event listeners
+    if (buscaInput) {
+        buscaInput.addEventListener('input', filtrarParticipantes);
+    }
+
+    if (botoesOrdenacao.length > 0) {
+        botoesOrdenacao.forEach(botao => {
+            botao.addEventListener('click', function(e) {
+                e.preventDefault();
+                const criterio = this.dataset.sort;
+                ordenarParticipantes(criterio);
+                
+                // Atualiza texto do dropdown
+                const dropdownButton = document.getElementById('dropdownOrdenacao');
+                const icon = this.querySelector('i').className;
+                const texto = this.textContent.trim();
+                dropdownButton.innerHTML = `<i class="${icon} me-2"></i>${texto}`;
+            });
+        });
+    }
+
     // --- Lógica para Realizar o Sorteio ---
     if (sortearBtn) {
         sortearBtn.addEventListener('click', function() {
@@ -728,6 +1209,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 console.log(`Iniciando sorteio para ${quantidadeVencedores} vencedor(es).`);
 
+                // Obtém a velocidade selecionada
+                const velocidade = parseInt(document.getElementById('velocidadeSorteio').value, 10);
+                console.log(`Velocidade selecionada: ${velocidade}ms`);
+
                 // Cria a lista ponderada de tickets
                 let ticketsPonderados = [];
                 participantes.forEach(p => {
@@ -737,6 +1222,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 
                 console.log(`Total de ${ticketsPonderados.length} tickets criados.`);
+
+                // Configura a velocidade no objeto sorteioAnimado
+                window.sorteioAnimado.velocidadeSorteio = velocidade;
 
                 // Inicia a animação do sorteio, passando também o título e a descrição
                 window.sorteioAnimado.iniciarSorteioInstagram(ticketsPonderados, quantidadeVencedores, sorteioTitulo, sorteioDescricao);
