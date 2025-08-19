@@ -36,6 +36,7 @@ class SorteioAnimado {
         this.timeoutIds = [];
         this.ultimoVencedor = null; // Para armazenar o último item mostrado
         this.sorteioLojasComSucesso = false; // Flag para controlar reload
+        this.velocidadeSorteio = 4000; // Velocidade padrão: Normal (4s)
     }
 
     // Inicializa o sorteio de lojas
@@ -80,42 +81,73 @@ class SorteioAnimado {
 
         const modalHtml = `
             <div class="modal fade" id="sorteioModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-xl">
+                <div class="modal-dialog modal-fullscreen">
                     <div class="modal-content sorteio-modal">
                         <div class="modal-header border-0 position-relative">
                             <h4 class="modal-title text-white w-100 text-center">
                                 🎲 ${titulo}
                             </h4>
-                            <button type="button" id="fecharModalBtn" class="btn-close-custom" data-bs-dismiss="modal" title="Fechar">
-                                <i class="bi bi-x"></i>
+                            <button type="button" id="fecharModalBtn" class="btn-close-custom d-none" data-bs-dismiss="modal" title="Fechar">
+                                <i class="fas fa-times"></i>
                             </button>
                         </div>
                         <div class="modal-body p-0">
-                            <div class="sorteio-layout-wide">
-                                <!-- Área Principal do Sorteio -->
-                                <div class="sorteio-area-principal">
-                                    <!-- Relógio Elegante - Removido para melhor UX -->
-                                    <div class="relogio-container" id="relogioContainer" style="display: none;">
-                                        <div class="relogio" id="relogioSorteio">
-                                            <div class="data-atual" id="dataAtual"></div>
-                                            <div class="hora-atual" id="horaAtual"></div>
+                            <div class="sorteio-layout">
+                                <!-- Coluna Esquerda - Ficha do Sorteio -->
+                                <div class="sorteio-col-ficha">
+                                    <div class="ficha-header">
+                                        <h5><i class="fas fa-info-circle"></i> Informações do Sorteio</h5>
+                                    </div>
+                                    <div class="ficha-content">
+                                        <div id="fichaSorteio">
+                                            <!-- Conteúdo será preenchido dinamicamente -->
                                         </div>
                                     </div>
-                                    
-                                    <!-- Status do Sorteio -->
-                                    <div class="sorteio-status-central" id="sorteioStatus">${statusInicial}</div>
-                                    
-                                    <!-- Display do Sorteio -->
-                                    <div class="sorteio-display-central" id="sorteioDisplay">
-                                        <div class="nome-sorteio" id="nomeSorteio">Aguarde...</div>
-                                        <div class="confetti-container" id="confettiContainer"></div>
-                                    </div>
-                                    
-                                    <!-- Lista de Ganhadores (Se múltiplos) -->
-                                    <div class="ganhadores-lista-central" id="ganhadores-container" style="display: none;">
-                                        <ul class="list-group list-group-flush" id="listaGanhadores"></ul>
+                                </div>
+                                
+                                <!-- Coluna Central - Sorteio -->
+                                <div class="sorteio-col-central">
+                                    <div class="central-container">
+                                        <!-- Relógio Elegante -->
+                                        <div class="relogio-container" id="relogioContainer">
+                                            <div class="relogio" id="relogioSorteio">
+                                                <div class="data-atual" id="dataAtual"></div>
+                                                <div class="hora-atual" id="horaAtual"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Status do Sorteio -->
+                                        <div class="sorteio-status-central" id="sorteioStatus">${statusInicial}</div>
+                                        
+                                        <!-- Display do Sorteio -->
+                                        <div class="sorteio-display-central" id="sorteioDisplay">
+                                            <div class="nome-sorteio" id="nomeSorteio">Aguarde...</div>
+                                            <div class="confetti-container" id="confettiContainer"></div>
+                                        </div>
                                     </div>
                                 </div>
+                                
+                                <!-- Coluna Direita - Ganhadores -->
+                                <div class="sorteio-col-ganhadores">
+                                    <div class="ganhadores-header">
+                                        <h5><i class="fas fa-trophy"></i> Ganhadores</h5>
+                                    </div>
+                                    <div class="ganhadores-content">
+                                        <ul class="list-group list-group-flush" id="listaGanhadores">
+                                            <!-- Ganhadores serão adicionados dinamicamente -->
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Tela Final Fullscreen -->
+                            <div id="telaFinalFullscreen" class="tela-final-fullscreen d-none">
+                                <div class="tela-final-content">
+                                    <!-- Conteúdo será preenchido dinamicamente -->
+                                </div>
+                                <button type="button" id="sairFullscreenBtn" class="btn-sair-fullscreen">
+                                    <i class="fas fa-times"></i> Sair do Fullscreen
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -128,6 +160,10 @@ class SorteioAnimado {
         this.modal.show();
 
         document.getElementById('fecharModalBtn')?.addEventListener('click', () => this.modal.hide());
+
+        document.getElementById('sairFullscreenBtn')?.addEventListener('click', () => {
+            this.sairTelaFinal();
+        });
 
         document.getElementById('sorteioModal').addEventListener('hidden.bs.modal', () => {
             if (this.sorteioConcluidoComSucesso) {
@@ -182,23 +218,36 @@ class SorteioAnimado {
     }
 
     // Popula a ficha do sorteio com as informações
-    popularFichaSorteio(titulo, descricao, participantes, tickets) {
+    popularFichaSorteio(titulo, descricao, participantes, comentarios) {
         const fichaEl = document.getElementById('fichaSorteio');
         if (!fichaEl) return;
 
         const fichaHtml = `
-            <div class="ficha-titulo-modern">${titulo}</div>
-            <div class="ficha-descricao-modern">${descricao}</div>
-            <div class="ficha-stats-modern">
-                <div class="stat-modern">
-                    <i class="fas fa-users"></i>
-                    <span>${participantes}</span>
-                    <span class="stat-label">Participantes</span>
-                </div>
-                <div class="stat-modern">
-                    <i class="fas fa-ticket-alt"></i>
-                    <span>${tickets}</span>
-                    <span class="stat-label">Tickets</span>
+            <div class="ficha-item">
+                <h6><i class="fas fa-trophy"></i> Título</h6>
+                <p>${titulo}</p>
+            </div>
+            <div class="ficha-item">
+                <h6><i class="fas fa-info-circle"></i> Descrição</h6>
+                <p>${descricao || 'Sem descrição'}</p>
+            </div>
+            <div class="ficha-stats">
+                <h6><i class="fas fa-chart-bar"></i> Estatísticas</h6>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-number">${participantes}</div>
+                            <div class="stat-label">Participantes</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-comments"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-number">${comentarios}</div>
+                            <div class="stat-label">Comentários</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -262,14 +311,14 @@ class SorteioAnimado {
 
         // Calcula estatísticas iniciais
         const participantesUnicos = new Set(ticketsPonderados.map(t => t.username)).size;
-        const totalTickets = ticketsPonderados.length;
+        const totalComentarios = ticketsPonderados.reduce((total, p) => total + (p.comentarios_validos || 0), 0);
 
         // Popula a ficha do sorteio
         this.popularFichaSorteio(
             this.sorteioTitulo,
             this.sorteioDescricao,
             participantesUnicos,
-            totalTickets
+            totalComentarios
         );
 
         for (let i = 0; i < quantidade; i++) {
@@ -307,19 +356,28 @@ class SorteioAnimado {
             const display = document.getElementById('nomeSorteio');
             const container = document.getElementById('sorteioDisplay');
             
+            // Usa a velocidade configurada (convertida para iterações)
+            const duracaoTotal = this.velocidadeSorteio; // ms
+            const iteracoesPorSegundo = 20; // Velocidade da animação
+            const totalIteracoes = Math.floor((duracaoTotal / 1000) * iteracoesPorSegundo);
+            
             let speed = 50; // Velocidade inicial (ms)
             let iterations = 0;
-            const minIterations = 50; // Mínimo de iterações para garantir um tempo de rolagem
-            const maxSpeed = 200; // Velocidade máxima (mais lenta)
-            const accelerationSteps = 20; // Quantidade de passos para acelerar/desacelerar
+            const minIterations = Math.max(30, totalIteracoes - 20); // Mínimo baseado na velocidade
+            const maxIterations = totalIteracoes; // Máximo baseado na velocidade
+            const accelerationSteps = Math.floor(totalIteracoes * 0.3); // 30% para acelerar
 
             display.className = 'nome-sorteio';
-            container.className = 'sorteio-display';
+            container.className = 'sorteio-display-central';
 
             const interval = setInterval(() => {
                 // Acelera no início
                 if (iterations < accelerationSteps) {
-                    speed = Math.max(10, speed - 2); // Acelera até 10ms
+                    speed = Math.max(30, speed - 1); // Acelera gradualmente
+                }
+                // Desacelera no final
+                else if (iterations > maxIterations - accelerationSteps) {
+                    speed = Math.min(150, speed + 3); // Desacelera gradualmente
                 }
 
                 // Escolhe um item aleatório para exibir a cada tick
@@ -328,12 +386,12 @@ class SorteioAnimado {
                 display.textContent = item.nome || item.username || item.codigo || item;
                 
                 display.classList.add('animando');
-                setTimeout(() => display.classList.remove('animando'), speed / 2); // Remove a classe mais rápido
+                setTimeout(() => display.classList.remove('animando'), speed / 2);
 
                 iterations++;
 
-                // Lógica para parar a animação
-                if (iterations >= minIterations && Math.random() < 0.05) { // Chance de parar após minIterations
+                // Lógica para parar a animação baseada na velocidade configurada
+                if (iterations >= minIterations && (iterations >= maxIterations || Math.random() < 0.03)) {
                     clearInterval(interval);
                     
                     // Garante que o último item exibido seja o vencedor
@@ -346,7 +404,7 @@ class SorteioAnimado {
                         
                         this.criarConfetti();
                         resolve(vencedor);
-                    }, 500); // Pequeno delay para o efeito final
+                    }, 500);
                 }
             }, speed);
         });
@@ -554,12 +612,23 @@ class SorteioAnimado {
     // Adiciona um ganhador à lista visual na coluna da direita
     adicionarGanhadorNaLista(ganhador, numero) {
         const listaGanhadores = document.getElementById('listaGanhadores');
-        const item = document.createElement('li');
-        item.className = 'list-group-item animate__animated animate__fadeInRight';
+        const item = document.createElement('div');
+        item.className = 'ganhador-live-item animate__animated animate__fadeInRight';
         item.innerHTML = `
-            @${ganhador.username}
+            <div class="ganhador-live-content">
+                <div class="ganhador-live-posicao">${numero}º</div>
+                <div class="ganhador-live-username">@${ganhador.username}</div>
+                <div class="ganhador-live-stats">
+                    <span class="badge badge-comentarios">${ganhador.comentarios_validos || 0} comentários</span>
+                </div>
+            </div>
         `;
         listaGanhadores.appendChild(item);
+        
+        // Auto-scroll para mostrar o último ganhador
+        setTimeout(() => {
+            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
     }
 
     // Finaliza o sorteio, salva os dados e prepara para fechar
@@ -593,6 +662,7 @@ class SorteioAnimado {
             this.mostrarAlertaSucessoTopo();
             // Mostra o botão de fechar
             document.getElementById('fecharModalBtn').classList.remove('d-none');
+            // Sorteio finalizado - ganhadores já estão visíveis no layout
         });
     }
 
@@ -652,17 +722,19 @@ class SorteioAnimado {
         titulo.innerText = 'GANHADORES';
         listaEl.appendChild(titulo);
 
-        // Lógica de grid e tamanho
+        // Lógica de grid otimizada para 10-20 ganhadores
         let numColunas = 2;
-        let cardSizeClass = 'ganhador-card-grande';
+        let cardSizeClass = 'ganhador-card-pequeno';
+        
+        // Otimização baseada na quantidade de ganhadores
         if (ganhadores.length <= 5) {
             numColunas = 1;
             cardSizeClass = 'ganhador-card-grande';
-        } else if (ganhadores.length <= 10) {
-            numColunas = 2;
-            cardSizeClass = 'ganhador-card-grande';
+        } else if (ganhadores.length <= 15) {
+            numColunas = 2; // 2 colunas para até 15 ganhadores
+            cardSizeClass = 'ganhador-card-medio';
         } else {
-            numColunas = 2;
+            numColunas = 2; // Mantém 2 colunas mesmo com mais ganhadores
             cardSizeClass = 'ganhador-card-pequeno';
         }
 
@@ -680,6 +752,9 @@ class SorteioAnimado {
                 item.innerHTML = `
                     <div class="ganhador-final-content centralizado">
                         <div class="ganhador-nome">@${ganhador.username}</div>
+                        <div class="ganhador-stats-modal">
+                            <span class="badge badge-comentarios">${ganhador.comentarios_validos || 0} comentários</span>
+                        </div>
                     </div>
                 `;
                 gridContainer.appendChild(item);
@@ -885,6 +960,137 @@ class SorteioAnimado {
             alerta.classList.add('animate__fadeOutUp');
             setTimeout(() => alerta.remove(), 1000);
         }, 5000);
+    }
+
+    // Mostra tela final fullscreen memorável
+    mostrarTelaFinalFullscreen(ganhadores) {
+        const telaFinal = document.getElementById('telaFinalFullscreen');
+        const telaContent = telaFinal.querySelector('.tela-final-content');
+        
+        if (!telaFinal || !telaContent) return;
+
+        const agora = new Date();
+        const dataHora = agora.toLocaleString('pt-BR', {
+            weekday: 'long',
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        const participantesUnicos = new Set(this.participantesOriginais?.map(t => t.username) || []).size;
+        const totalTickets = this.participantesOriginais?.length || 0;
+
+        telaContent.innerHTML = `
+            <div class="tela-final-header">
+                <div class="tela-final-confetti" id="telaFinalConfetti"></div>
+                <h1 class="tela-final-titulo animate__animated animate__fadeInDown">
+                    🏆 SORTEIO FINALIZADO! 🏆
+                </h1>
+                <p class="tela-final-data animate__animated animate__fadeInUp animate__delay-1s">
+                    ${dataHora}
+                </p>
+            </div>
+            
+            <div class="tela-final-info animate__animated animate__fadeIn animate__delay-2s">
+                <div class="row text-center mb-5">
+                    <div class="col-md-4">
+                        <div class="tela-final-stat">
+                            <h3 class="tela-final-titulo-sorteio">${this.sorteioTitulo}</h3>
+                            <p class="tela-final-descricao">${this.sorteioDescricao}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tela-final-stat">
+                            <div class="tela-final-numero">${participantesUnicos}</div>
+                            <div class="tela-final-label">Participantes</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tela-final-stat">
+                            <div class="tela-final-numero">${totalTickets}</div>
+                            <div class="tela-final-label">Total de Tickets</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tela-final-ganhadores animate__animated animate__fadeInUp animate__delay-3s">
+                <h2 class="text-center mb-4">
+                    <i class="fas fa-crown me-3"></i>
+                    GANHADOR${ganhadores.length > 1 ? 'ES' : ''}
+                    <i class="fas fa-crown ms-3"></i>
+                </h2>
+                <div class="tela-final-ganhadores-grid">
+                    ${ganhadores.map((ganhador, index) => `
+                        <div class="tela-final-ganhador animate__animated animate__bounceIn" 
+                             style="animation-delay: ${3.5 + (index * 0.3)}s">
+                            <div class="tela-final-ganhador-numero">${index + 1}º</div>
+                            <div class="tela-final-ganhador-username">@${ganhador.username}</div>
+                            <div class="tela-final-ganhador-tickets">${ganhador.tickets} tickets</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+        // Mostra a tela final
+        telaFinal.classList.remove('d-none');
+        telaFinal.classList.add('animate__animated', 'animate__fadeIn');
+
+        // Ativa confetti especial
+        this.criarConfettiTelaFinal();
+    }
+
+    // Sair da tela final fullscreen
+    sairTelaFinal() {
+        const telaFinal = document.getElementById('telaFinalFullscreen');
+        if (telaFinal) {
+            telaFinal.classList.add('animate__animated', 'animate__fadeOut');
+            setTimeout(() => {
+                telaFinal.classList.add('d-none');
+                telaFinal.classList.remove('animate__animated', 'animate__fadeOut', 'animate__fadeIn');
+            }, 500);
+        }
+    }
+
+    // Cria confetti especial para tela final
+    criarConfettiTelaFinal() {
+        const container = document.getElementById('telaFinalConfetti');
+        if (!container) return;
+        
+        container.innerHTML = '';
+
+        // Cria múltiplas ondas de confetti mais intenso
+        for (let onda = 0; onda < 5; onda++) {
+            setTimeout(() => {
+                for (let i = 0; i < 120; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'tela-final-confetti-piece';
+                    
+                    // Cores douradas e festivas
+                    const cores = ['#FFD700', '#FFA500', '#FF6347', '#32CD32', '#1E90FF', '#FF69B4', '#9370DB', '#00CED1'];
+                    confetti.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
+                    
+                    // Posição e tamanho aleatórios
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.width = (Math.random() * 12 + 6) + 'px';
+                    confetti.style.height = confetti.style.width;
+                    
+                    // Animação personalizada
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    confetti.style.animationDuration = (Math.random() * 4 + 3) + 's';
+                    
+                    container.appendChild(confetti);
+                }
+            }, onda * 800);
+        }
+
+        // Remove confetti após todas as ondas
+        setTimeout(() => {
+            if (container) container.innerHTML = '';
+        }, 12000);
     }
 }
 

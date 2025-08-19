@@ -1723,7 +1723,11 @@ def instagram_participantes(id):
 
     # Prepara os dados dos participantes para o sorteio no frontend
     participantes_json = [
-        {'username': p.username, 'tickets': p.tickets} for p in participantes
+        {
+            'username': p.username, 
+            'tickets': p.tickets,
+            'comentarios_validos': p.comentarios_validos
+        } for p in participantes
     ]
     
     # Busca os ganhadores se o sorteio já foi realizado
