@@ -121,6 +121,10 @@ def dashboard():
     lojas_ganhadoras = []
     if sorteio_atual:
         # Loja BIG ganhadora
+        colaboradores_aptos_big = Colaborador.query.filter_by(
+            loja_id=sorteio_atual.loja_big_id,
+            apto=True
+        ).count()
         lojas_ganhadoras.append({
             'loja': sorteio_atual.loja_big,
             'tipo': 'BIG',
@@ -129,13 +133,18 @@ def dashboard():
                 SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
                 Colaborador.loja_id == sorteio_atual.loja_big_id
             ).count(),
+            'colaboradores_aptos': colaboradores_aptos_big,
             'premios_disponiveis': Premio.query.filter(
                 db.or_(Premio.loja_id == sorteio_atual.loja_big_id, Premio.loja_id.is_(None)),
                 Premio.ativo == True
             ).count()
         })
-        
+
         # Loja ULTRA ganhadora
+        colaboradores_aptos_ultra = Colaborador.query.filter_by(
+            loja_id=sorteio_atual.loja_ultra_id,
+            apto=True
+        ).count()
         lojas_ganhadoras.append({
             'loja': sorteio_atual.loja_ultra,
             'tipo': 'ULTRA',
@@ -144,6 +153,7 @@ def dashboard():
                 SorteioColaborador.sorteio_semanal_id == sorteio_atual.id,
                 Colaborador.loja_id == sorteio_atual.loja_ultra_id
             ).count(),
+            'colaboradores_aptos': colaboradores_aptos_ultra,
             'premios_disponiveis': Premio.query.filter(
                 db.or_(Premio.loja_id == sorteio_atual.loja_ultra_id, Premio.loja_id.is_(None)),
                 Premio.ativo == True
