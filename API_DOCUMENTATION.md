@@ -284,6 +284,7 @@ def save_secure_file(file, upload_folder):
 ```python
 def parse_instagram_comments(content, palavra_chave):
     """Processa comentários e retorna participantes"""
+    # Basta fazer upload do arquivo `.txt` com os comentários pelo sistema. O processamento é automático, sem necessidade de dividir arquivos manualmente.
     # Retorna: [(username, nome_exibicao, tickets), ...]
 ```
 
@@ -325,7 +326,12 @@ MAIL_PASSWORD=senha_app
 
 ## 💡 Exemplos de Uso
 
-### Criar Usuário Programaticamente
+[...existing code...]
+### Upload de Comentários Instagram
+```python
+# Basta salvar o texto dos comentários em um arquivo .txt e fazer upload pelo sistema na tela de sorteio Instagram.
+# Não é necessário dividir arquivos grandes manualmente.
+```
 ```python
 from app.models import Usuario, Loja, db
 

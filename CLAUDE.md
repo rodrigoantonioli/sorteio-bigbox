@@ -320,9 +320,10 @@ class SorteioAnimado {
 ### 🔄 Fluxo Completo
 1. **Configuração** → Definir palavras-chave e limites
 2. **Criação** → Novo sorteio Instagram
-3. **Processamento** → Upload/parse de comentários
+3. **Processamento** → Upload/parse de comentários (`.txt`)
+    - Não é mais necessário dividir arquivos grandes manualmente. O sistema aceita arquivos grandes e processa automaticamente.
 4. **Participantes** → Visualização em cards
-5. **Sorteio** → Interface cinematográfica
+5. **Sorteio** → Interface cinematográfica aprimorada
 6. **Resultados** → Exibição permanente
 
 ### 🎯 Modelos Instagram
@@ -464,6 +465,7 @@ MAIL_PASSWORD=senha_app
 4. **Correções CSRF** → Proteção aprimorada em formulários POST
 5. **Layout Responsivo** → Melhor experiência mobile
 6. **Sistema de Fotos** → Gestão completa de imagens de prêmios
+7. **Upload direto de comentários Instagram** → Não é mais necessário o script `split_comments.py`. Basta salvar o texto em `.txt` e fazer upload.
 
 ### 📸 Sistema de Fotos (v1.4)
 ```python

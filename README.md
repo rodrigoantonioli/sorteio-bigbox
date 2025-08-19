@@ -7,6 +7,12 @@
 
 Sistema web completo para **endomarketing interno** do **Grupo Big Box Ultrabox**, gerenciando sorteios de lojas, colaboradores e **Instagram**. Interface cinematográfica otimizada para filmagem profissional.
 
+**Novidade v1.4:**
+- Upload direto de comentários do Instagram (não é mais necessário dividir arquivos grandes manualmente)
+- Interface cinematográfica aprimorada para sorteios Instagram
+- Integração Cloudinary para imagens de prêmios
+- Segurança reforçada em formulários e uploads
+
 ## 🚀 Funcionalidades
 
 ### 👨‍💼 **Admin**
@@ -55,6 +61,8 @@ FLASK_ENV=development
 # Inicialize e execute
 flask init-db
 python run.py
+
+**Importante:** Para sorteios Instagram com muitos comentários, basta salvar o texto em um arquivo `.txt` e fazer upload direto pelo sistema. Não é mais necessário usar scripts externos como `split_comments.py`.
 ```
 
 ## 🧪 Testes
@@ -72,8 +80,8 @@ python tests/run_all_tests.py
 
 ## 📚 Documentação
 
-- **[CLAUDE.md](CLAUDE.md)** - Guia completo para desenvolvedores
-- **[API_DOCUMENTATION.md](API_DOCUMENTATION.md)** - Referência técnica
+- **[CLAUDE.md](CLAUDE.md)** - Guia completo para desenvolvedores (atualizado v1.4)
+- **[API_DOCUMENTATION.md](API_DOCUMENTATION.md)** - Referência técnica (atualizado v1.4)
 - **[tests/README.md](tests/README.md)** - Documentação de testes
 
 ---
